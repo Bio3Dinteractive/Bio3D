@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bio3D - Frog Anatomy</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600&display=swap');
 
@@ -14,9 +15,13 @@
     --line: rgba(55, 76, 58, .14);
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
-html, body, #app {
+html,
+body,
+#app {
     width: 100%;
     height: 100%;
     margin: 0;
@@ -74,6 +79,7 @@ h1 {
     position: absolute;
     top: 26px;
     right: 28px;
+    z-index: 5;
     padding: 11px 14px;
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -92,7 +98,7 @@ h1 {
     position: absolute;
     left: 26px;
     bottom: 25px;
-    z-index: 4;
+    z-index: 6;
     border: 1px solid var(--line);
     border-radius: 7px;
     padding: 10px 14px;
@@ -112,7 +118,7 @@ h1 {
     position: absolute;
     right: 27px;
     bottom: 27px;
-    z-index: 3;
+    z-index: 5;
     color: #66776d;
     font-size: 12px;
     letter-spacing: .04em;
@@ -122,7 +128,7 @@ h1 {
     position: absolute;
     right: 28px;
     top: 138px;
-    z-index: 4;
+    z-index: 7;
     width: 220px;
     padding: 15px;
     border: 1px solid var(--line);
@@ -266,7 +272,7 @@ h1 {
     position: absolute;
     left: 28px;
     top: 148px;
-    z-index: 4;
+    z-index: 8;
     padding: 10px 12px;
     border: 1px solid var(--line);
     border-radius: 7px;
@@ -286,16 +292,26 @@ h1 {
     position: absolute;
     left: 28px;
     top: 195px;
-    z-index: 4;
+    z-index: 8;
+
+    display: block !important;
+
     width: min(350px, calc(100vw - 56px));
     max-height: 54vh;
     overflow: auto;
     padding: 17px;
+
     border: 1px solid var(--line);
     border-radius: 8px;
+
     color: var(--ink);
-    background: rgba(255, 251, 241, .95);
+    background: rgba(255, 251, 241, .97);
+
     box-shadow: 0 16px 34px rgba(36, 55, 41, .16);
+}
+
+.info-panel[hidden] {
+    display: none !important;
 }
 
 .info-panel h2 {
@@ -329,13 +345,13 @@ h1 {
 
 .anatomy-tooltip {
     position: fixed;
-    z-index: 10;
+    z-index: 20;
     width: min(290px, calc(100vw - 28px));
     padding: 13px 14px;
     border: 1px solid rgba(55, 76, 58, .2);
     border-radius: 8px;
     color: var(--ink);
-    background: rgba(255, 251, 241, .96);
+    background: rgba(255, 251, 241, .97);
     box-shadow: 0 16px 34px rgba(36, 55, 41, .18);
     pointer-events: none;
     opacity: 0;
@@ -375,7 +391,7 @@ h1 {
 
 .tympanum-marker {
     position: fixed;
-    z-index: 8;
+    z-index: 18;
     width: 46px;
     height: 46px;
     border: 4px solid #d44852;
@@ -394,6 +410,7 @@ h1 {
 }
 
 @media (max-width: 600px) {
+
     .header {
         padding: 18px;
     }
@@ -421,6 +438,7 @@ h1 {
 }
 
 @media (max-width: 700px) {
+
     .anatomy-panel {
         top: auto;
         right: 18px;
@@ -439,6 +457,7 @@ h1 {
 }
 
 @media (max-width: 700px) {
+
     .info-toggle {
         left: 18px;
         top: 145px;
@@ -461,7 +480,9 @@ h1 {
     <header class="header">
         <p class="eyebrow">Animal study / Bio3D</p>
         <h1>Frog Anatomy</h1>
-        <p class="subtitle">Explore the form and external structures of a frog.</p>
+        <p class="subtitle">
+            Explore the form and external structures of a frog.
+        </p>
     </header>
 
     <div class="control-note">
@@ -470,11 +491,18 @@ h1 {
         <strong>Scroll</strong> to zoom
     </div>
 
-    <button class="info-toggle" id="infoToggle" aria-expanded="true">
+    <button
+        class="info-toggle"
+        id="infoToggle"
+        aria-expanded="true"
+    >
         Close related notes
     </button>
 
-    <section class="info-panel" id="infoPanel">
+    <section
+        class="info-panel"
+        id="infoPanel"
+    >
 
         <h2>Frog biology essentials</h2>
 
@@ -542,7 +570,10 @@ h1 {
 
     </section>
 
-    <aside class="anatomy-panel" aria-label="Frog anatomy controls">
+    <aside
+        class="anatomy-panel"
+        aria-label="Frog anatomy controls"
+    >
 
         <button
             class="panel-toggle"
@@ -558,37 +589,61 @@ h1 {
             Click it again to dissect it away.
         </p>
 
-        <button class="anatomy-button" id="internalToggle">
+        <button
+            class="anatomy-button"
+            id="internalToggle"
+        >
             Reveal internal anatomy
         </button>
 
         <div id="externalTools">
 
-            <button class="anatomy-button" id="tympanumFocus">
+            <button
+                class="anatomy-button"
+                id="tympanumFocus"
+            >
                 Locate tympanum
             </button>
 
-            <button class="anatomy-button" id="tongueFocus">
+            <button
+                class="anatomy-button"
+                id="tongueFocus"
+            >
                 Inspect tongue
             </button>
 
         </div>
 
-        <div id="internalTools" hidden>
+        <div
+            id="internalTools"
+            hidden
+        >
 
-            <div class="reproductive-actions" id="reproductiveActions">
+            <div
+                class="reproductive-actions"
+                id="reproductiveActions"
+            >
 
-                <button class="reproductive-button" id="femaleToggle">
+                <button
+                    class="reproductive-button"
+                    id="femaleToggle"
+                >
                     Female view
                 </button>
 
-                <button class="reproductive-button" id="maleToggle">
+                <button
+                    class="reproductive-button"
+                    id="maleToggle"
+                >
                     Male view
                 </button>
 
             </div>
 
-            <p class="organ-list" id="organList">
+            <p
+                class="organ-list"
+                id="organList"
+            >
                 Internal parts: ventral skin · heart · left lung · right lung ·
                 left, right, and median liver lobes · stomach · small intestine ·
                 left kidney · right kidney · spleen · urinary bladder · fat bodies ·
@@ -596,9 +651,15 @@ h1 {
                 sperm ducts · urinogenital ducts · cloaca
             </p>
 
-            <div class="dissection-list" id="dissectionList"></div>
+            <div
+                class="dissection-list"
+                id="dissectionList"
+            ></div>
 
-            <button class="dissection-reset" id="dissectionReset">
+            <button
+                class="dissection-reset"
+                id="dissectionReset"
+            >
                 Show all dissected parts
             </button>
 
@@ -606,10 +667,20 @@ h1 {
 
     </aside>
 
-    <aside class="anatomy-tooltip" id="anatomyTooltip" aria-live="polite">
+    <aside
+        class="anatomy-tooltip"
+        id="anatomyTooltip"
+        aria-live="polite"
+    >
         <h3 id="tooltipTitle"></h3>
-        <p class="role" id="tooltipRole"></p>
-        <p class="fact" id="tooltipFact"></p>
+        <p
+            class="role"
+            id="tooltipRole"
+        ></p>
+        <p
+            class="fact"
+            id="tooltipFact"
+        ></p>
     </aside>
 
     <div
@@ -626,7 +697,10 @@ h1 {
         aria-label="Left tympanum"
     ></div>
 
-    <button id="backButton" onclick="location.href='index.html'">
+    <button
+        id="backButton"
+        onclick="location.href='index.html'"
+    >
         Back to Bio3D
     </button>
 
@@ -652,55 +726,112 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
 
 
-/* -------------------------------------------------------
+/* =======================================================
    SCENE
-------------------------------------------------------- */
+======================================================= */
 
 const scene = new THREE.Scene();
 
-scene.background = new THREE.Color(0xd8e3d2);
-scene.fog = new THREE.Fog(0xd8e3d2, 8, 16);
+scene.background =
+    new THREE.Color(0xd8e3d2);
 
-const camera = new THREE.PerspectiveCamera(
-    37,
-    innerWidth / innerHeight,
-    .1,
-    50
+scene.fog =
+    new THREE.Fog(
+        0xd8e3d2,
+        8,
+        16
+    );
+
+
+const camera =
+    new THREE.PerspectiveCamera(
+        37,
+        innerWidth / innerHeight,
+        .1,
+        50
+    );
+
+camera.position.set(
+    0,
+    1.25,
+    7.6
 );
 
-camera.position.set(0, 1.25, 7.6);
 
-const renderer = new THREE.WebGLRenderer({
-    antialias: true
-});
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias: true
+    });
 
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(
+        devicePixelRatio,
+        2
+    )
+);
+
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
 
-document.getElementById('app').appendChild(renderer.domElement);
+renderer.shadowMap.type =
+    THREE.PCFSoftShadowMap;
+
+renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+renderer.toneMapping =
+    THREE.ACESFilmicToneMapping;
+
+renderer.toneMappingExposure =
+    1.1;
 
 
-const controls = new OrbitControls(
-    camera,
-    renderer.domElement
-);
+/*
+    Put canvas behind all UI.
+*/
+renderer.domElement.style.position =
+    'absolute';
+
+renderer.domElement.style.left =
+    '0';
+
+renderer.domElement.style.top =
+    '0';
+
+renderer.domElement.style.zIndex =
+    '0';
+
+document
+    .getElementById('app')
+    .appendChild(renderer.domElement);
+
+
+const controls =
+    new OrbitControls(
+        camera,
+        renderer.domElement
+    );
 
 controls.enableDamping = true;
 controls.dampingFactor = .055;
 controls.enablePan = false;
 controls.minDistance = 3.8;
 controls.maxDistance = 11;
-controls.target.set(0, .45, 0);
+
+controls.target.set(
+    0,
+    .45,
+    0
+);
 
 
-/* -------------------------------------------------------
+/* =======================================================
    LIGHTING
-------------------------------------------------------- */
+======================================================= */
 
 scene.add(
     new THREE.HemisphereLight(
@@ -710,66 +841,110 @@ scene.add(
     )
 );
 
-const key = new THREE.DirectionalLight(
-    0xfff1d7,
-    3.1
+
+const key =
+    new THREE.DirectionalLight(
+        0xfff1d7,
+        3.1
+    );
+
+key.position.set(
+    4,
+    7,
+    5
 );
 
-key.position.set(4, 7, 5);
 key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048);
+
+key.shadow.mapSize.set(
+    2048,
+    2048
+);
 
 scene.add(key);
 
-const fill = new THREE.DirectionalLight(
-    0xc5e4d2,
-    1.25
-);
 
-fill.position.set(-5, 3, -4);
+const fill =
+    new THREE.DirectionalLight(
+        0xc5e4d2,
+        1.25
+    );
+
+fill.position.set(
+    -5,
+    3,
+    -4
+);
 
 scene.add(fill);
 
 
-/* -------------------------------------------------------
+/* =======================================================
    FROG
-------------------------------------------------------- */
+======================================================= */
 
-const frog = new THREE.Group();
+const frog =
+    new THREE.Group();
 
-frog.position.y = .15;
+frog.position.y =
+    .15;
 
 scene.add(frog);
 
 
-/* -------------------------------------------------------
+/* =======================================================
    SKIN TEXTURE
-------------------------------------------------------- */
+======================================================= */
 
 function createSkinTexture() {
 
-    const canvas = document.createElement('canvas');
+    const canvas =
+        document.createElement('canvas');
 
-    canvas.width = 256;
-    canvas.height = 256;
+    canvas.width =
+        256;
 
-    const context = canvas.getContext('2d');
+    canvas.height =
+        256;
 
-    context.fillStyle = '#6d9958';
-    context.fillRect(0, 0, 256, 256);
+    const context =
+        canvas.getContext('2d');
 
-    for (let i = 0; i < 320; i++) {
+    context.fillStyle =
+        '#6d9958';
 
-        const x = (i * 83) % 256;
-        const y = (i * 47) % 256;
-        const radius = 1 + (i % 5);
+    context.fillRect(
+        0,
+        0,
+        256,
+        256
+    );
+
+
+    for (
+        let i = 0;
+        i < 320;
+        i++
+    ) {
+
+        const x =
+            (i * 83) % 256;
+
+        const y =
+            (i * 47) % 256;
+
+        const radius =
+            1 + (i % 5);
+
 
         context.fillStyle =
             i % 4 === 0
                 ? 'rgba(28, 64, 40, .22)'
                 : 'rgba(188, 211, 123, .12)';
 
+
         context.beginPath();
+
         context.arc(
             x,
             y,
@@ -781,75 +956,90 @@ function createSkinTexture() {
         context.fill();
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
 
-    texture.colorSpace = THREE.SRGBColorSpace;
+    const texture =
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+    texture.colorSpace =
+        THREE.SRGBColorSpace;
 
     return texture;
 }
 
 
-const skinTexture = createSkinTexture();
+const skinTexture =
+    createSkinTexture();
 
 
-const skin = new THREE.MeshPhysicalMaterial({
-    map: skinTexture,
-    color: 0x91af70,
-    roughness: .69,
-    clearcoat: .12,
-    clearcoatRoughness: .78,
-    sheen: .2,
-    sheenColor: new THREE.Color(0xa9cf86)
-});
+const skin =
+    new THREE.MeshPhysicalMaterial({
+        map: skinTexture,
+        color: 0x91af70,
+        roughness: .69,
+        clearcoat: .12,
+        clearcoatRoughness: .78,
+        sheen: .2,
+        sheenColor:
+            new THREE.Color(0xa9cf86)
+    });
 
 
-const skinLight = new THREE.MeshPhysicalMaterial({
-    map: skinTexture,
-    color: 0xb0c98a,
-    roughness: .7,
-    clearcoat: .1,
-    clearcoatRoughness: .8,
-    sheen: .2,
-    sheenColor: new THREE.Color(0xd4e6a0)
-});
+const skinLight =
+    new THREE.MeshPhysicalMaterial({
+        map: skinTexture,
+        color: 0xb0c98a,
+        roughness: .7,
+        clearcoat: .1,
+        clearcoatRoughness: .8,
+        sheen: .2,
+        sheenColor:
+            new THREE.Color(0xd4e6a0)
+    });
 
 
-const belly = new THREE.MeshPhysicalMaterial({
-    color: 0xb9c58e,
-    roughness: .98,
-    polygonOffset: true,
-    polygonOffsetFactor: -1,
-    polygonOffsetUnits: -1,
-    side: THREE.DoubleSide
-});
+const belly =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xb9c58e,
+        roughness: .98,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+        side: THREE.DoubleSide
+    });
 
 
-const darkSkin = new THREE.MeshPhysicalMaterial({
-    color: 0x365e3c,
-    roughness: .86
-});
+const darkSkin =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x365e3c,
+        roughness: .86
+    });
 
 
-const eyeGold = new THREE.MeshPhysicalMaterial({
-    color: 0xd9c75f,
-    roughness: .36
-});
+const eyeGold =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xd9c75f,
+        roughness: .36
+    });
 
 
-const pupil = new THREE.MeshBasicMaterial({
-    color: 0x10251d
-});
+const pupil =
+    new THREE.MeshBasicMaterial({
+        color: 0x10251d
+    });
 
 
-const mouthMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x536044,
-    roughness: .92
-});
+const mouthMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x536044,
+        roughness: .92
+    });
 
 
-/* -------------------------------------------------------
-   BASIC HELPERS
-------------------------------------------------------- */
+/* =======================================================
+   HELPERS
+======================================================= */
 
 function ellipsoid(
     geometry,
@@ -858,13 +1048,19 @@ function ellipsoid(
     scale
 ) {
 
-    const mesh = new THREE.Mesh(
-        geometry,
-        material
+    const mesh =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+    mesh.position.copy(
+        position
     );
 
-    mesh.position.copy(position);
-    mesh.scale.copy(scale);
+    mesh.scale.copy(
+        scale
+    );
 
     mesh.castShadow = true;
     mesh.receiveShadow = true;
@@ -890,63 +1086,116 @@ function mark(
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    BODY
-------------------------------------------------------- */
+======================================================= */
 
-const torso = mark(
-    ellipsoid(
-        new THREE.SphereGeometry(1, 48, 32),
-        skin,
-        new THREE.Vector3(0, .2, 0),
-        new THREE.Vector3(1.42, .76, 1.06)
-    ),
-    'Body wall and skin',
-    'Protection and respiration',
-    'The moist skin protects the body and allows cutaneous respiration. In frogs, gases diffuse across the skin, especially when submerged or resting.'
-);
-
-
-const bellyPatch = mark(
-    new THREE.Mesh(
-        new DecalGeometry(
-            torso,
-            new THREE.Vector3(0, .35, 1.0),
-            new THREE.Euler(0, 0, 0),
-            new THREE.Vector3(1.25, .62, .08)
+const torso =
+    mark(
+        ellipsoid(
+            new THREE.SphereGeometry(
+                1,
+                48,
+                32
+            ),
+            skin,
+            new THREE.Vector3(
+                0,
+                .2,
+                0
+            ),
+            new THREE.Vector3(
+                1.42,
+                .76,
+                1.06
+            )
         ),
-        belly
-    ),
-    'Ventral skin',
-    'Protection and water balance',
-    'The ventral surface is thin and moist. Skin glands secrete mucus that reduces water loss and supports gaseous exchange.'
-);
+        'Body wall and skin',
+        'Protection and respiration',
+        'The moist skin protects the body and allows cutaneous respiration. In frogs, gases diffuse across the skin, especially when submerged or resting.'
+    );
 
 
-const head = mark(
-    ellipsoid(
-        new THREE.SphereGeometry(1, 48, 32),
-        skinLight,
-        new THREE.Vector3(0, .82, .28),
-        new THREE.Vector3(1.3, .66, .92)
-    ),
-    'Head',
-    'Sensory region',
-    'The head bears the eyes, tympanum, mouth, and external nares, concentrating the frog\'s feeding and sensory structures.'
-);
+const bellyPatch =
+    mark(
+        new THREE.Mesh(
+            new DecalGeometry(
+                torso,
+                new THREE.Vector3(
+                    0,
+                    .35,
+                    1.0
+                ),
+                new THREE.Euler(
+                    0,
+                    0,
+                    0
+                ),
+                new THREE.Vector3(
+                    1.25,
+                    .62,
+                    .08
+                )
+            ),
+            belly
+        ),
+        'Ventral skin',
+        'Protection and water balance',
+        'The ventral surface is thin and moist. Skin glands secrete mucus that reduces water loss and supports gaseous exchange.'
+    );
 
 
-const snout = mark(
-    ellipsoid(
-        new THREE.SphereGeometry(1, 40, 24),
-        skinLight,
-        new THREE.Vector3(0, .66, 1.0),
-        new THREE.Vector3(.92, .36, .36)
-    ),
-    'Snout and mouth',
-    'Feeding',
-    'The frog catches prey with its sticky, protrusible tongue. The mouth opens into the buccopharyngeal cavity, which also helps in respiration.'
-);
+const head =
+    mark(
+        ellipsoid(
+            new THREE.SphereGeometry(
+                1,
+                48,
+                32
+            ),
+            skinLight,
+            new THREE.Vector3(
+                0,
+                .82,
+                .28
+            ),
+            new THREE.Vector3(
+                1.3,
+                .66,
+                .92
+            )
+        ),
+        'Head',
+        'Sensory region',
+        'The head bears the eyes, tympanum, mouth, and external nares, concentrating the frog\'s feeding and sensory structures.'
+    );
+
+
+const snout =
+    mark(
+        ellipsoid(
+            new THREE.SphereGeometry(
+                1,
+                40,
+                24
+            ),
+            skinLight,
+            new THREE.Vector3(
+                0,
+                .66,
+                1.0
+            ),
+            new THREE.Vector3(
+                .92,
+                .36,
+                .36
+            )
+        ),
+        'Snout and mouth',
+        'Feeding',
+        'The frog catches prey with its sticky, protrusible tongue. The mouth opens into the buccopharyngeal cavity, which also helps in respiration.'
+    );
+
 
 frog.add(
     torso,
@@ -956,11 +1205,12 @@ frog.add(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    TYMPANUM
-------------------------------------------------------- */
+======================================================= */
 
-const tympanumGroup = new THREE.Group();
+const tympanumGroup =
+    new THREE.Group();
 
 tympanumGroup.userData.anatomy = {
     name: 'Tympanum',
@@ -968,14 +1218,25 @@ tympanumGroup.userData.anatomy = {
     fact: 'The tympanum is the frog\'s external eardrum. It receives sound vibrations and passes them through the middle ear to the inner ear, where they are converted into nerve signals.'
 };
 
-frog.add(tympanumGroup);
+frog.add(
+    tympanumGroup
+);
 
 
-const tympanumMarker = new THREE.Group();
+const tympanumMarker =
+    new THREE.Group();
 
-tympanumMarker.name = 'Tympanum locator';
-tympanumMarker.visible = false;
-tympanumMarker.position.set(.855, .79, .28);
+tympanumMarker.name =
+    'Tympanum locator';
+
+tympanumMarker.visible =
+    false;
+
+tympanumMarker.position.set(
+    .855,
+    .79,
+    .28
+);
 
 tympanumMarker.userData.anatomy = {
     name: 'Tympanum location',
@@ -984,30 +1245,42 @@ tympanumMarker.userData.anatomy = {
 };
 
 
-const markerRing = new THREE.Mesh(
-    new THREE.RingGeometry(.27, .33, 40),
-    new THREE.MeshBasicMaterial({
-        color: 0xd44852,
-        transparent: true,
-        opacity: 1,
-        side: THREE.DoubleSide,
-        depthTest: true,
-        depthWrite: false,
-        polygonOffset: true,
-        polygonOffsetFactor: -4,
-        polygonOffsetUnits: -4
-    })
-);
+const markerRing =
+    new THREE.Mesh(
+        new THREE.RingGeometry(
+            .27,
+            .33,
+            40
+        ),
+        new THREE.MeshBasicMaterial({
+            color: 0xd44852,
+            transparent: true,
+            opacity: 1,
+            side: THREE.DoubleSide,
+            depthTest: true,
+            depthWrite: false,
+            polygonOffset: true,
+            polygonOffsetFactor: -4,
+            polygonOffsetUnits: -4
+        })
+    );
 
-markerRing.rotation.y = Math.PI / 2;
-markerRing.renderOrder = 20;
+markerRing.rotation.y =
+    Math.PI / 2;
+
+markerRing.renderOrder =
+    20;
 
 markerRing.userData.anatomy =
     tympanumMarker.userData.anatomy;
 
-tympanumMarker.add(markerRing);
+tympanumMarker.add(
+    markerRing
+);
 
-frog.add(tympanumMarker);
+frog.add(
+    tympanumMarker
+);
 
 
 const leftTympanumLocator =
@@ -1025,19 +1298,27 @@ leftTympanumLocator.position.set(
 leftTympanumLocator.children[0].rotation.y =
     -Math.PI / 2;
 
-frog.add(leftTympanumLocator);
+frog.add(
+    leftTympanumLocator
+);
 
 
-/* -------------------------------------------------------
+/* =======================================================
    EYES
-------------------------------------------------------- */
+======================================================= */
 
-for (const side of [-1, 1]) {
+for (
+    const side of [-1, 1]
+) {
 
     frog.add(
         mark(
             ellipsoid(
-                new THREE.SphereGeometry(1, 28, 20),
+                new THREE.SphereGeometry(
+                    1,
+                    28,
+                    20
+                ),
                 darkSkin,
                 new THREE.Vector3(
                     side * .72,
@@ -1060,7 +1341,11 @@ for (const side of [-1, 1]) {
     frog.add(
         mark(
             ellipsoid(
-                new THREE.SphereGeometry(1, 28, 20),
+                new THREE.SphereGeometry(
+                    1,
+                    28,
+                    20
+                ),
                 eyeGold,
                 new THREE.Vector3(
                     side * .73,
@@ -1083,7 +1368,11 @@ for (const side of [-1, 1]) {
     frog.add(
         mark(
             ellipsoid(
-                new THREE.SphereGeometry(1, 24, 16),
+                new THREE.SphereGeometry(
+                    1,
+                    24,
+                    16
+                ),
                 pupil,
                 new THREE.Vector3(
                     side * .73,
@@ -1103,18 +1392,22 @@ for (const side of [-1, 1]) {
     );
 
 
-    const tympanum = mark(
-        new THREE.Mesh(
-            new THREE.CircleGeometry(.19, 32),
-            new THREE.MeshPhysicalMaterial({
-                color: 0x789d61,
-                roughness: .9
-            })
-        ),
-        'Tympanum',
-        'Hearing',
-        'The tympanum is the external eardrum. It receives sound vibrations and transmits them to the middle and inner ear.'
-    );
+    const tympanum =
+        mark(
+            new THREE.Mesh(
+                new THREE.CircleGeometry(
+                    .19,
+                    32
+                ),
+                new THREE.MeshPhysicalMaterial({
+                    color: 0x789d61,
+                    roughness: .9
+                })
+            ),
+            'Tympanum',
+            'Hearing',
+            'The tympanum is the external eardrum. It receives sound vibrations and transmits them to the middle and inner ear.'
+        );
 
     tympanum.position.set(
         side * .82,
@@ -1125,51 +1418,69 @@ for (const side of [-1, 1]) {
     tympanum.rotation.y =
         side * Math.PI / 2;
 
-    tympanumGroup.add(tympanum);
+    tympanumGroup.add(
+        tympanum
+    );
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    MOUTH
-------------------------------------------------------- */
+======================================================= */
 
 const mouthCurve =
     new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-.62, .67, 1.31),
-        new THREE.Vector3(0, .59, 1.365),
-        new THREE.Vector3(.62, .67, 1.31)
+        new THREE.Vector3(
+            -.62,
+            .67,
+            1.31
+        ),
+        new THREE.Vector3(
+            0,
+            .59,
+            1.365
+        ),
+        new THREE.Vector3(
+            .62,
+            .67,
+            1.31
+        )
     ]);
 
 
-const mouth = mark(
-    new THREE.Mesh(
-        new THREE.TubeGeometry(
-            mouthCurve,
-            24,
-            .012,
-            8,
-            false
+const mouth =
+    mark(
+        new THREE.Mesh(
+            new THREE.TubeGeometry(
+                mouthCurve,
+                24,
+                .012,
+                8,
+                false
+            ),
+            mouthMaterial
         ),
-        mouthMaterial
-    ),
-    'Mouth',
-    'Ingestion and respiration',
-    'The buccal cavity receives food and forms part of the buccopharyngeal pump used in breathing.'
+        'Mouth',
+        'Ingestion and respiration',
+        'The buccal cavity receives food and forms part of the buccopharyngeal pump used in breathing.'
+    );
+
+frog.add(
+    mouth
 );
 
-frog.add(mouth);
 
-
-/* -------------------------------------------------------
+/* =======================================================
    TONGUE
-------------------------------------------------------- */
+======================================================= */
 
 const tongueMaterial =
     new THREE.MeshPhysicalMaterial({
         color: 0xa95f64,
         roughness: .72,
         sheen: .28,
-        sheenColor: new THREE.Color(0xe1a0a0)
+        sheenColor:
+            new THREE.Color(0xe1a0a0)
     });
 
 
@@ -1178,7 +1489,8 @@ const tongueTipMaterial =
         color: 0xc8847d,
         roughness: .58,
         sheen: .34,
-        sheenColor: new THREE.Color(0xf0b7a8)
+        sheenColor:
+            new THREE.Color(0xf0b7a8)
     });
 
 
@@ -1197,9 +1509,11 @@ const toothMaterial =
     });
 
 
-const tongueGroup = new THREE.Group();
+const tongueGroup =
+    new THREE.Group();
 
-tongueGroup.visible = false;
+tongueGroup.visible =
+    false;
 
 tongueGroup.userData.anatomy = {
     name: 'Tongue',
@@ -1210,49 +1524,95 @@ tongueGroup.userData.anatomy = {
 
 const tongueCurve =
     new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, .52, 1.07),
-        new THREE.Vector3(0, .54, 1.17),
-        new THREE.Vector3(0, .64, 1.27),
-        new THREE.Vector3(0, .59, 1.37),
-        new THREE.Vector3(0, .54, 1.31)
+        new THREE.Vector3(
+            0,
+            .52,
+            1.07
+        ),
+        new THREE.Vector3(
+            0,
+            .54,
+            1.17
+        ),
+        new THREE.Vector3(
+            0,
+            .64,
+            1.27
+        ),
+        new THREE.Vector3(
+            0,
+            .59,
+            1.37
+        ),
+        new THREE.Vector3(
+            0,
+            .54,
+            1.31
+        )
     ]);
 
 
-const tongueBody = mark(
-    new THREE.Mesh(
-        new THREE.TubeGeometry(
-            tongueCurve,
-            32,
-            .075,
-            12,
-            false
+const tongueBody =
+    mark(
+        new THREE.Mesh(
+            new THREE.TubeGeometry(
+                tongueCurve,
+                32,
+                .075,
+                12,
+                false
+            ),
+            tongueMaterial
         ),
-        tongueMaterial
-    ),
-    'Rolled tongue body',
-    'Muscular and elastic feeding organ',
-    'At rest, the tongue folds back inside the mouth. The front attachment and elastic tissues allow it to unroll and extend rapidly during feeding.'
-);
+        'Rolled tongue body',
+        'Muscular and elastic feeding organ',
+        'At rest, the tongue folds back inside the mouth. The front attachment and elastic tissues allow it to unroll and extend rapidly during feeding.'
+    );
 
 
-const tongueTip = mark(
-    ellipsoid(
-        new THREE.SphereGeometry(1, 32, 20),
-        tongueTipMaterial,
-        new THREE.Vector3(0, .54, 1.3),
-        new THREE.Vector3(.27, .07, .14)
-    ),
-    'Sticky tongue tip',
-    'Prey capture',
-    'A shallow median groove divides the broad tip visually; sticky mucus increases adhesion to prey. The frog tongue is not a forked snake-like tongue.'
-);
+const tongueTip =
+    mark(
+        ellipsoid(
+            new THREE.SphereGeometry(
+                1,
+                32,
+                20
+            ),
+            tongueTipMaterial,
+            new THREE.Vector3(
+                0,
+                .54,
+                1.3
+            ),
+            new THREE.Vector3(
+                .27,
+                .07,
+                .14
+            )
+        ),
+        'Sticky tongue tip',
+        'Prey capture',
+        'A shallow median groove divides the broad tip visually; sticky mucus increases adhesion to prey. The frog tongue is not a forked snake-like tongue.'
+    );
 
 
 const tongueGrooveCurve =
     new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, .606, 1.2),
-        new THREE.Vector3(0, .676, 1.29),
-        new THREE.Vector3(0, .606, 1.37)
+        new THREE.Vector3(
+            0,
+            .606,
+            1.2
+        ),
+        new THREE.Vector3(
+            0,
+            .676,
+            1.29
+        ),
+        new THREE.Vector3(
+            0,
+            .606,
+            1.37
+        )
     ]);
 
 
@@ -1277,59 +1637,101 @@ tongueGroup.add(
     tongueGroove
 );
 
-frog.add(tongueGroup);
+frog.add(
+    tongueGroup
+);
 
 
-/* -------------------------------------------------------
+/* =======================================================
    OPEN MOUTH
-------------------------------------------------------- */
+======================================================= */
 
 const openMouthGroup =
     new THREE.Group();
 
-openMouthGroup.visible = false;
+openMouthGroup.visible =
+    false;
 
 
-const oralCavity = mark(
-    ellipsoid(
-        new THREE.SphereGeometry(1, 32, 20),
-        new THREE.MeshPhysicalMaterial({
-            color: 0x402b2c,
-            roughness: .95
-        }),
-        new THREE.Vector3(0, .57, 1.23),
-        new THREE.Vector3(.72, .23, .14)
-    ),
-    'Buccal cavity',
-    'Feeding and buccopharyngeal respiration',
-    'The moist buccopharyngeal cavity receives food and participates in respiration by rhythmic movements of the floor of the mouth.'
-);
+const oralCavity =
+    mark(
+        ellipsoid(
+            new THREE.SphereGeometry(
+                1,
+                32,
+                20
+            ),
+            new THREE.MeshPhysicalMaterial({
+                color: 0x402b2c,
+                roughness: .95
+            }),
+            new THREE.Vector3(
+                0,
+                .57,
+                1.23
+            ),
+            new THREE.Vector3(
+                .72,
+                .23,
+                .14
+            )
+        ),
+        'Buccal cavity',
+        'Feeding and buccopharyngeal respiration',
+        'The moist buccopharyngeal cavity receives food and participates in respiration by rhythmic movements of the floor of the mouth.'
+    );
 
 
-const upperJaw = mark(
-    ellipsoid(
-        new THREE.SphereGeometry(1, 32, 20),
-        jawMaterial,
-        new THREE.Vector3(0, .73, 1.12),
-        new THREE.Vector3(.82, .1, .27)
-    ),
-    'Upper jaw',
-    'Fixed jaw and prey retention',
-    'The frog upper jaw is fixed to the skull. In ranid frogs, small maxillary teeth help hold prey; the lower jaw moves down to open the mouth.'
-);
+const upperJaw =
+    mark(
+        ellipsoid(
+            new THREE.SphereGeometry(
+                1,
+                32,
+                20
+            ),
+            jawMaterial,
+            new THREE.Vector3(
+                0,
+                .73,
+                1.12
+            ),
+            new THREE.Vector3(
+                .82,
+                .1,
+                .27
+            )
+        ),
+        'Upper jaw',
+        'Fixed jaw and prey retention',
+        'The frog upper jaw is fixed to the skull. In ranid frogs, small maxillary teeth help hold prey; the lower jaw moves down to open the mouth.'
+    );
 
 
-const lowerJaw = mark(
-    ellipsoid(
-        new THREE.SphereGeometry(1, 32, 20),
-        skinLight,
-        new THREE.Vector3(0, .39, 1.05),
-        new THREE.Vector3(.78, .12, .3)
-    ),
-    'Lower jaw',
-    'Opening the mouth',
-    'The lower jaw moves down to open the mouth for prey capture and helps create pressure changes during buccopharyngeal breathing.'
-);
+const lowerJaw =
+    mark(
+        ellipsoid(
+            new THREE.SphereGeometry(
+                1,
+                32,
+                20
+            ),
+            skinLight,
+            new THREE.Vector3(
+                0,
+                .39,
+                1.05
+            ),
+            new THREE.Vector3(
+                .78,
+                .12,
+                .3
+            )
+        ),
+        'Lower jaw',
+        'Opening the mouth',
+        'The lower jaw moves down to open the mouth for prey capture and helps create pressure changes during buccopharyngeal breathing.'
+    );
 
 
 openMouthGroup.add(
@@ -1339,11 +1741,19 @@ openMouthGroup.add(
 );
 
 
-for (let tooth = -4; tooth <= 4; tooth++) {
+for (
+    let tooth = -4;
+    tooth <= 4;
+    tooth++
+) {
 
     const maxillaryTooth =
         new THREE.Mesh(
-            new THREE.ConeGeometry(.018, .08, 8),
+            new THREE.ConeGeometry(
+                .018,
+                .08,
+                8
+            ),
             toothMaterial
         );
 
@@ -1362,15 +1772,25 @@ for (let tooth = -4; tooth <= 4; tooth++) {
         fact: 'Small teeth on the upper jaw help grip prey. Frog teeth are mainly for holding food, not chewing, because prey is swallowed whole.'
     };
 
-    openMouthGroup.add(maxillaryTooth);
+    openMouthGroup.add(
+        maxillaryTooth
+    );
 }
 
 
-for (let tooth = -2; tooth <= 2; tooth++) {
+for (
+    let tooth = -2;
+    tooth <= 2;
+    tooth++
+) {
 
     const vomerineTooth =
         new THREE.Mesh(
-            new THREE.ConeGeometry(.022, .07, 8),
+            new THREE.ConeGeometry(
+                .022,
+                .07,
+                8
+            ),
             toothMaterial
         );
 
@@ -1389,15 +1809,19 @@ for (let tooth = -2; tooth <= 2; tooth++) {
         fact: 'Vomerine teeth occur on the roof of the mouth and help hold prey while it is being swallowed. Their presence and arrangement vary among frog groups.'
     };
 
-    openMouthGroup.add(vomerineTooth);
+    openMouthGroup.add(
+        vomerineTooth
+    );
 }
 
-frog.add(openMouthGroup);
+frog.add(
+    openMouthGroup
+);
 
 
-/* -------------------------------------------------------
-   LIMBS
-------------------------------------------------------- */
+/* =======================================================
+   LIMB HELPER
+======================================================= */
 
 function limbBetween(
     start,
@@ -1409,7 +1833,10 @@ function limbBetween(
 
     const direction =
         new THREE.Vector3()
-            .subVectors(end, start);
+            .subVectors(
+                end,
+                start
+            );
 
     const limb =
         new THREE.Mesh(
@@ -1417,7 +1844,8 @@ function limbBetween(
                 radius,
                 Math.max(
                     .05,
-                    direction.length() - radius * 2
+                    direction.length() -
+                    radius * 2
                 ),
                 12,
                 20
@@ -1431,30 +1859,40 @@ function limbBetween(
         .multiplyScalar(.5);
 
     limb.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
         direction.normalize()
     );
 
-    limb.castShadow = true;
+    limb.castShadow =
+        true;
+
+    limb.receiveShadow =
+        true;
 
     if (anatomy) {
-        limb.userData.anatomy = anatomy;
+
+        limb.userData.anatomy =
+            anatomy;
     }
 
     return limb;
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    WEBBING MATERIALS
-------------------------------------------------------- */
+======================================================= */
 
 const hindWebbingMaterial =
     new THREE.MeshPhysicalMaterial({
         color: 0x8eae6d,
         roughness: .78,
         transparent: true,
-        opacity: .78,
+        opacity: .86,
         side: THREE.DoubleSide,
         depthWrite: false
     });
@@ -1471,61 +1909,34 @@ const frontWebbingMaterial =
     });
 
 
-/* -------------------------------------------------------
-   HIND FOOT WEBBING
-   EXACTLY 4 HIND DIGITS
-------------------------------------------------------- */
+/* =======================================================
+   HIND FOOT
+   EXACTLY FOUR DIGITS + VISIBLE WEBBING
+======================================================= */
 
-function makeWebbedFoot(side) {
-
-    /*
-        Frog hind feet have four main digits in this model.
-
-        Digit positions:
-            0   1   2   3
-
-        Webbing is built between:
-            digit 0 ↔ digit 1
-            digit 1 ↔ digit 2
-            digit 2 ↔ digit 3
-
-        There is deliberately NO fifth digit.
-    */
-
-    const toeEnds = [];
-
-    const toeOffsets = [
-        -1.5,
-        -0.5,
-         0.5,
-         1.5
-    ];
-
-    for (const offset of toeOffsets) {
-
-        toeEnds.push(
-            new THREE.Vector3(
-                side * (
-                    1.5 +
-                    offset * .14
-                ),
-                -.68,
-                1.16 -
-                Math.abs(offset) * .045
-            )
-        );
-    }
-
+function makeWebbedFoot(
+    side,
+    toeEnds
+) {
 
     /*
-        Four individual digits are already created separately
-        below. Here we create three broad membrane panels
-        connecting adjacent digits.
+        IMPORTANT:
+        Exactly FOUR digits exist.
+
+        digit 1
+        digit 2
+        digit 3
+        digit 4
+
+        There is NO fifth digit.
     */
 
-    const vertices = [];
-    const indices = [];
+    /*
+        Create the webbing as three clearly visible
+        membrane panels.
 
+        Each panel connects two adjacent digits.
+    */
 
     for (
         let i = 0;
@@ -1533,121 +1944,147 @@ function makeWebbedFoot(side) {
         i++
     ) {
 
-        const leftToe =
+        const a =
             toeEnds[i];
 
-        const rightToe =
+        const b =
             toeEnds[i + 1];
 
 
         /*
-            Each webbing panel begins slightly above/behind
-            the toes and widens toward the ankle.
-
-            Using four vertices instead of one triangle gives
-            the webbing a clear membrane shape between the
-            digits.
+            The webbing starts near the ankle and widens
+            toward the two adjacent digits.
         */
 
-        const leftRoot =
+        const rootCenter =
             new THREE.Vector3(
-                side * (
-                    1.5 +
-                    (toeOffsets[i] * .055)
-                ),
+                side * 1.5,
                 -.61,
-                .70
-            );
-
-        const rightRoot =
-            new THREE.Vector3(
-                side * (
-                    1.5 +
-                    (toeOffsets[i + 1] * .055)
-                ),
-                -.61,
-                .70
+                .66
             );
 
 
-        const base =
-            vertices.length / 3;
+        const rootWidth =
+            .11;
 
 
-        vertices.push(
+        const rootA =
+            new THREE.Vector3(
+                rootCenter.x +
+                    side * (
+                        i - 1
+                    ) * rootWidth,
+                rootCenter.y,
+                rootCenter.z
+            );
 
-            leftRoot.x,
-            leftRoot.y,
-            leftRoot.z,
 
-            rightRoot.x,
-            rightRoot.y,
-            rightRoot.z,
-
-            leftToe.x,
-            leftToe.y,
-            leftToe.z,
-
-            rightToe.x,
-            rightToe.y,
-            rightToe.z
-        );
+        const rootB =
+            new THREE.Vector3(
+                rootCenter.x +
+                    side * (
+                        i - 0.15
+                    ) * rootWidth,
+                rootCenter.y,
+                rootCenter.z
+            );
 
 
         /*
-            Two triangles form one continuous webbing panel.
+            Put the membrane slightly in front of
+            the toes so it is visually obvious.
         */
 
-        indices.push(
-            base,
-            base + 2,
-            base + 1,
+        const tipA =
+            a.clone();
 
-            base + 1,
-            base + 2,
-            base + 3
+        const tipB =
+            b.clone();
+
+
+        tipA.y += .025;
+        tipB.y += .025;
+
+
+        const geometry =
+            new THREE.BufferGeometry();
+
+
+        const vertices = [
+
+            rootA.x,
+            rootA.y,
+            rootA.z,
+
+            rootB.x,
+            rootB.y,
+            rootB.z,
+
+            tipA.x,
+            tipA.y,
+            tipA.z,
+
+            tipB.x,
+            tipB.y,
+            tipB.z
+        ];
+
+
+        const indices = [
+
+            0, 2, 1,
+            1, 2, 3
+        ];
+
+
+        geometry.setAttribute(
+            'position',
+            new THREE.Float32BufferAttribute(
+                vertices,
+                3
+            )
+        );
+
+        geometry.setIndex(
+            indices
+        );
+
+        geometry.computeVertexNormals();
+
+
+        const web =
+            new THREE.Mesh(
+                geometry,
+                hindWebbingMaterial
+            );
+
+
+        web.userData.anatomy = {
+            name: 'Webbing between hind digits',
+            role: 'Swimming adaptation',
+            fact: 'Broad webbing stretches between the four hind digits. It increases the surface area of the foot, allowing the frog to push against water more effectively during swimming.'
+        };
+
+
+        web.castShadow =
+            true;
+
+        web.receiveShadow =
+            true;
+
+        web.renderOrder =
+            2;
+
+        frog.add(
+            web
         );
     }
-
-
-    const geometry =
-        new THREE.BufferGeometry();
-
-    geometry.setAttribute(
-        'position',
-        new THREE.Float32BufferAttribute(
-            vertices,
-            3
-        )
-    );
-
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
-
-
-    const web =
-        new THREE.Mesh(
-            geometry,
-            hindWebbingMaterial
-        );
-
-    web.userData.anatomy = {
-        name: 'Webbed hind foot',
-        role: 'Swimming adaptation',
-        fact: 'The frog has four long hind digits in this model, with broad webbing between adjacent digits. The webbed foot increases surface area and helps push against water during swimming.'
-    };
-
-    web.castShadow = true;
-    web.receiveShadow = true;
-    web.renderOrder = 1;
-
-    frog.add(web);
 }
 
 
-/* -------------------------------------------------------
-   PARTIAL FRONT HAND WEBBING
-------------------------------------------------------- */
+/* =======================================================
+   FRONT WEBBING
+======================================================= */
 
 function makeFrontWebbing(
     side,
@@ -1671,6 +2108,7 @@ function makeFrontWebbing(
         const b =
             fingertips[i + 1];
 
+
         const basePoint =
             new THREE.Vector3(
                 side * 1.12,
@@ -1678,10 +2116,13 @@ function makeFrontWebbing(
                 1.25
             );
 
+
         const base =
             vertices.length / 3;
 
+
         vertices.push(
+
             basePoint.x,
             basePoint.y,
             basePoint.z,
@@ -1695,6 +2136,7 @@ function makeFrontWebbing(
             b.z
         );
 
+
         indices.push(
             base,
             base + 1,
@@ -1706,6 +2148,7 @@ function makeFrontWebbing(
     const geometry =
         new THREE.BufferGeometry();
 
+
     geometry.setAttribute(
         'position',
         new THREE.Float32BufferAttribute(
@@ -1714,7 +2157,12 @@ function makeFrontWebbing(
         )
     );
 
-    geometry.setIndex(indices);
+
+    geometry.setIndex(
+        indices
+    );
+
+
     geometry.computeVertexNormals();
 
 
@@ -1724,25 +2172,37 @@ function makeFrontWebbing(
             frontWebbingMaterial
         );
 
+
     web.userData.anatomy = {
         name: 'Partial forefoot webbing',
         role: 'Hand and aquatic movement',
-        fact: 'The frog’s front hands are much less extensively webbed than the hind feet. In this model, the subtle membrane at the base of the front digits represents partial webbing rather than the broad swimming web of the hind foot.'
+        fact: 'The frog’s front hands are much less extensively webbed than the hind feet. The broad swimming web is mainly associated with the hind foot.'
     };
 
-    web.castShadow = true;
-    web.receiveShadow = true;
-    web.renderOrder = 1;
 
-    frog.add(web);
+    web.castShadow =
+        true;
+
+    web.receiveShadow =
+        true;
+
+    web.renderOrder =
+        1;
+
+
+    frog.add(
+        web
+    );
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    CREATE LIMBS
-------------------------------------------------------- */
+======================================================= */
 
-for (const side of [-1, 1]) {
+for (
+    const side of [-1, 1]
+) {
 
     const shoulder =
         new THREE.Vector3(
@@ -1751,12 +2211,14 @@ for (const side of [-1, 1]) {
             .18
         );
 
+
     const elbow =
         new THREE.Vector3(
             side * 1.25,
             -.12,
             .62
         );
+
 
     const wrist =
         new THREE.Vector3(
@@ -1774,6 +2236,7 @@ for (const side of [-1, 1]) {
 
 
     frog.add(
+
         limbBetween(
             shoulder,
             elbow,
@@ -1795,7 +2258,15 @@ for (const side of [-1, 1]) {
     const fingertips = [];
 
 
-    for (let toe = -1; toe <= 1; toe++) {
+    /*
+        Front hand: three simplified visible digits.
+    */
+
+    for (
+        let toe = -1;
+        toe <= 1;
+        toe++
+    ) {
 
         const fingertip =
             new THREE.Vector3(
@@ -1808,7 +2279,10 @@ for (const side of [-1, 1]) {
                 Math.abs(toe) * .08
             );
 
-        fingertips.push(fingertip);
+
+        fingertips.push(
+            fingertip
+        );
 
 
         frog.add(
@@ -1818,22 +2292,25 @@ for (const side of [-1, 1]) {
                 .045,
                 skinLight,
                 {
-                    name: 'Front digits',
+                    name: 'Front digit',
                     role: 'Grip and balance',
-                    fact: 'Short, flexible digits help the frog grip surfaces and maintain balance during movement.'
+                    fact: 'Short flexible digits help the frog grip surfaces and maintain balance during movement.'
                 }
             )
         );
     }
 
 
-    /* subtle webbing between the front digits */
     makeFrontWebbing(
         side,
         wrist,
         fingertips
     );
 
+
+    /* ---------------------------------------------------
+       HIND LIMB
+    --------------------------------------------------- */
 
     const hip =
         new THREE.Vector3(
@@ -1842,12 +2319,14 @@ for (const side of [-1, 1]) {
             -.34
         );
 
+
     const knee =
         new THREE.Vector3(
             side * 1.65,
             -.3,
             -.48
         );
+
 
     const ankle =
         new THREE.Vector3(
@@ -1865,6 +2344,7 @@ for (const side of [-1, 1]) {
 
 
     frog.add(
+
         limbBetween(
             hip,
             knee,
@@ -1886,18 +2366,16 @@ for (const side of [-1, 1]) {
     /*
         EXACTLY FOUR HIND DIGITS.
 
-        The previous version used:
-            for (let toe = -2; toe <= 2; toe++)
+        They are deliberately spread out so that all four
+        can be seen individually.
 
-        which created FIVE digits.
+        Positions:
+            digit 1 = -1.5
+            digit 2 = -0.5
+            digit 3 =  0.5
+            digit 4 =  1.5
 
-        This version uses four positions:
-            -1.5
-            -0.5
-             0.5
-             1.5
-
-        Therefore each hind foot has exactly four digits.
+        No fifth digit exists.
     */
 
     const hindToeOffsets = [
@@ -1908,7 +2386,12 @@ for (const side of [-1, 1]) {
     ];
 
 
-    for (const toe of hindToeOffsets) {
+    const hindToeEnds = [];
+
+
+    for (
+        const toe of hindToeOffsets
+    ) {
 
         const toeStart =
             new THREE.Vector3(
@@ -1917,16 +2400,27 @@ for (const side of [-1, 1]) {
                 .54
             );
 
+
+        /*
+            More spacing between the four digits makes
+            the individual toes visually obvious.
+        */
+
         const toeEnd =
             new THREE.Vector3(
                 side * (
                     1.5 +
-                    toe * .14
+                    toe * .19
                 ),
-                -.68,
-                1.16 -
-                Math.abs(toe) * .045
+                -.69,
+                1.20 -
+                Math.abs(toe) * .035
             );
+
+
+        hindToeEnds.push(
+            toeEnd
+        );
 
 
         frog.add(
@@ -1936,9 +2430,9 @@ for (const side of [-1, 1]) {
                 .055,
                 skinLight,
                 {
-                    name: 'Hind toe',
+                    name: 'Hind digit',
                     role: 'Swimming and propulsion',
-                    fact: 'The four long hind digits extend the foot during swimming and jumping. Broad webbing between the digits increases the effective surface area of the foot.'
+                    fact: 'The hind foot has four long digits. The digits spread during swimming while the webbing between them increases the effective surface area of the foot.'
                 }
             )
         );
@@ -1946,31 +2440,45 @@ for (const side of [-1, 1]) {
 
 
     /*
-        Broad swimming webbing between all four hind digits.
-        This creates three connected membrane sections:
-        1–2, 2–3, and 3–4.
+        The webbing is created AFTER all four digits.
+        Three membranes connect:
+
+        1 ↔ 2
+        2 ↔ 3
+        3 ↔ 4
     */
-    makeWebbedFoot(side);
+
+    makeWebbedFoot(
+        side,
+        hindToeEnds
+    );
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    INTERNAL ANATOMY
-------------------------------------------------------- */
+======================================================= */
 
 const internal =
     new THREE.Group();
 
-internal.position.y = .15;
-internal.visible = false;
+internal.position.y =
+    .15;
 
-scene.add(internal);
+internal.visible =
+    false;
+
+scene.add(
+    internal
+);
 
 
 const organLayers = {};
 
 
-function getOrganLayer(key) {
+function getOrganLayer(
+    key
+) {
 
     if (!organLayers[key]) {
 
@@ -1986,9 +2494,9 @@ function getOrganLayer(key) {
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    ORGAN MATERIALS
-------------------------------------------------------- */
+======================================================= */
 
 const heartMaterial =
     new THREE.MeshPhysicalMaterial({
@@ -2105,9 +2613,9 @@ function organ(
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    INTERNAL LAYER INFO
-------------------------------------------------------- */
+======================================================= */
 
 const layerInfo = {
 
@@ -2146,9 +2654,9 @@ const layerInfo = {
 };
 
 
-/* -------------------------------------------------------
+/* =======================================================
    INTERNAL STRUCTURES
-------------------------------------------------------- */
+======================================================= */
 
 const ventralSkin =
     new THREE.Mesh(
@@ -2167,6 +2675,7 @@ const ventralSkin =
         })
     );
 
+
 ventralSkin.position.set(
     0,
     -.02,
@@ -2179,6 +2688,7 @@ ventralSkin.scale.set(
     .08
 );
 
+
 ventralSkin.userData.anatomy = {
     name: 'Ventral skin',
     role: 'Cutaneous respiration',
@@ -2186,16 +2696,31 @@ ventralSkin.userData.anatomy = {
     layer: 'ventralSkin'
 };
 
+
 getOrganLayer(
     'ventralSkin'
-).add(ventralSkin);
+).add(
+    ventralSkin
+);
 
 
 organ(
-    new THREE.SphereGeometry(1, 32, 24),
+    new THREE.SphereGeometry(
+        1,
+        32,
+        24
+    ),
     heartMaterial,
-    new THREE.Vector3(0, .63, .35),
-    new THREE.Vector3(.22, .3, .18),
+    new THREE.Vector3(
+        0,
+        .63,
+        .35
+    ),
+    new THREE.Vector3(
+        .22,
+        .3,
+        .18
+    ),
     {
         name: 'Heart',
         role: 'Three-chambered circulation',
@@ -2206,10 +2731,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 32, 24),
+    new THREE.SphereGeometry(
+        1,
+        32,
+        24
+    ),
     lungMaterial,
-    new THREE.Vector3(-.42, .72, .05),
-    new THREE.Vector3(.28, .5, .2),
+    new THREE.Vector3(
+        -.42,
+        .72,
+        .05
+    ),
+    new THREE.Vector3(
+        .28,
+        .5,
+        .2
+    ),
     {
         name: 'Left lung',
         role: 'Pulmonary and buccopharyngeal respiration',
@@ -2220,10 +2757,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 32, 24),
+    new THREE.SphereGeometry(
+        1,
+        32,
+        24
+    ),
     lungMaterial,
-    new THREE.Vector3(.42, .72, .05),
-    new THREE.Vector3(.28, .5, .2),
+    new THREE.Vector3(
+        .42,
+        .72,
+        .05
+    ),
+    new THREE.Vector3(
+        .28,
+        .5,
+        .2
+    ),
     {
         name: 'Right lung',
         role: 'Pulmonary and buccopharyngeal respiration',
@@ -2234,10 +2783,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 36, 24),
+    new THREE.SphereGeometry(
+        1,
+        36,
+        24
+    ),
     liverMaterial,
-    new THREE.Vector3(-.43, .2, .34),
-    new THREE.Vector3(.58, .34, .3),
+    new THREE.Vector3(
+        -.43,
+        .2,
+        .34
+    ),
+    new THREE.Vector3(
+        .58,
+        .34,
+        .3
+    ),
     {
         name: 'Left liver lobe',
         role: 'Digestion and metabolism',
@@ -2248,10 +2809,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 36, 24),
+    new THREE.SphereGeometry(
+        1,
+        36,
+        24
+    ),
     liverMaterial,
-    new THREE.Vector3(.43, .2, .34),
-    new THREE.Vector3(.58, .34, .3),
+    new THREE.Vector3(
+        .43,
+        .2,
+        .34
+    ),
+    new THREE.Vector3(
+        .58,
+        .34,
+        .3
+    ),
     {
         name: 'Right liver lobe',
         role: 'Digestion and metabolism',
@@ -2262,10 +2835,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 32, 22),
+    new THREE.SphereGeometry(
+        1,
+        32,
+        22
+    ),
     liverMaterial,
-    new THREE.Vector3(0, .12, .48),
-    new THREE.Vector3(.4, .28, .26),
+    new THREE.Vector3(
+        0,
+        .12,
+        .48
+    ),
+    new THREE.Vector3(
+        .4,
+        .28,
+        .26
+    ),
     {
         name: 'Median liver lobe',
         role: 'Accessory digestive gland',
@@ -2276,10 +2861,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 32, 22),
+    new THREE.SphereGeometry(
+        1,
+        32,
+        22
+    ),
     digestiveMaterial,
-    new THREE.Vector3(.26, -.2, .42),
-    new THREE.Vector3(.34, .44, .25),
+    new THREE.Vector3(
+        .26,
+        -.2,
+        .42
+    ),
+    new THREE.Vector3(
+        .34,
+        .44,
+        .25
+    ),
     {
         name: 'Stomach',
         role: 'Protein digestion',
@@ -2289,14 +2886,19 @@ organ(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    INTESTINES
-------------------------------------------------------- */
+======================================================= */
 
 const intestines =
     new THREE.Group();
 
-for (let i = 0; i < 4; i++) {
+
+for (
+    let i = 0;
+    i < 4;
+    i++
+) {
 
     const loop =
         new THREE.Mesh(
@@ -2309,14 +2911,17 @@ for (let i = 0; i < 4; i++) {
             digestiveMaterial
         );
 
+
     loop.position.set(
         (i % 2 ? .12 : -.12),
         -.48 + i * .08,
         .38 + (i % 2) * .03
     );
 
+
     loop.rotation.x =
         Math.PI / 2;
+
 
     loop.scale.set(
         1.2,
@@ -2324,7 +2929,10 @@ for (let i = 0; i < 4; i++) {
         1
     );
 
-    loop.castShadow = true;
+
+    loop.castShadow =
+        true;
+
 
     loop.userData.anatomy = {
         name: 'Small intestine',
@@ -2333,17 +2941,32 @@ for (let i = 0; i < 4; i++) {
         layer: 'intestines'
     };
 
+
     getOrganLayer(
         'intestines'
-    ).add(loop);
+    ).add(
+        loop
+    );
 }
 
 
 organ(
-    new THREE.SphereGeometry(1, 28, 20),
+    new THREE.SphereGeometry(
+        1,
+        28,
+        20
+    ),
     kidneyMaterial,
-    new THREE.Vector3(-.48, -.32, -.03),
-    new THREE.Vector3(.16, .5, .12),
+    new THREE.Vector3(
+        -.48,
+        -.32,
+        -.03
+    ),
+    new THREE.Vector3(
+        .16,
+        .5,
+        .12
+    ),
     {
         name: 'Left kidney',
         role: 'Excretion and osmoregulation',
@@ -2354,10 +2977,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 28, 20),
+    new THREE.SphereGeometry(
+        1,
+        28,
+        20
+    ),
     kidneyMaterial,
-    new THREE.Vector3(.48, -.32, -.03),
-    new THREE.Vector3(.16, .5, .12),
+    new THREE.Vector3(
+        .48,
+        -.32,
+        -.03
+    ),
+    new THREE.Vector3(
+        .16,
+        .5,
+        .12
+    ),
     {
         name: 'Right kidney',
         role: 'Excretion and osmoregulation',
@@ -2368,10 +3003,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 24, 18),
+    new THREE.SphereGeometry(
+        1,
+        24,
+        18
+    ),
     organDarkMaterial,
-    new THREE.Vector3(-.08, -.16, .08),
-    new THREE.Vector3(.11, .13, .1),
+    new THREE.Vector3(
+        -.08,
+        -.16,
+        .08
+    ),
+    new THREE.Vector3(
+        .11,
+        .13,
+        .1
+    ),
     {
         name: 'Spleen',
         role: 'Blood and immunity',
@@ -2382,10 +3029,22 @@ organ(
 
 
 organ(
-    new THREE.SphereGeometry(1, 28, 20),
+    new THREE.SphereGeometry(
+        1,
+        28,
+        20
+    ),
     bladderMaterial,
-    new THREE.Vector3(0, -.86, .2),
-    new THREE.Vector3(.24, .18, .2),
+    new THREE.Vector3(
+        0,
+        -.86,
+        .2
+    ),
+    new THREE.Vector3(
+        .24,
+        .18,
+        .2
+    ),
     {
         name: 'Urinary bladder',
         role: 'Urine storage and water balance',
@@ -2395,13 +3054,19 @@ organ(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    REPRODUCTIVE STRUCTURES
-------------------------------------------------------- */
+======================================================= */
 
-for (const side of [-1, 1]) {
+for (
+    const side of [-1, 1]
+) {
 
-    for (let i = 0; i < 4; i++) {
+    for (
+        let i = 0;
+        i < 4;
+        i++
+    ) {
 
         organ(
             new THREE.SphereGeometry(
@@ -2411,7 +3076,10 @@ for (const side of [-1, 1]) {
             ),
             fatMaterial,
             new THREE.Vector3(
-                side * (.68 + i * .07),
+                side * (
+                    .68 +
+                    i * .07
+                ),
                 .1 - i * .16,
                 -.02
             ),
@@ -2462,7 +3130,11 @@ for (const side of [-1, 1]) {
     );
 
 
-    for (let lobule = 0; lobule < 5; lobule++) {
+    for (
+        let lobule = 0;
+        lobule < 5;
+        lobule++
+    ) {
 
         organ(
             new THREE.SphereGeometry(
@@ -2480,7 +3152,9 @@ for (const side of [-1, 1]) {
                     (lobule % 2) * .12
                 ),
                 -.2 +
-                Math.floor(lobule / 2) * .09,
+                Math.floor(
+                    lobule / 2
+                ) * .09,
                 .27
             ),
             new THREE.Vector3(
@@ -2519,9 +3193,12 @@ for (const side of [-1, 1]) {
             }
         );
 
+
     getOrganLayer(
         'maleReproductive'
-    ).add(vasaEfferentia);
+    ).add(
+        vasaEfferentia
+    );
 
 
     const spermDuct =
@@ -2545,9 +3222,12 @@ for (const side of [-1, 1]) {
             }
         );
 
+
     getOrganLayer(
         'maleReproductive'
-    ).add(spermDuct);
+    ).add(
+        spermDuct
+    );
 
 
     const maleUrinaryDuct =
@@ -2571,9 +3251,12 @@ for (const side of [-1, 1]) {
             }
         );
 
+
     getOrganLayer(
         'maleReproductive'
-    ).add(maleUrinaryDuct);
+    ).add(
+        maleUrinaryDuct
+    );
 
 
     const ovaryName =
@@ -2608,10 +3291,18 @@ for (const side of [-1, 1]) {
     );
 
 
-    for (let ovum = 0; ovum < 7; ovum++) {
+    for (
+        let ovum = 0;
+        ovum < 7;
+        ovum++
+    ) {
 
         const ovumAngle =
-            ovum * Math.PI * 2 / 7;
+            ovum *
+            Math.PI *
+            2 /
+            7;
+
 
         organ(
             new THREE.SphereGeometry(
@@ -2623,12 +3314,18 @@ for (const side of [-1, 1]) {
             new THREE.Vector3(
                 side * (
                     .34 +
-                    Math.cos(ovumAngle) * .22
+                    Math.cos(
+                        ovumAngle
+                    ) * .22
                 ),
                 -.22 +
-                Math.sin(ovumAngle) * .25,
+                Math.sin(
+                    ovumAngle
+                ) * .25,
                 .43 +
-                Math.cos(ovumAngle) * .05
+                Math.cos(
+                    ovumAngle
+                ) * .05
             ),
             new THREE.Vector3(
                 1,
@@ -2773,9 +3470,9 @@ organ(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    CONTROLS
-------------------------------------------------------- */
+======================================================= */
 
 const internalToggle =
     document.getElementById(
@@ -2793,12 +3490,23 @@ const infoPanel =
     );
 
 
-/* Related notes OPEN by default */
-infoPanel.hidden = false;
+/*
+    RELATED NOTES ARE OPEN IMMEDIATELY.
+    The CSS also protects this panel from being hidden
+    behind the Three.js canvas.
+*/
+
+infoPanel.hidden =
+    false;
+
+infoPanel.style.display =
+    'block';
+
 infoToggle.setAttribute(
     'aria-expanded',
     'true'
 );
+
 infoToggle.textContent =
     'Close related notes';
 
@@ -2861,7 +3569,9 @@ const maleToggle =
     );
 
 
-let reproductiveMode = null;
+let reproductiveMode =
+    null;
+
 
 organLayers.femaleReproductive.visible =
     false;
@@ -2870,12 +3580,15 @@ organLayers.maleReproductive.visible =
     false;
 
 
-/* -------------------------------------------------------
+/* =======================================================
    HOVER HIGHLIGHT SYSTEM
-------------------------------------------------------- */
+======================================================= */
 
-let highlightedObject = null;
-let highlightedMaterial = null;
+let highlightedObject =
+    null;
+
+let highlightedMaterial =
+    null;
 
 
 function clearHighlight() {
@@ -2887,73 +3600,136 @@ function clearHighlight() {
 
         highlightedObject.material =
             highlightedMaterial;
-
-        highlightedObject = null;
-        highlightedMaterial = null;
     }
+
+
+    highlightedObject =
+        null;
+
+    highlightedMaterial =
+        null;
 }
 
 
-function highlightObject(object) {
+function getHighlightTarget(
+    object
+) {
 
-    if (!object || !object.isMesh) {
+    /*
+        Prefer the exact anatomical mesh.
+
+        If the ray hits a child mesh without anatomy,
+        walk upward until an anatomical parent is found.
+    */
+
+    let current =
+        object;
+
+
+    while (current) {
+
+        if (
+            current.isMesh &&
+            current.userData &&
+            current.userData.anatomy
+        ) {
+
+            return current;
+        }
+
+        current =
+            current.parent;
+    }
+
+
+    return null;
+}
+
+
+function highlightObject(
+    object
+) {
+
+    const target =
+        getHighlightTarget(
+            object
+        );
+
+
+    if (!target) {
         return;
     }
+
 
     if (
-        highlightedObject === object
+        highlightedObject ===
+        target
     ) {
+
         return;
     }
+
 
     clearHighlight();
 
-    if (!object.material) {
+
+    if (!target.material) {
         return;
     }
 
 
-    highlightedObject = object;
+    highlightedObject =
+        target;
+
     highlightedMaterial =
-        object.material;
+        target.material;
 
 
     const material =
-        object.material.clone();
+        target.material.clone();
 
+
+    /*
+        MeshPhysicalMaterial and MeshStandardMaterial
+        have emissive properties.
+    */
 
     if (
-        'emissive' in material
+        material.emissive
     ) {
 
         material.emissive =
-            new THREE.Color(0xffd36e);
+            new THREE.Color(
+                0xffd36e
+            );
 
         material.emissiveIntensity =
-            .55;
+            .8;
     }
 
     else if (
-        'color' in material
+        material.color
     ) {
 
         material.color =
             material.color.clone()
                 .lerp(
-                    new THREE.Color(0xffd36e),
-                    .38
+                    new THREE.Color(
+                        0xffd36e
+                    ),
+                    .5
                 );
     }
 
 
-    object.material =
+    target.material =
         material;
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    PANEL
-------------------------------------------------------- */
+======================================================= */
 
 panelToggle.addEventListener(
     'click',
@@ -2964,10 +3740,12 @@ panelToggle.addEventListener(
                 'is-collapsed'
             );
 
+
         panelToggle.textContent =
             collapsed
                 ? '←'
                 : '→';
+
 
         panelToggle.setAttribute(
             'aria-label',
@@ -2975,6 +3753,7 @@ panelToggle.addEventListener(
                 ? 'Open study panel'
                 : 'Collapse study panel'
         );
+
 
         panelToggle.setAttribute(
             'aria-expanded',
@@ -2984,9 +3763,9 @@ panelToggle.addEventListener(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    CAMERA
-------------------------------------------------------- */
+======================================================= */
 
 function restoreOverallView(
     internalView = false
@@ -3019,9 +3798,9 @@ function restoreOverallView(
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    RELATED NOTES
-------------------------------------------------------- */
+======================================================= */
 
 infoToggle.addEventListener(
     'click',
@@ -3030,13 +3809,28 @@ infoToggle.addEventListener(
         const isOpen =
             !infoPanel.hidden;
 
+
         infoPanel.hidden =
             isOpen;
+
+
+        if (isOpen) {
+
+            infoPanel.style.display =
+                'none';
+
+        } else {
+
+            infoPanel.style.display =
+                'block';
+        }
+
 
         infoToggle.setAttribute(
             'aria-expanded',
             String(!isOpen)
         );
+
 
         infoToggle.textContent =
             isOpen
@@ -3046,14 +3840,17 @@ infoToggle.addEventListener(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    INTERNAL FOCUS
-------------------------------------------------------- */
+======================================================= */
 
-function focusLayer(key) {
+function focusLayer(
+    key
+) {
 
     const layer =
         organLayers[key];
+
 
     if (!layer) {
         return;
@@ -3062,35 +3859,42 @@ function focusLayer(key) {
 
     const bounds =
         new THREE.Box3()
-            .setFromObject(layer);
+            .setFromObject(
+                layer
+            );
+
 
     const center =
         bounds.getCenter(
             new THREE.Vector3()
         );
 
+
     const sphere =
         bounds.getBoundingSphere(
             new THREE.Sphere()
         );
 
+
     const direction =
         camera.position
             .clone()
-            .sub(controls.target)
+            .sub(
+                controls.target
+            )
             .normalize();
 
 
-    camera.position.copy(
-        center
-    ).add(
-        direction.multiplyScalar(
-            Math.max(
-                4.5,
-                sphere.radius * 3.5
+    camera.position
+        .copy(center)
+        .add(
+            direction.multiplyScalar(
+                Math.max(
+                    4.5,
+                    sphere.radius * 3.5
+                )
             )
-        )
-    );
+        );
 
 
     controls.target.copy(
@@ -3135,137 +3939,150 @@ function focusLayer(key) {
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    DISSECTION BUTTONS
-------------------------------------------------------- */
+======================================================= */
 
-Object.entries(layerInfo)
-    .forEach(
-        ([key, label]) => {
+Object.entries(
+    layerInfo
+)
+.forEach(
+    ([key, label]) => {
 
-            const button =
-                document.createElement(
-                    'button'
+        const button =
+            document.createElement(
+                'button'
+            );
+
+
+        button.className =
+            'dissection-button';
+
+
+        button.textContent =
+            label;
+
+
+        button.dataset.layer =
+            key;
+
+
+        button.addEventListener(
+            'click',
+            () => {
+
+                const layer =
+                    organLayers[key];
+
+
+                if (
+                    key ===
+                    'femaleReproductive' &&
+                    !layer.visible
+                ) {
+
+                    selectReproductiveMode(
+                        'female'
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    key ===
+                    'maleReproductive' &&
+                    !layer.visible
+                ) {
+
+                    selectReproductiveMode(
+                        'male'
+                    );
+
+                    return;
+                }
+
+
+                const isSelected =
+                    button.classList.contains(
+                        'is-selected'
+                    );
+
+
+                if (
+                    layer.visible &&
+                    !isSelected
+                ) {
+
+                    button.classList.add(
+                        'is-selected'
+                    );
+
+                    focusLayer(
+                        key
+                    );
+
+                    return;
+                }
+
+
+                layer.visible =
+                    !layer.visible;
+
+
+                button.classList.toggle(
+                    'is-hidden',
+                    !layer.visible
                 );
 
-            button.className =
-                'dissection-button';
 
-            button.textContent =
-                label;
-
-            button.dataset.layer =
-                key;
+                button.classList.toggle(
+                    'is-selected',
+                    layer.visible
+                );
 
 
-            button.addEventListener(
-                'click',
-                () => {
+                if (layer.visible) {
 
-                    const layer =
-                        organLayers[key];
-
-
-                    if (
-                        key ===
-                        'femaleReproductive' &&
-                        !layer.visible
-                    ) {
-
-                        selectReproductiveMode(
-                            'female'
-                        );
-
-                        return;
-                    }
-
-
-                    if (
-                        key ===
-                        'maleReproductive' &&
-                        !layer.visible
-                    ) {
-
-                        selectReproductiveMode(
-                            'male'
-                        );
-
-                        return;
-                    }
-
-
-                    const isSelected =
-                        button.classList.contains(
-                            'is-selected'
-                        );
-
-
-                    if (
-                        layer.visible &&
-                        !isSelected
-                    ) {
-
-                        button.classList.add(
-                            'is-selected'
-                        );
-
-                        focusLayer(key);
-
-                        return;
-                    }
-
-
-                    layer.visible =
-                        !layer.visible;
-
-                    button.classList.toggle(
-                        'is-hidden',
-                        !layer.visible
+                    focusLayer(
+                        key
                     );
 
-                    button.classList.toggle(
-                        'is-selected',
-                        layer.visible
+                } else {
+
+                    restoreOverallView(
+                        true
                     );
-
-
-                    if (layer.visible) {
-
-                        focusLayer(key);
-
-                    } else {
-
-                        restoreOverallView(
-                            true
-                        );
-                    }
                 }
-            );
+            }
+        );
 
 
-            dissectionList.appendChild(
-                button
-            );
-        }
-    );
+        dissectionList.appendChild(
+            button
+        );
+    }
+);
 
 
-/* -------------------------------------------------------
+/* =======================================================
    RESET DISSECTION
-------------------------------------------------------- */
+======================================================= */
 
 dissectionReset.addEventListener(
     'click',
     () => {
 
-        Object.keys(layerInfo)
-            .forEach(
-                (key) => {
+        Object.keys(
+            layerInfo
+        )
+        .forEach(
+            (key) => {
 
-                    organLayers[key]
-                        .visible = true;
-                }
-            );
+                organLayers[key]
+                    .visible = true;
+            }
+        );
 
 
         if (
@@ -3321,30 +4138,36 @@ dissectionReset.addEventListener(
             'is-visible'
         );
 
+
         clearHighlight();
 
-        restoreOverallView(true);
+
+        restoreOverallView(
+            true
+        );
     }
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    REPRODUCTIVE MODE
-------------------------------------------------------- */
+======================================================= */
 
 function selectReproductiveMode(
     mode
 ) {
 
     if (
-        reproductiveMode === mode
+        reproductiveMode ===
+        mode
     ) {
 
         organLayers[
             mode === 'female'
                 ? 'femaleReproductive'
                 : 'maleReproductive'
-        ].visible = false;
+        ].visible =
+            false;
 
 
         const button =
@@ -3361,28 +4184,38 @@ function selectReproductiveMode(
             'is-selected'
         );
 
+
         button?.classList.add(
             'is-hidden'
         );
 
 
-        reproductiveMode = null;
+        reproductiveMode =
+            null;
+
 
         femaleToggle.classList.remove(
             'is-active'
         );
 
+
         maleToggle.classList.remove(
             'is-active'
         );
+
 
         tooltip.classList.remove(
             'is-visible'
         );
 
+
         clearHighlight();
 
-        restoreOverallView(true);
+
+        restoreOverallView(
+            true
+        );
+
 
         return;
     }
@@ -3397,6 +4230,7 @@ function selectReproductiveMode(
         .visible =
             mode === 'female';
 
+
     organLayers
         .maleReproductive
         .visible =
@@ -3407,6 +4241,7 @@ function selectReproductiveMode(
         'is-active',
         mode === 'female'
     );
+
 
     maleToggle.classList.toggle(
         'is-active',
@@ -3464,23 +4299,25 @@ function selectReproductiveMode(
 
 femaleToggle.addEventListener(
     'click',
-    () => selectReproductiveMode(
-        'female'
-    )
+    () =>
+        selectReproductiveMode(
+            'female'
+        )
 );
 
 
 maleToggle.addEventListener(
     'click',
-    () => selectReproductiveMode(
-        'male'
-    )
+    () =>
+        selectReproductiveMode(
+            'male'
+        )
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    INTERNAL / EXTERNAL TOGGLE
-------------------------------------------------------- */
+======================================================= */
 
 internalToggle.addEventListener(
     'click',
@@ -3492,6 +4329,7 @@ internalToggle.addEventListener(
 
         internal.visible =
             showingInternal;
+
 
         frog.visible =
             !showingInternal;
@@ -3513,17 +4351,22 @@ internalToggle.addEventListener(
         dissectionList.hidden =
             !showingInternal;
 
+
         dissectionReset.hidden =
             !showingInternal;
+
 
         reproductiveActions.hidden =
             !showingInternal;
 
+
         organList.hidden =
             !showingInternal;
 
+
         externalTools.hidden =
             showingInternal;
+
 
         internalTools.hidden =
             !showingInternal;
@@ -3531,17 +4374,22 @@ internalToggle.addEventListener(
 
         if (showingInternal) {
 
-            setTympanumLocator(false);
+            setTympanumLocator(
+                false
+            );
+
 
             tongueFocus.classList.remove(
                 'is-selected'
             );
+
 
             camera.position.set(
                 0,
                 .55,
                 6.3
             );
+
 
             controls.target.set(
                 0,
@@ -3555,12 +4403,18 @@ internalToggle.addEventListener(
                 externalCameraPosition
             );
 
+
             controls.target.copy(
                 externalTarget
             );
 
-            snout.visible = true;
-            mouth.visible = true;
+
+            snout.visible =
+                true;
+
+            mouth.visible =
+                true;
+
 
             tongueGroup.visible =
                 false;
@@ -3568,13 +4422,16 @@ internalToggle.addEventListener(
             openMouthGroup.visible =
                 false;
 
+
             tongueFocus.classList.remove(
                 'is-selected'
             );
 
+
             femaleToggle.classList.remove(
                 'is-active'
             );
+
 
             maleToggle.classList.remove(
                 'is-active'
@@ -3584,61 +4441,67 @@ internalToggle.addEventListener(
 
         clearHighlight();
 
-        document
-            .getElementById(
-                'anatomyTooltip'
-            )
-            .classList.remove(
-                'is-visible'
-            );
+
+        tooltip.classList.remove(
+            'is-visible'
+        );
     }
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    RAYCASTER / TOOLTIP
-------------------------------------------------------- */
+======================================================= */
 
 const raycaster =
     new THREE.Raycaster();
 
+
 const pointer =
     new THREE.Vector2();
+
 
 const tooltip =
     document.getElementById(
         'anatomyTooltip'
     );
 
+
 const tooltipTitle =
     document.getElementById(
         'tooltipTitle'
     );
+
 
 const tooltipRole =
     document.getElementById(
         'tooltipRole'
     );
 
+
 const tooltipFact =
     document.getElementById(
         'tooltipFact'
     );
+
 
 const tympanumFocus =
     document.getElementById(
         'tympanumFocus'
     );
 
+
 const tongueFocus =
     document.getElementById(
         'tongueFocus'
     );
 
+
 const rightTympanumMarkerElement =
     document.getElementById(
         'rightTympanumMarker'
     );
+
 
 const leftTympanumMarkerElement =
     document.getElementById(
@@ -3650,20 +4513,23 @@ let tympanumLocatorActive =
     false;
 
 
-/* -------------------------------------------------------
+/* =======================================================
    TYMPANUM INFO
-------------------------------------------------------- */
+======================================================= */
 
 function showTympanumInfo() {
 
     tooltipTitle.textContent =
         'Tympanum';
 
+
     tooltipRole.textContent =
         'External ear and hearing';
 
+
     tooltipFact.textContent =
         'The tympanum is the frog\'s external eardrum. It receives sound vibrations and transmits them through the middle ear to the inner ear.';
+
 
     tooltip.classList.add(
         'is-visible'
@@ -3671,9 +4537,9 @@ function showTympanumInfo() {
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    TYMPANUM LOCATOR
-------------------------------------------------------- */
+======================================================= */
 
 function setTympanumLocator(
     active
@@ -3682,11 +4548,14 @@ function setTympanumLocator(
     tympanumLocatorActive =
         active;
 
+
     tympanumMarker.visible =
         false;
 
+
     leftTympanumLocator.visible =
         false;
+
 
     rightTympanumMarkerElement
         .classList.toggle(
@@ -3694,11 +4563,13 @@ function setTympanumLocator(
             active
         );
 
+
     leftTympanumMarkerElement
         .classList.toggle(
             'is-visible',
             active
         );
+
 
     tympanumFocus.classList.toggle(
         'is-selected',
@@ -3707,9 +4578,9 @@ function setTympanumLocator(
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    TYMPANUM MARKERS
-------------------------------------------------------- */
+======================================================= */
 
 function updateTympanumMarkers() {
 
@@ -3717,6 +4588,7 @@ function updateTympanumMarkers() {
         !tympanumLocatorActive ||
         !frog.visible
     ) {
+
         return;
     }
 
@@ -3775,6 +4647,7 @@ function updateTympanumMarkers() {
                     position.clone()
                 );
 
+
             const worldNormal =
                 normal
                     .clone()
@@ -3783,10 +4656,13 @@ function updateTympanumMarkers() {
                     )
                     .normalize();
 
+
             const towardCamera =
                 camera.position
                     .clone()
-                    .sub(worldPosition)
+                    .sub(
+                        worldPosition
+                    )
                     .normalize();
 
 
@@ -3799,20 +4675,32 @@ function updateTympanumMarkers() {
             const projected =
                 worldPosition
                     .clone()
-                    .project(camera);
+                    .project(
+                        camera
+                    );
 
 
             const x =
-                (projected.x * .5 + .5) *
+                (
+                    projected.x *
+                    .5 +
+                    .5
+                ) *
                 innerWidth;
 
+
             const y =
-                (-projected.y * .5 + .5) *
+                (
+                    -projected.y *
+                    .5 +
+                    .5
+                ) *
                 innerHeight;
 
 
             element.style.left =
                 `${x - 23}px`;
+
 
             element.style.top =
                 `${y - 23}px`;
@@ -3830,13 +4718,15 @@ function updateTympanumMarkers() {
 [
     rightTympanumMarkerElement,
     leftTympanumMarkerElement
-].forEach(
+]
+.forEach(
     (element) => {
 
         element.addEventListener(
             'pointerenter',
             showTympanumInfo
         );
+
 
         element.addEventListener(
             'pointerleave',
@@ -3846,27 +4736,37 @@ function updateTympanumMarkers() {
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    TYMPANUM BUTTON
-------------------------------------------------------- */
+======================================================= */
 
 tympanumFocus.addEventListener(
     'click',
     () => {
 
-        if (internal.visible) {
+        if (
+            internal.visible
+        ) {
+
             internalToggle.click();
         }
 
 
-        snout.visible = true;
-        mouth.visible = true;
+        snout.visible =
+            true;
+
+
+        mouth.visible =
+            true;
+
 
         tongueGroup.visible =
             false;
 
+
         openMouthGroup.visible =
             false;
+
 
         tongueFocus.classList.remove(
             'is-selected'
@@ -3886,9 +4786,11 @@ tympanumFocus.addEventListener(
 
             hideTooltip();
 
+
             restoreOverallView(
                 false
             );
+
 
             return;
         }
@@ -3908,24 +4810,29 @@ tympanumFocus.addEventListener(
             4.15
         );
 
+
         controls.target.copy(
             center
         );
+
 
         showTympanumInfo();
     }
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    TONGUE BUTTON
-------------------------------------------------------- */
+======================================================= */
 
 tongueFocus.addEventListener(
     'click',
     () => {
 
-        if (internal.visible) {
+        if (
+            internal.visible
+        ) {
+
             internalToggle.click();
         }
 
@@ -3938,26 +4845,34 @@ tongueFocus.addEventListener(
             tongueGroup.visible =
                 false;
 
+
             openMouthGroup.visible =
                 false;
+
 
             snout.visible =
                 true;
 
+
             mouth.visible =
                 true;
+
 
             tongueFocus.classList.remove(
                 'is-selected'
             );
 
+
             restoreOverallView(
                 false
             );
 
+
             clearHighlight();
 
+
             hideTooltip();
+
 
             return;
         }
@@ -3966,26 +4881,36 @@ tongueFocus.addEventListener(
         tympanumMarker.visible =
             false;
 
+
         leftTympanumLocator.visible =
             false;
 
-        setTympanumLocator(false);
+
+        setTympanumLocator(
+            false
+        );
+
 
         tympanumFocus.classList.remove(
             'is-selected'
         );
 
+
         snout.visible =
             false;
+
 
         mouth.visible =
             false;
 
+
         openMouthGroup.visible =
             true;
 
+
         tongueGroup.visible =
             true;
+
 
         tongueFocus.classList.add(
             'is-selected'
@@ -3998,6 +4923,7 @@ tongueFocus.addEventListener(
                     openMouthGroup
                 );
 
+
         bounds.expandByObject(
             tongueGroup
         );
@@ -4008,6 +4934,7 @@ tongueFocus.addEventListener(
                 new THREE.Vector3()
             );
 
+
         const sphere =
             bounds.getBoundingSphere(
                 new THREE.Sphere()
@@ -4017,20 +4944,22 @@ tongueFocus.addEventListener(
         const direction =
             camera.position
                 .clone()
-                .sub(controls.target)
+                .sub(
+                    controls.target
+                )
                 .normalize();
 
 
-        camera.position.copy(
-            center
-        ).add(
-            direction.multiplyScalar(
-                Math.max(
-                    4.1,
-                    sphere.radius * 5
+        camera.position
+            .copy(center)
+            .add(
+                direction.multiplyScalar(
+                    Math.max(
+                        4.1,
+                        sphere.radius * 5
+                    )
                 )
-            )
-        );
+            );
 
 
         controls.target.copy(
@@ -4045,8 +4974,10 @@ tongueFocus.addEventListener(
         tooltipTitle.textContent =
             anatomy.name;
 
+
         tooltipRole.textContent =
             anatomy.role;
+
 
         tooltipFact.textContent =
             anatomy.fact;
@@ -4059,9 +4990,9 @@ tongueFocus.addEventListener(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    HIDE TOOLTIP
-------------------------------------------------------- */
+======================================================= */
 
 function hideTooltip() {
 
@@ -4069,18 +5000,22 @@ function hideTooltip() {
         'is-visible'
     );
 
+
     clearHighlight();
+
 
     renderer.domElement.style.cursor =
         'grab';
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    FIND ANATOMY
-------------------------------------------------------- */
+======================================================= */
 
-function findAnatomy(object) {
+function findAnatomy(
+    object
+) {
 
     let current =
         object;
@@ -4089,10 +5024,13 @@ function findAnatomy(object) {
     while (current) {
 
         if (
+            current.userData &&
             current.userData.anatomy
         ) {
+
             return current.userData.anatomy;
         }
+
 
         current =
             current.parent;
@@ -4103,9 +5041,9 @@ function findAnatomy(object) {
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    VISIBILITY
-------------------------------------------------------- */
+======================================================= */
 
 function isVisibleInScene(
     object
@@ -4118,8 +5056,10 @@ function isVisibleInScene(
     while (current) {
 
         if (!current.visible) {
+
             return false;
         }
+
 
         current =
             current.parent;
@@ -4130,9 +5070,9 @@ function isVisibleInScene(
 }
 
 
-/* -------------------------------------------------------
+/* =======================================================
    HOVER / HIGHLIGHT
-------------------------------------------------------- */
+======================================================= */
 
 renderer.domElement.addEventListener(
     'pointermove',
@@ -4145,16 +5085,26 @@ renderer.domElement.addEventListener(
 
         pointer.x =
             (
-                (event.clientX - bounds.left)
-                / bounds.width
-            ) * 2 - 1;
+                (
+                    event.clientX -
+                    bounds.left
+                ) /
+                bounds.width
+            ) *
+            2 -
+            1;
 
 
         pointer.y =
             -(
-                (event.clientY - bounds.top)
-                / bounds.height
-            ) * 2 + 1;
+                (
+                    event.clientY -
+                    bounds.top
+                ) /
+                bounds.height
+            ) *
+            2 +
+            1;
 
 
         raycaster.setFromCamera(
@@ -4176,16 +5126,45 @@ renderer.domElement.addEventListener(
             );
 
 
-        const validHit =
-            hits.find(
-                (hit) =>
-                    isVisibleInScene(
-                        hit.object
-                    ) &&
-                    findAnatomy(
-                        hit.object
-                    )
-            );
+        /*
+            Find the nearest visible object that
+            actually represents an anatomical structure.
+
+            This avoids the common problem where the
+            large torso mesh blocks smaller anatomical
+            targets behind it.
+        */
+
+        let validHit =
+            null;
+
+
+        for (
+            const hit of hits
+        ) {
+
+            if (
+                !isVisibleInScene(
+                    hit.object
+                )
+            ) {
+
+                continue;
+            }
+
+
+            if (
+                findAnatomy(
+                    hit.object
+                )
+            ) {
+
+                validHit =
+                    hit;
+
+                break;
+            }
+        }
 
 
         if (!validHit) {
@@ -4210,7 +5189,10 @@ renderer.domElement.addEventListener(
         }
 
 
-        /* Highlight the exact mesh under the cursor */
+        /*
+            Highlight the actual anatomical mesh.
+        */
+
         highlightObject(
             validHit.object
         );
@@ -4219,8 +5201,10 @@ renderer.domElement.addEventListener(
         tooltipTitle.textContent =
             anatomy.name;
 
+
         tooltipRole.textContent =
             anatomy.role;
+
 
         tooltipFact.textContent =
             anatomy.fact;
@@ -4275,9 +5259,9 @@ renderer.domElement.addEventListener(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    GROUND
-------------------------------------------------------- */
+======================================================= */
 
 const ground =
     new THREE.Mesh(
@@ -4297,18 +5281,23 @@ const ground =
 ground.rotation.x =
     -Math.PI / 2;
 
+
 ground.position.y =
     -1.18;
+
 
 ground.receiveShadow =
     true;
 
-scene.add(ground);
+
+scene.add(
+    ground
+);
 
 
-/* -------------------------------------------------------
+/* =======================================================
    RESIZE
-------------------------------------------------------- */
+======================================================= */
 
 addEventListener(
     'resize',
@@ -4318,12 +5307,15 @@ addEventListener(
             innerWidth /
             innerHeight;
 
+
         camera.updateProjectionMatrix();
+
 
         renderer.setSize(
             innerWidth,
             innerHeight
         );
+
 
         renderer.setPixelRatio(
             Math.min(
@@ -4335,9 +5327,9 @@ addEventListener(
 );
 
 
-/* -------------------------------------------------------
+/* =======================================================
    ANIMATION
-------------------------------------------------------- */
+======================================================= */
 
 function animate() {
 
@@ -4345,9 +5337,12 @@ function animate() {
         animate
     );
 
+
     controls.update();
 
+
     updateTympanumMarkers();
+
 
     renderer.render(
         scene,
