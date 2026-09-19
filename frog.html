@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio3D - Frog Anatomy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600&display=swap');
+:root { --ink: #20312a; --muted: #68766d; --glass: rgba(248, 244, 232, .84); --line: rgba(55, 76, 58, .14); }
+* { box-sizing: border-box; }
+html, body, #app { width: 100%; height: 100%; margin: 0; }
+body { overflow: hidden; color: var(--ink); font-family: 'DM Sans', sans-serif; background: #d8e3d2; }
+#app { position: relative; }
+canvas { display: block; }
+.header { position: absolute; top: 0; left: 0; z-index: 3; width: 100%; padding: 24px 28px; pointer-events: none; }
+.eyebrow { margin: 0 0 7px; color: #7b4a4a; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+h1 { margin: 0; font-family: 'Fraunces', serif; font-size: clamp(34px, 5vw, 58px); font-weight: 600; line-height: .98; }
+.subtitle { margin: 11px 0 0; color: var(--muted); font-size: 14px; }
+.control-note { position: absolute; top: 26px; right: 28px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 8px; color: #506057; background: var(--glass); box-shadow: 0 10px 28px rgba(54, 69, 51, .09); font-size: 12px; backdrop-filter: blur(12px); }
+.control-note strong { color: var(--ink); }
+#backButton { position: absolute; left: 26px; bottom: 25px; z-index: 4; border: 1px solid var(--line); border-radius: 7px; padding: 10px 14px; color: var(--ink); background: var(--glass); font: 500 12px 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 8px 22px rgba(54, 69, 51, .08); backdrop-filter: blur(12px); }
+#backButton:hover { background: #fffaf0; }
+.species-tag { position: absolute; right: 27px; bottom: 27px; z-index: 3; color: #66776d; font-size: 12px; letter-spacing: .04em; }
+.anatomy-panel { position: absolute; right: 28px; top: 138px; z-index: 4; width: 220px; padding: 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--glass); box-shadow: 0 10px 28px rgba(54, 69, 51, .09); backdrop-filter: blur(12px); }
+.panel-toggle { position: absolute; top: 9px; right: 9px; width: 25px; height: 25px; padding: 0; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: rgba(255,255,255,.42); font: 700 15px 'DM Sans', sans-serif; line-height: 1; cursor: pointer; }
+.panel-toggle:hover { background: #fffaf0; }
+.anatomy-panel.is-collapsed { width: 48px; height: 45px; padding: 9px; }
+.anatomy-panel.is-collapsed > :not(.panel-toggle) { display: none; }
+.anatomy-panel h2 { margin: 0 0 6px; font: 600 17px 'Fraunces', serif; }
+.anatomy-panel p { margin: 0 0 11px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+.anatomy-button { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: rgba(255,255,255,.38); font: 700 11px 'DM Sans', sans-serif; text-align: left; cursor: pointer; }
+.anatomy-button:hover { background: #fffaf0; }
+.organ-list { margin-top: 11px !important; margin-bottom: 0 !important; color: #7b4a4a !important; }
+.dissection-list { display: grid; gap: 5px; max-height: 190px; overflow: auto; }
+.dissection-button { width: 100%; padding: 7px 8px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: rgba(255,255,255,.38); font: 500 10px 'DM Sans', sans-serif; text-align: left; cursor: pointer; }
+.dissection-button:hover, .dissection-button.is-selected { background: #fffaf0; border-color: #b77a63; }
+.dissection-button.is-hidden { color: #9a716f; text-decoration: line-through; opacity: .7; }
+.dissection-reset { width: 100%; margin-top: 8px; padding: 7px; border: 0; border-radius: 5px; color: #fffaf0; background: var(--ink); font: 700 10px 'DM Sans', sans-serif; cursor: pointer; }
+.reproductive-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; }
+.reproductive-button { padding: 7px 5px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: rgba(255,255,255,.38); font: 700 10px 'DM Sans', sans-serif; cursor: pointer; }
+.reproductive-button:hover, .reproductive-button.is-active { border-color: #b77a63; background: #fffaf0; }
+.info-toggle { position: absolute; left: 28px; top: 148px; z-index: 4; padding: 10px 12px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: var(--glass); font: 700 11px 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 8px 22px rgba(54, 69, 51, .08); backdrop-filter: blur(12px); }
+.info-toggle:hover { background: #fffaf0; }
+.info-panel { position: absolute; left: 28px; top: 195px; z-index: 4; width: min(350px, calc(100vw - 56px)); max-height: 54vh; overflow: auto; padding: 17px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: rgba(255, 251, 241, .95); box-shadow: 0 16px 34px rgba(36, 55, 41, .16); }
+.info-panel h2 { margin: 0 0 10px; font: 600 20px 'Fraunces', serif; }
+.info-panel h3 { margin: 15px 0 4px; color: #7b4a4a; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.info-panel p, .info-panel li { color: var(--muted); font-size: 12px; line-height: 1.48; }
+.info-panel p { margin: 5px 0; }
+.info-panel ul { margin: 5px 0 0; padding-left: 18px; }
+.anatomy-tooltip { position: fixed; z-index: 10; width: min(290px, calc(100vw - 28px)); padding: 13px 14px; border: 1px solid rgba(55, 76, 58, .2); border-radius: 8px; color: var(--ink); background: rgba(255, 251, 241, .96); box-shadow: 0 16px 34px rgba(36, 55, 41, .18); pointer-events: none; opacity: 0; transform: translateY(5px); transition: opacity .14s ease, transform .14s ease; }
+.anatomy-tooltip.is-visible { opacity: 1; transform: translateY(0); }
+.anatomy-tooltip h3 { margin: 0 0 4px; font: 600 18px 'Fraunces', serif; }
+.anatomy-tooltip .role { margin: 0 0 7px; color: #7b4a4a; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.anatomy-tooltip .fact { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.42; }
+.anatomy-marker { pointer-events: auto; }
+.tympanum-marker { position: fixed; z-index: 8; width: 46px; height: 46px; border: 4px solid #d44852; border-radius: 50%; background: rgba(212, 72, 82, .12); box-shadow: 0 0 0 3px rgba(255, 251, 241, .72), 0 8px 18px rgba(126, 43, 47, .2); cursor: help; pointer-events: auto; display: none; }
+.tympanum-marker.is-visible { display: block; }
+@media (max-width: 600px) { .header { padding: 18px; } .control-note { top: 18px; right: 18px; padding: 9px 10px; font-size: 11px; } .subtitle { font-size: 12px; } #backButton { left: 18px; bottom: 18px; } .species-tag { right: 18px; bottom: 22px; } }
+@media (max-width: 700px) { .anatomy-panel { top: auto; right: 18px; bottom: 18px; width: 190px; padding: 11px; } .anatomy-panel p { display: none; } .organ-list { display: none !important; } }
+@media (max-width: 700px) { .info-toggle { left: 18px; top: 145px; } .info-panel { left: 18px; top: 190px; width: calc(100vw - 36px); max-height: 45vh; } }
+</style>
+</head>
+<body>
+<main id="app">
+    <header class="header">
+        <p class="eyebrow">Animal study / Bio3D</p>
+        <h1>Frog Anatomy</h1>
+        <p class="subtitle">Explore the form and external structures of a frog.</p>
+    </header>
+    <div class="control-note"><strong>Drag</strong> to turn <span aria-hidden="true">&nbsp;·&nbsp;</span> <strong>Scroll</strong> to zoom</div>
+    <button class="info-toggle" id="infoToggle" aria-expanded="false">Related notes</button>
+    <section class="info-panel" id="infoPanel" hidden>
+        <h2>Frog biology essentials</h2>
+        <h3>Classification</h3>
+        <p><strong>Scientific name:</strong> <em>Hoplobatrachus tigerinus</em> (formerly <em>Rana tigrina</em>), the Indian frog used in many school biology references.</p>
+        <ul>
+            <li>Kingdom Animalia</li>
+            <li>Phylum Chordata</li>
+            <li>Class Amphibia</li>
+            <li>Order Anura</li>
+            <li>Family Ranidae</li>
+        </ul>
+        <h3>Thermoregulation and circulation</h3>
+        <p>Frogs are <strong>ectothermic</strong> and <strong>poikilothermic</strong>: body temperature depends largely on the environment. They are not “half-blooded”; their heart gives <strong>incomplete double circulation</strong>, because oxygenated and deoxygenated blood can partly mix in the single ventricle.</p>
+        <h3>Respiration</h3>
+        <p>Adults use three routes: <strong>cutaneous respiration</strong> through moist skin, <strong>pulmonary respiration</strong> through lungs, and <strong>buccopharyngeal respiration</strong> through the moist lining of the mouth and pharynx. Tadpoles primarily use <strong>branchial respiration</strong> through gills.</p>
+        <h3>Special frog adaptations</h3>
+        <p>The frog tongue is <strong>attached at the front</strong> of the mouth and is folded back over the floor of the buccal cavity when at rest. It flips outward rapidly to catch prey; sticky mucus traps insects, then elastic tissue and muscles retract the tongue.</p>
+        <p>The <strong>tympanum</strong> is the external eardrum. Raised eyes, a nictitating membrane, moist glandular skin, webbed feet, and powerful hindlimbs are adaptations for amphibious life.</p>
+        <h3>Reproduction</h3>
+        <p>Fertilisation is generally <strong>external</strong> in water. Eggs pass through the female oviduct and are released through the cloaca; in males, sperm and urine share the urinogenital duct before reaching the cloaca.</p>
+    </section>
+    <aside class="anatomy-panel" aria-label="Frog anatomy controls">
+        <button class="panel-toggle" id="panelToggle" aria-label="Collapse study panel" aria-expanded="true">→</button>
+        <h2>Study view</h2>
+        <p>Switch views, then click a part to focus it. Click it again to dissect it away.</p>
+        <button class="anatomy-button" id="internalToggle">Reveal internal anatomy</button>
+        <div id="externalTools">
+            <button class="anatomy-button" id="tympanumFocus">Locate tympanum</button>
+            <button class="anatomy-button" id="tongueFocus">Inspect tongue</button>
+        </div>
+        <div id="internalTools" hidden>
+            <div class="reproductive-actions" id="reproductiveActions">
+                <button class="reproductive-button" id="femaleToggle">Female view</button>
+                <button class="reproductive-button" id="maleToggle">Male view</button>
+            </div>
+            <p class="organ-list" id="organList">Internal parts: ventral skin · heart · left lung · right lung · left, right, and median liver lobes · stomach · small intestine · left kidney · right kidney · spleen · urinary bladder · fat bodies · ovaries · ova · oviducts · testes · testis lobules · vasa efferentia · sperm ducts · urinogenital ducts · cloaca</p>
+            <div class="dissection-list" id="dissectionList"></div>
+            <button class="dissection-reset" id="dissectionReset">Show all dissected parts</button>
+        </div>
+    </aside>
+    <aside class="anatomy-tooltip" id="anatomyTooltip" aria-live="polite">
+        <h3 id="tooltipTitle"></h3>
+        <p class="role" id="tooltipRole"></p>
+        <p class="fact" id="tooltipFact"></p>
+    </aside>
+    <div class="tympanum-marker" id="rightTympanumMarker" data-side="right" aria-label="Right tympanum"></div>
+    <div class="tympanum-marker" id="leftTympanumMarker" data-side="left" aria-label="Left tympanum"></div>
+    <button id="backButton" onclick="location.href='index.html'">Back to Bio3D</button>
+    <div class="species-tag">Ranidae · amphibian study</div>
+</main>
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xd8e3d2);
+scene.fog = new THREE.Fog(0xd8e3d2, 8, 16);
+const camera = new THREE.PerspectiveCamera(37, innerWidth / innerHeight, .1, 50);
+camera.position.set(0, 1.25, 7.6);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+document.getElementById('app').appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = .055;
+controls.enablePan = false;
+controls.minDistance = 3.8;
+controls.maxDistance = 11;
+controls.target.set(0, .45, 0);
+
+scene.add(new THREE.HemisphereLight(0xf5ffe9, 0x294c38, 2.2));
+const key = new THREE.DirectionalLight(0xfff1d7, 3.1);
+key.position.set(4, 7, 5);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xc5e4d2, 1.25);
+fill.position.set(-5, 3, -4);
+scene.add(fill);
+
+const frog = new THREE.Group();
+frog.position.y = .15;
+scene.add(frog);
+
+function createSkinTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#6d9958';
+    context.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 320; i++) {
+        const x = (i * 83) % 256;
+        const y = (i * 47) % 256;
+        const radius = 1 + (i % 5);
+        context.fillStyle = i % 4 === 0 ? 'rgba(28, 64, 40, .22)' : 'rgba(188, 211, 123, .12)';
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fill();
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+}
+
+const skinTexture = createSkinTexture();
+const skin = new THREE.MeshPhysicalMaterial({ map: skinTexture, color: 0x91af70, roughness: .69, clearcoat: .12, clearcoatRoughness: .78, sheen: .2, sheenColor: new THREE.Color(0xa9cf86) });
+const skinLight = new THREE.MeshPhysicalMaterial({ map: skinTexture, color: 0xb0c98a, roughness: .7, clearcoat: .1, clearcoatRoughness: .8, sheen: .2, sheenColor: new THREE.Color(0xd4e6a0) });
+const belly = new THREE.MeshPhysicalMaterial({ color: 0xb9c58e, roughness: .98, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1, side: THREE.DoubleSide });
+const darkSkin = new THREE.MeshPhysicalMaterial({ color: 0x365e3c, roughness: .86 });
+const eyeGold = new THREE.MeshPhysicalMaterial({ color: 0xd9c75f, roughness: .36 });
+const pupil = new THREE.MeshBasicMaterial({ color: 0x10251d });
+const mouthMaterial = new THREE.MeshPhysicalMaterial({ color: 0x536044, roughness: .92 });
+
+function ellipsoid(geometry, material, position, scale) {
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.copy(position);
+    mesh.scale.copy(scale);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    return mesh;
+}
+
+function mark(mesh, name, role, fact) {
+    mesh.userData.anatomy = { name, role, fact };
+    return mesh;
+}
+
+const torso = mark(ellipsoid(new THREE.SphereGeometry(1, 48, 32), skin, new THREE.Vector3(0, .2, 0), new THREE.Vector3(1.42, .76, 1.06)), 'Body wall and skin', 'Protection and respiration', 'The moist skin protects the body and allows cutaneous respiration. In frogs, gases diffuse across the skin, especially when submerged or resting.');
+const bellyPatch = mark(new THREE.Mesh(new DecalGeometry(torso, new THREE.Vector3(0, .35, 1.0), new THREE.Euler(0, 0, 0), new THREE.Vector3(1.25, .62, .08)), belly), 'Ventral skin', 'Protection and water balance', 'The ventral surface is thin and moist. Skin glands secrete mucus that reduces water loss and supports gaseous exchange.');
+const head = mark(ellipsoid(new THREE.SphereGeometry(1, 48, 32), skinLight, new THREE.Vector3(0, .82, .28), new THREE.Vector3(1.3, .66, .92)), 'Head', 'Sensory region', 'The head bears the eyes, tympanum, mouth, and external nares, concentrating the frog\'s feeding and sensory structures.');
+const snout = mark(ellipsoid(new THREE.SphereGeometry(1, 40, 24), skinLight, new THREE.Vector3(0, .66, 1.0), new THREE.Vector3(.92, .36, .36)), 'Snout and mouth', 'Feeding', 'The frog catches prey with its sticky, protrusible tongue. The mouth opens into the buccopharyngeal cavity, which also helps in respiration.');
+frog.add(torso, bellyPatch, head, snout);
+const tympanumGroup = new THREE.Group();
+tympanumGroup.userData.anatomy = { name: 'Tympanum', role: 'External ear and hearing', fact: 'The tympanum is the frog\'s external eardrum. It receives sound vibrations and passes them through the middle ear to the inner ear, where they are converted into nerve signals.' };
+frog.add(tympanumGroup);
+const tympanumMarker = new THREE.Group();
+tympanumMarker.name = 'Tympanum locator';
+tympanumMarker.visible = false;
+tympanumMarker.position.set(.855, .79, .28);
+tympanumMarker.userData.anatomy = { name: 'Tympanum location', role: 'External ear and hearing', fact: 'This marked circular membrane is the tympanum, the frog\'s external eardrum. It receives sound vibrations and transmits them to the middle and inner ear.' };
+const markerRing = new THREE.Mesh(new THREE.RingGeometry(.27, .33, 40), new THREE.MeshBasicMaterial({ color: 0xd44852, transparent: true, opacity: 1, side: THREE.DoubleSide, depthTest: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
+markerRing.rotation.y = Math.PI / 2;
+markerRing.renderOrder = 20;
+markerRing.userData.anatomy = tympanumMarker.userData.anatomy;
+tympanumMarker.add(markerRing);
+frog.add(tympanumMarker);
+const leftTympanumLocator = tympanumMarker.clone();
+leftTympanumLocator.name = 'Left tympanum locator';
+leftTympanumLocator.position.set(-.855, .79, .28);
+leftTympanumLocator.children[0].rotation.y = -Math.PI / 2;
+frog.add(leftTympanumLocator);
+
+for (const side of [-1, 1]) {
+    frog.add(mark(ellipsoid(new THREE.SphereGeometry(1, 28, 20), darkSkin, new THREE.Vector3(side * .72, 1.23, .28), new THREE.Vector3(.34, .31, .34)), 'Eye socket', 'Protection and vision', 'The raised eye socket protects the eye and gives the frog a wide field of vision above the water surface.'));
+    frog.add(mark(ellipsoid(new THREE.SphereGeometry(1, 28, 20), eyeGold, new THREE.Vector3(side * .73, 1.28, .49), new THREE.Vector3(.235, .235, .15)), 'Eye', 'Vision', 'The frog eye forms an image on the retina. A nictitating membrane protects the eye while the frog is underwater.'));
+    frog.add(mark(ellipsoid(new THREE.SphereGeometry(1, 24, 16), pupil, new THREE.Vector3(side * .73, 1.28, .615), new THREE.Vector3(.075, .15, .035)), 'Pupil', 'Light control', 'The pupil regulates the amount of light entering the eye and is part of the visual apparatus.'));
+    const tympanum = mark(new THREE.Mesh(new THREE.CircleGeometry(.19, 32), new THREE.MeshPhysicalMaterial({ color: 0x789d61, roughness: .9 })), 'Tympanum', 'Hearing', 'The tympanum is the external eardrum. It receives sound vibrations and transmits them to the middle and inner ear.');
+    tympanum.position.set(side * .82, .79, .28);
+    tympanum.rotation.y = side * Math.PI / 2;
+    tympanumGroup.add(tympanum);
+}
+
+const mouthCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-.62, .67, 1.31),
+    new THREE.Vector3(0, .59, 1.365),
+    new THREE.Vector3(.62, .67, 1.31)
+]);
+const mouth = mark(new THREE.Mesh(new THREE.TubeGeometry(mouthCurve, 24, .012, 8, false), mouthMaterial), 'Mouth', 'Ingestion and respiration', 'The buccal cavity receives food and forms part of the buccopharyngeal pump used in breathing.');
+frog.add(mouth);
+
+const tongueMaterial = new THREE.MeshPhysicalMaterial({ color: 0xa95f64, roughness: .72, sheen: .28, sheenColor: new THREE.Color(0xe1a0a0) });
+const tongueTipMaterial = new THREE.MeshPhysicalMaterial({ color: 0xc8847d, roughness: .58, sheen: .34, sheenColor: new THREE.Color(0xf0b7a8) });
+const jawMaterial = new THREE.MeshPhysicalMaterial({ color: 0x789b5c, roughness: .8, sheen: .12 });
+const toothMaterial = new THREE.MeshPhysicalMaterial({ color: 0xe7dfbd, roughness: .46 });
+const tongueGroup = new THREE.Group();
+tongueGroup.visible = false;
+tongueGroup.userData.anatomy = { name: 'Tongue', role: 'Projectile feeding organ', fact: 'The frog tongue is attached at the front of the mouth, folds back at rest, and can extend to roughly 1.5 times its resting length in a rapid prey-capture movement. Its sticky mucus adheres to insects before retraction.' };
+const tongueCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, .52, 1.07),
+    new THREE.Vector3(0, .54, 1.17),
+    new THREE.Vector3(0, .64, 1.27),
+    new THREE.Vector3(0, .59, 1.37),
+    new THREE.Vector3(0, .54, 1.31)
+]);
+const tongueBody = mark(new THREE.Mesh(new THREE.TubeGeometry(tongueCurve, 32, .075, 12, false), tongueMaterial), 'Rolled tongue body', 'Muscular and elastic feeding organ', 'At rest, the tongue folds back inside the mouth. The front attachment and elastic tissues allow it to unroll and extend rapidly during feeding.');
+const tongueTip = mark(ellipsoid(new THREE.SphereGeometry(1, 32, 20), tongueTipMaterial, new THREE.Vector3(0, .54, 1.3), new THREE.Vector3(.27, .07, .14)), 'Sticky tongue tip', 'Prey capture', 'A shallow median groove divides the broad tip visually; sticky mucus increases adhesion to prey. The frog tongue is not a forked snake-like tongue.');
+const tongueGrooveCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, .606, 1.2),
+    new THREE.Vector3(0, .676, 1.29),
+    new THREE.Vector3(0, .606, 1.37)
+]);
+const tongueGroove = new THREE.Mesh(new THREE.TubeGeometry(tongueGrooveCurve, 18, .012, 6, false), new THREE.MeshPhysicalMaterial({ color: 0x7d414c, roughness: .8 }));
+tongueGroup.add(tongueBody, tongueTip, tongueGroove);
+frog.add(tongueGroup);
+const openMouthGroup = new THREE.Group();
+openMouthGroup.visible = false;
+const oralCavity = mark(ellipsoid(new THREE.SphereGeometry(1, 32, 20), new THREE.MeshPhysicalMaterial({ color: 0x402b2c, roughness: .95 }), new THREE.Vector3(0, .57, 1.23), new THREE.Vector3(.72, .23, .14)), 'Buccal cavity', 'Feeding and buccopharyngeal respiration', 'The moist buccopharyngeal cavity receives food and participates in respiration by rhythmic movements of the floor of the mouth.');
+const upperJaw = mark(ellipsoid(new THREE.SphereGeometry(1, 32, 20), jawMaterial, new THREE.Vector3(0, .73, 1.12), new THREE.Vector3(.82, .1, .27)), 'Upper jaw', 'Fixed jaw and prey retention', 'The frog upper jaw is fixed to the skull. In ranid frogs, small maxillary teeth help hold prey; the lower jaw moves down to open the mouth.');
+const lowerJaw = mark(ellipsoid(new THREE.SphereGeometry(1, 32, 20), skinLight, new THREE.Vector3(0, .39, 1.05), new THREE.Vector3(.78, .12, .3)), 'Lower jaw', 'Opening the mouth', 'The lower jaw moves down to open the mouth for prey capture and helps create pressure changes during buccopharyngeal breathing.');
+openMouthGroup.add(oralCavity, upperJaw, lowerJaw);
+for (let tooth = -4; tooth <= 4; tooth++) {
+    const maxillaryTooth = new THREE.Mesh(new THREE.ConeGeometry(.018, .08, 8), toothMaterial);
+    maxillaryTooth.position.set(tooth * .13, .665, 1.32);
+    maxillaryTooth.rotation.x = Math.PI;
+    maxillaryTooth.userData.anatomy = { name: 'Maxillary teeth', role: 'Prey retention', fact: 'Small teeth on the upper jaw help grip prey. Frog teeth are mainly for holding food, not chewing, because prey is swallowed whole.' };
+    openMouthGroup.add(maxillaryTooth);
+}
+for (let tooth = -2; tooth <= 2; tooth++) {
+    const vomerineTooth = new THREE.Mesh(new THREE.ConeGeometry(.022, .07, 8), toothMaterial);
+    vomerineTooth.position.set(tooth * .12, .71, 1.13);
+    vomerineTooth.rotation.x = Math.PI;
+    vomerineTooth.userData.anatomy = { name: 'Vomerine teeth', role: 'Prey retention', fact: 'Vomerine teeth occur on the roof of the mouth and help hold prey while it is being swallowed. Their presence and arrangement vary among frog groups.' };
+    openMouthGroup.add(vomerineTooth);
+}
+frog.add(openMouthGroup);
+
+function limbBetween(start, end, radius, material, anatomy) {
+    const direction = new THREE.Vector3().subVectors(end, start);
+    const limb = new THREE.Mesh(new THREE.CapsuleGeometry(radius, Math.max(.05, direction.length() - radius * 2), 12, 20), material);
+    limb.position.copy(start).add(end).multiplyScalar(.5);
+    limb.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+    limb.castShadow = true;
+    if (anatomy) limb.userData.anatomy = anatomy;
+    return limb;
+}
+
+for (const side of [-1, 1]) {
+    const shoulder = new THREE.Vector3(side * 1.02, .28, .18);
+    const elbow = new THREE.Vector3(side * 1.25, -.12, .62);
+    const wrist = new THREE.Vector3(side * 1.12, -.3, 1.08);
+    const forelimbInfo = { name: 'Forelimb', role: 'Locomotion and support', fact: 'The forelimbs absorb landing forces and support the body. Frog limbs show adaptations for life on land and in water.' };
+    frog.add(limbBetween(shoulder, elbow, .16, skin, forelimbInfo), limbBetween(elbow, wrist, .12, skinLight, forelimbInfo));
+    for (let toe = -1; toe <= 1; toe++) {
+        const fingertip = new THREE.Vector3(side * (1.08 + toe * .13), -.36, 1.4 + Math.abs(toe) * .08);
+        frog.add(limbBetween(wrist, fingertip, .045, skinLight, { name: 'Front digits', role: 'Grip and balance', fact: 'Short, flexible digits help the frog grip surfaces and maintain balance during movement.' }));
+    }
+    const hip = new THREE.Vector3(side * 1.16, .12, -.34);
+    const knee = new THREE.Vector3(side * 1.65, -.3, -.48);
+    const ankle = new THREE.Vector3(side * 1.5, -.62, .54);
+    const hindlimbInfo = { name: 'Hindlimb', role: 'Jumping and swimming', fact: 'The elongated hindlimbs provide the main thrust for jumping and swimming. Strong muscles and joints act as a lever system.' };
+    frog.add(limbBetween(hip, knee, .3, skin, hindlimbInfo), limbBetween(knee, ankle, .22, skinLight, hindlimbInfo));
+    for (let toe = -2; toe <= 2; toe++) {
+        const toeStart = new THREE.Vector3(side * 1.5, -.62, .54);
+        const toeEnd = new THREE.Vector3(side * (1.5 + toe * .14), -.68, 1.16 - Math.abs(toe) * .08);
+        frog.add(limbBetween(toeStart, toeEnd, .055, skinLight, { name: 'Webbed hind foot', role: 'Swimming', fact: 'Webbing increases surface area and pushes against water, improving swimming efficiency.' }));
+    }
+}
+
+const internal = new THREE.Group();
+internal.position.y = .15;
+internal.visible = false;
+scene.add(internal);
+const organLayers = {};
+function getOrganLayer(key) {
+    if (!organLayers[key]) {
+        organLayers[key] = new THREE.Group();
+        internal.add(organLayers[key]);
+    }
+    return organLayers[key];
+}
+
+const heartMaterial = new THREE.MeshPhysicalMaterial({ color: 0xb52f43, roughness: .56 });
+const lungMaterial = new THREE.MeshPhysicalMaterial({ color: 0xd98582, roughness: .68, transparent: true, opacity: .9 });
+const liverMaterial = new THREE.MeshPhysicalMaterial({ color: 0x7b3d35, roughness: .72 });
+const digestiveMaterial = new THREE.MeshPhysicalMaterial({ color: 0xd69a54, roughness: .64 });
+const kidneyMaterial = new THREE.MeshPhysicalMaterial({ color: 0x793c4b, roughness: .7 });
+const bladderMaterial = new THREE.MeshPhysicalMaterial({ color: 0x81b9bd, roughness: .44, transparent: true, opacity: .82 });
+const fatMaterial = new THREE.MeshPhysicalMaterial({ color: 0xe4bd4e, roughness: .48 });
+const organDarkMaterial = new THREE.MeshPhysicalMaterial({ color: 0x633747, roughness: .62 });
+const ovaryMaterial = new THREE.MeshPhysicalMaterial({ color: 0xe9b6a0, roughness: .54 });
+const ovumMaterial = new THREE.MeshPhysicalMaterial({ color: 0xf2d36e, roughness: .42 });
+const testisMaterial = new THREE.MeshPhysicalMaterial({ color: 0xe2c65c, roughness: .5 });
+const ductMaterial = new THREE.MeshPhysicalMaterial({ color: 0xe5a7a0, roughness: .58 });
+
+function organ(geometry, material, position, scale, anatomy) {
+    const mesh = ellipsoid(geometry, material, position, scale);
+    mesh.userData.anatomy = anatomy;
+    getOrganLayer(anatomy.layer).add(mesh);
+    return mesh;
+}
+
+const layerInfo = {
+    ventralSkin: 'Ventral skin', circulation: 'Heart and lungs', liver: 'Liver lobes', stomach: 'Stomach', intestines: 'Small intestine', kidneys: 'Kidneys', spleen: 'Spleen', bladder: 'Urinary bladder', fatBodies: 'Fat bodies', femaleReproductive: 'Female: ovaries and ova', maleReproductive: 'Male: testes'
+};
+const ventralSkin = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), new THREE.MeshPhysicalMaterial({ color: 0x9cae79, roughness: .86, transparent: true, opacity: .23, side: THREE.DoubleSide, depthWrite: false }));
+ventralSkin.position.set(0, -.02, .68);
+ventralSkin.scale.set(1.08, .67, .08);
+ventralSkin.userData.anatomy = { name: 'Ventral skin', role: 'Cutaneous respiration', fact: 'The thin, moist ventral skin allows oxygen and carbon dioxide to diffuse directly between the environment and capillary blood.', layer: 'ventralSkin' };
+getOrganLayer('ventralSkin').add(ventralSkin);
+
+organ(new THREE.SphereGeometry(1, 32, 24), heartMaterial, new THREE.Vector3(0, .63, .35), new THREE.Vector3(.22, .3, .18), { name: 'Heart', role: 'Three-chambered circulation', fact: 'The frog heart has two atria and one ventricle. It produces incomplete double circulation: pulmonary circulation sends blood to the lungs, while systemic circulation sends it to the body, with partial mixing in the ventricle.', layer: 'circulation' });
+organ(new THREE.SphereGeometry(1, 32, 24), lungMaterial, new THREE.Vector3(-.42, .72, .05), new THREE.Vector3(.28, .5, .2), { name: 'Left lung', role: 'Pulmonary and buccopharyngeal respiration', fact: 'The thin-walled lung exchanges oxygen and carbon dioxide. Air is moved by buccopharyngeal pumping because frogs lack a diaphragm; moist skin also carries out cutaneous respiration.', layer: 'circulation' });
+organ(new THREE.SphereGeometry(1, 32, 24), lungMaterial, new THREE.Vector3(.42, .72, .05), new THREE.Vector3(.28, .5, .2), { name: 'Right lung', role: 'Pulmonary and buccopharyngeal respiration', fact: 'Adult frogs combine pulmonary respiration through the lungs with cutaneous respiration through the skin and buccopharyngeal respiration through the mouth and pharynx. Tadpoles use branchial respiration through gills.', layer: 'circulation' });
+organ(new THREE.SphereGeometry(1, 36, 24), liverMaterial, new THREE.Vector3(-.43, .2, .34), new THREE.Vector3(.58, .34, .3), { name: 'Left liver lobe', role: 'Digestion and metabolism', fact: 'The liver secretes bile, stores glycogen, detoxifies substances, and helps regulate metabolism.', layer: 'liver' });
+organ(new THREE.SphereGeometry(1, 36, 24), liverMaterial, new THREE.Vector3(.43, .2, .34), new THREE.Vector3(.58, .34, .3), { name: 'Right liver lobe', role: 'Digestion and metabolism', fact: 'The liver is a large accessory digestive gland. Bile emulsifies fats and supports their digestion in the small intestine.', layer: 'liver' });
+organ(new THREE.SphereGeometry(1, 32, 22), liverMaterial, new THREE.Vector3(0, .12, .48), new THREE.Vector3(.4, .28, .26), { name: 'Median liver lobe', role: 'Accessory digestive gland', fact: 'Together, the three liver lobes surround the anterior digestive organs and produce bile for fat digestion.', layer: 'liver' });
+organ(new THREE.SphereGeometry(1, 32, 22), digestiveMaterial, new THREE.Vector3(.26, -.2, .42), new THREE.Vector3(.34, .44, .25), { name: 'Stomach', role: 'Protein digestion', fact: 'The stomach temporarily stores food and begins protein digestion with gastric juice containing hydrochloric acid and pepsin.', layer: 'stomach' });
+
+const intestines = new THREE.Group();
+for (let i = 0; i < 4; i++) {
+    const loop = new THREE.Mesh(new THREE.TorusGeometry(.25 - i * .025, .045, 10, 28), digestiveMaterial);
+    loop.position.set((i % 2 ? .12 : -.12), -.48 + i * .08, .38 + (i % 2) * .03);
+    loop.rotation.x = Math.PI / 2;
+    loop.scale.set(1.2, .72, 1);
+    loop.castShadow = true;
+    loop.userData.anatomy = { name: 'Small intestine', role: 'Digestion and absorption', fact: 'The small intestine completes digestion and absorbs nutrients through its inner lining into blood and lymph.', layer: 'intestines' };
+    getOrganLayer('intestines').add(loop);
+}
+organ(new THREE.SphereGeometry(1, 28, 20), kidneyMaterial, new THREE.Vector3(-.48, -.32, -.03), new THREE.Vector3(.16, .5, .12), { name: 'Left kidney', role: 'Excretion and osmoregulation', fact: 'Kidneys remove nitrogenous wastes from blood and help regulate water and salt balance. The functional units are nephrons.', layer: 'kidneys' });
+organ(new THREE.SphereGeometry(1, 28, 20), kidneyMaterial, new THREE.Vector3(.48, -.32, -.03), new THREE.Vector3(.16, .5, .12), { name: 'Right kidney', role: 'Excretion and osmoregulation', fact: 'The paired kidneys filter blood and form urine, contributing to homeostasis of the internal environment.', layer: 'kidneys' });
+organ(new THREE.SphereGeometry(1, 24, 18), organDarkMaterial, new THREE.Vector3(-.08, -.16, .08), new THREE.Vector3(.11, .13, .1), { name: 'Spleen', role: 'Blood and immunity', fact: 'The spleen stores and filters blood and contributes to the destruction of worn-out blood cells and immune responses.', layer: 'spleen' });
+organ(new THREE.SphereGeometry(1, 28, 20), bladderMaterial, new THREE.Vector3(0, -.86, .2), new THREE.Vector3(.24, .18, .2), { name: 'Urinary bladder', role: 'Urine storage and water balance', fact: 'The thin-walled urinary bladder stores urine and can also help conserve water in an amphibian body.', layer: 'bladder' });
+
+for (const side of [-1, 1]) {
+    for (let i = 0; i < 4; i++) {
+        organ(new THREE.SphereGeometry(.1, 16, 12), fatMaterial, new THREE.Vector3(side * (.68 + i * .07), .1 - i * .16, -.02), new THREE.Vector3(1, 1.5, .75), { name: 'Fat bodies', role: 'Energy reserve', fact: 'Yellow fat bodies store lipids that provide energy for metabolism, hibernation, and reproduction.', layer: 'fatBodies' });
+    }
+    const testisName = side < 0 ? 'Left testis' : 'Right testis';
+    organ(new THREE.SphereGeometry(.16, 28, 20), testisMaterial, new THREE.Vector3(side * .3, -.27, .12), new THREE.Vector3(.22, .34, .14), { name: testisName, role: 'Male reproduction', fact: 'The paired testes contain seminiferous tissue that produces spermatozoa. They also release male reproductive hormones.', layer: 'maleReproductive' });
+    for (let lobule = 0; lobule < 5; lobule++) {
+        organ(new THREE.SphereGeometry(.045, 14, 10), new THREE.MeshPhysicalMaterial({ color: 0xf3df83, roughness: .46 }), new THREE.Vector3(side * (.23 + (lobule % 2) * .12), -.2 + Math.floor(lobule / 2) * .09, .27), new THREE.Vector3(1.1, 1.25, .8), { name: 'Testis lobules', role: 'Sperm production', fact: 'Testis lobules contain the sperm-forming tissue. Sperm travel from the seminiferous region through ducts to the cloaca.', layer: 'maleReproductive' });
+    }
+    const vasaEfferentia = limbBetween(new THREE.Vector3(side * .32, -.19, .2), new THREE.Vector3(side * .2, -.36, .28), .018, ductMaterial, { name: 'Vasa efferentia', role: 'Sperm transport', fact: 'Fine vasa efferentia carry sperm from the testis into the kidney region and connect with the urinogenital pathway.' });
+    getOrganLayer('maleReproductive').add(vasaEfferentia);
+    const spermDuct = limbBetween(new THREE.Vector3(side * .2, -.36, .28), new THREE.Vector3(side * .1, -.7, .33), .025, ductMaterial, { name: 'Sperm duct', role: 'Male reproductive transport', fact: 'The sperm duct carries sperm toward the cloaca. In male frogs, the urinogenital duct also carries urine and sperm, so it is a shared urinary and reproductive duct.' });
+    getOrganLayer('maleReproductive').add(spermDuct);
+    const maleUrinaryDuct = limbBetween(new THREE.Vector3(side * .48, -.42, -.02), new THREE.Vector3(side * .1, -.78, .33), .022, kidneyMaterial, { name: 'Urinogenital duct', role: 'Urinary and reproductive transport', fact: 'The urinogenital duct receives urine from the kidney and sperm from the reproductive ducts, carrying both to the cloaca in the male frog.' });
+    getOrganLayer('maleReproductive').add(maleUrinaryDuct);
+
+    const ovaryName = side < 0 ? 'Left ovary' : 'Right ovary';
+    organ(new THREE.SphereGeometry(.3, 28, 20), ovaryMaterial, new THREE.Vector3(side * .34, -.22, .24), new THREE.Vector3(.3, .36, .2), { name: ovaryName, role: 'Female reproduction', fact: 'The ovary contains developing ova. Mature ova accumulate yolk and are released into the body cavity before entering the oviduct.', layer: 'femaleReproductive' });
+    for (let ovum = 0; ovum < 7; ovum++) {
+        const ovumAngle = ovum * Math.PI * 2 / 7;
+        organ(new THREE.SphereGeometry(.065, 18, 14), ovumMaterial, new THREE.Vector3(side * (.34 + Math.cos(ovumAngle) * .22), -.22 + Math.sin(ovumAngle) * .25, .43 + Math.cos(ovumAngle) * .05), new THREE.Vector3(1, 1, .8), { name: 'Ovum', role: 'Female gamete', fact: 'An ovum is the female gamete. Frog fertilisation is generally external, in water, after eggs are released from the oviduct.', layer: 'femaleReproductive' });
+    }
+    const ostium = limbBetween(new THREE.Vector3(side * .56, .02, .42), new THREE.Vector3(side * .45, -.1, .4), .028, ductMaterial, { name: 'Oviduct ostium', role: 'Reception of ova', fact: 'The funnel-shaped ostium opens near the ovary and receives ova released into the body cavity.' });
+    const oviduct = limbBetween(new THREE.Vector3(side * .45, -.1, .4), new THREE.Vector3(side * .16, -.56, .4), .035, ductMaterial, { name: 'Oviduct', role: 'Female reproductive transport', fact: 'The oviduct carries ova toward the posterior end and adds albuminous jelly around the eggs.' });
+    const uterus = limbBetween(new THREE.Vector3(side * .16, -.56, .4), new THREE.Vector3(side * .08, -.75, .38), .055, ductMaterial, { name: 'Uterine region', role: 'Egg holding and passage', fact: 'The posterior oviduct or uterine region holds eggs briefly before they pass into the cloaca.' });
+    getOrganLayer('femaleReproductive').add(ostium, oviduct, uterus);
+}
+organ(new THREE.SphereGeometry(.14, 22, 16), ductMaterial, new THREE.Vector3(0, -.78, .38), new THREE.Vector3(1.2, .7, .8), { name: 'Cloaca', role: 'Common chamber', fact: 'The cloaca is a common chamber and opening for the digestive, urinary, and reproductive systems.', layer: 'maleReproductive' });
+organ(new THREE.SphereGeometry(.14, 22, 16), ductMaterial, new THREE.Vector3(0, -.78, .38), new THREE.Vector3(1.2, .7, .8), { name: 'Cloaca', role: 'Common chamber', fact: 'The cloaca is a common chamber and opening for the digestive, urinary, and reproductive systems.', layer: 'femaleReproductive' });
+
+const internalToggle = document.getElementById('internalToggle');
+const infoToggle = document.getElementById('infoToggle');
+const infoPanel = document.getElementById('infoPanel');
+const externalCameraPosition = camera.position.clone();
+const externalTarget = controls.target.clone();
+const dissectionList = document.getElementById('dissectionList');
+const dissectionReset = document.getElementById('dissectionReset');
+const organList = document.getElementById('organList');
+const externalTools = document.getElementById('externalTools');
+const internalTools = document.getElementById('internalTools');
+const anatomyPanel = document.querySelector('.anatomy-panel');
+const panelToggle = document.getElementById('panelToggle');
+const reproductiveActions = document.getElementById('reproductiveActions');
+const femaleToggle = document.getElementById('femaleToggle');
+const maleToggle = document.getElementById('maleToggle');
+let reproductiveMode = null;
+organLayers.femaleReproductive.visible = false;
+organLayers.maleReproductive.visible = false;
+
+panelToggle.addEventListener('click', () => {
+    const collapsed = anatomyPanel.classList.toggle('is-collapsed');
+    panelToggle.textContent = collapsed ? '←' : '→';
+    panelToggle.setAttribute('aria-label', collapsed ? 'Open study panel' : 'Collapse study panel');
+    panelToggle.setAttribute('aria-expanded', String(!collapsed));
+});
+
+function restoreOverallView(internalView = false) {
+    if (internalView) {
+        camera.position.set(0, .55, 6.3);
+        controls.target.set(0, -.05, 0);
+    } else {
+        camera.position.copy(externalCameraPosition);
+        controls.target.copy(externalTarget);
+    }
+}
+
+infoToggle.addEventListener('click', () => {
+    const isOpen = !infoPanel.hidden;
+    infoPanel.hidden = isOpen;
+    infoToggle.setAttribute('aria-expanded', String(!isOpen));
+    infoToggle.textContent = isOpen ? 'Related notes' : 'Close related notes';
+});
+
+function focusLayer(key) {
+    const layer = organLayers[key];
+    if (!layer) return;
+    const bounds = new THREE.Box3().setFromObject(layer);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const sphere = bounds.getBoundingSphere(new THREE.Sphere());
+    const direction = camera.position.clone().sub(controls.target).normalize();
+    camera.position.copy(center).add(direction.multiplyScalar(Math.max(4.5, sphere.radius * 3.5)));
+    controls.target.copy(center);
+    let firstAnatomy;
+    layer.traverse((object) => {
+        if (!firstAnatomy && object.isMesh && object.userData.anatomy) firstAnatomy = object.userData.anatomy;
+    });
+    if (firstAnatomy) {
+        tooltipTitle.textContent = firstAnatomy.name;
+        tooltipRole.textContent = firstAnatomy.role;
+        tooltipFact.textContent = firstAnatomy.fact;
+        tooltip.classList.add('is-visible');
+    }
+}
+
+Object.entries(layerInfo).forEach(([key, label]) => {
+    const button = document.createElement('button');
+    button.className = 'dissection-button';
+    button.textContent = label;
+    button.dataset.layer = key;
+    button.addEventListener('click', () => {
+        const layer = organLayers[key];
+        if (key === 'femaleReproductive' && !layer.visible) {
+            selectReproductiveMode('female');
+            return;
+        }
+        if (key === 'maleReproductive' && !layer.visible) {
+            selectReproductiveMode('male');
+            return;
+        }
+        const isSelected = button.classList.contains('is-selected');
+        if (layer.visible && !isSelected) {
+            button.classList.add('is-selected');
+            focusLayer(key);
+            return;
+        }
+        layer.visible = !layer.visible;
+        button.classList.toggle('is-hidden', !layer.visible);
+        button.classList.toggle('is-selected', layer.visible);
+        if (layer.visible) focusLayer(key);
+        else restoreOverallView(true);
+    });
+    dissectionList.appendChild(button);
+});
+
+dissectionReset.addEventListener('click', () => {
+    Object.keys(layerInfo).forEach((key) => { organLayers[key].visible = true; });
+    if (reproductiveMode === 'female') organLayers.maleReproductive.visible = false;
+    if (reproductiveMode === 'male') organLayers.femaleReproductive.visible = false;
+    if (!reproductiveMode) {
+        organLayers.femaleReproductive.visible = false;
+        organLayers.maleReproductive.visible = false;
+    }
+    dissectionList.querySelectorAll('.dissection-button').forEach((button) => button.classList.remove('is-hidden', 'is-selected'));
+    tooltip.classList.remove('is-visible');
+    restoreOverallView(true);
+});
+
+function selectReproductiveMode(mode) {
+    if (reproductiveMode === mode) {
+        organLayers[mode === 'female' ? 'femaleReproductive' : 'maleReproductive'].visible = false;
+        const button = dissectionList.querySelector(`[data-layer="${mode === 'female' ? 'femaleReproductive' : 'maleReproductive'}"]`);
+        button?.classList.remove('is-selected');
+        button?.classList.add('is-hidden');
+        reproductiveMode = null;
+        femaleToggle.classList.remove('is-active');
+        maleToggle.classList.remove('is-active');
+        tooltip.classList.remove('is-visible');
+        restoreOverallView(true);
+        return;
+    }
+    reproductiveMode = mode;
+    organLayers.femaleReproductive.visible = mode === 'female';
+    organLayers.maleReproductive.visible = mode === 'male';
+    femaleToggle.classList.toggle('is-active', mode === 'female');
+    maleToggle.classList.toggle('is-active', mode === 'male');
+    dissectionList.querySelector('[data-layer="femaleReproductive"]')?.classList.toggle('is-selected', mode === 'female');
+    dissectionList.querySelector('[data-layer="maleReproductive"]')?.classList.toggle('is-selected', mode === 'male');
+    dissectionList.querySelector('[data-layer="femaleReproductive"]')?.classList.toggle('is-hidden', mode !== 'female');
+    dissectionList.querySelector('[data-layer="maleReproductive"]')?.classList.toggle('is-hidden', mode !== 'male');
+    focusLayer(mode === 'female' ? 'femaleReproductive' : 'maleReproductive');
+}
+
+femaleToggle.addEventListener('click', () => selectReproductiveMode('female'));
+maleToggle.addEventListener('click', () => selectReproductiveMode('male'));
+
+internalToggle.addEventListener('click', () => {
+    const showingInternal = !internal.visible;
+    internal.visible = showingInternal;
+    frog.visible = !showingInternal;
+    internal.scale.setScalar(showingInternal ? 1.25 : 1);
+    internalToggle.textContent = showingInternal ? 'Show external frog' : 'Reveal internal anatomy';
+    dissectionList.hidden = !showingInternal;
+    dissectionReset.hidden = !showingInternal;
+    reproductiveActions.hidden = !showingInternal;
+    organList.hidden = !showingInternal;
+    externalTools.hidden = showingInternal;
+    internalTools.hidden = !showingInternal;
+    if (showingInternal) {
+        setTympanumLocator(false);
+        tongueFocus.classList.remove('is-selected');
+        camera.position.set(0, .55, 6.3);
+        controls.target.set(0, -.05, 0);
+    } else {
+        camera.position.copy(externalCameraPosition);
+        controls.target.copy(externalTarget);
+        snout.visible = true;
+        mouth.visible = true;
+        tongueGroup.visible = false;
+        openMouthGroup.visible = false;
+        tongueFocus.classList.remove('is-selected');
+        femaleToggle.classList.remove('is-active');
+        maleToggle.classList.remove('is-active');
+    }
+    document.getElementById('anatomyTooltip').classList.remove('is-visible');
+});
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const tooltip = document.getElementById('anatomyTooltip');
+const tooltipTitle = document.getElementById('tooltipTitle');
+const tooltipRole = document.getElementById('tooltipRole');
+const tooltipFact = document.getElementById('tooltipFact');
+const tympanumFocus = document.getElementById('tympanumFocus');
+const tongueFocus = document.getElementById('tongueFocus');
+const rightTympanumMarkerElement = document.getElementById('rightTympanumMarker');
+const leftTympanumMarkerElement = document.getElementById('leftTympanumMarker');
+let tympanumLocatorActive = false;
+
+function showTympanumInfo() {
+    tooltipTitle.textContent = 'Tympanum';
+    tooltipRole.textContent = 'External ear and hearing';
+    tooltipFact.textContent = 'The tympanum is the frog\'s external eardrum. It receives sound vibrations and transmits them through the middle ear to the inner ear.';
+    tooltip.classList.add('is-visible');
+}
+
+function setTympanumLocator(active) {
+    tympanumLocatorActive = active;
+    tympanumMarker.visible = false;
+    leftTympanumLocator.visible = false;
+    rightTympanumMarkerElement.classList.toggle('is-visible', active);
+    leftTympanumMarkerElement.classList.toggle('is-visible', active);
+    tympanumFocus.classList.toggle('is-selected', active);
+}
+
+function updateTympanumMarkers() {
+    if (!tympanumLocatorActive || !frog.visible) return;
+    const markerData = [
+        { element: rightTympanumMarkerElement, position: new THREE.Vector3(.855, .79, .28), normal: new THREE.Vector3(1, 0, 0) },
+        { element: leftTympanumMarkerElement, position: new THREE.Vector3(-.855, .79, .28), normal: new THREE.Vector3(-1, 0, 0) }
+    ];
+    markerData.forEach(({ element, position, normal }) => {
+        const worldPosition = frog.localToWorld(position.clone());
+        const worldNormal = normal.clone().transformDirection(frog.matrixWorld).normalize();
+        const towardCamera = camera.position.clone().sub(worldPosition).normalize();
+        const visible = worldNormal.dot(towardCamera) > -.15;
+        const projected = worldPosition.clone().project(camera);
+        const x = (projected.x * .5 + .5) * innerWidth;
+        const y = (-projected.y * .5 + .5) * innerHeight;
+        element.style.left = `${x - 23}px`;
+        element.style.top = `${y - 23}px`;
+        element.classList.toggle('is-visible', visible);
+    });
+}
+
+[rightTympanumMarkerElement, leftTympanumMarkerElement].forEach((element) => {
+    element.addEventListener('pointerenter', showTympanumInfo);
+    element.addEventListener('pointerleave', hideTooltip);
+});
+
+tympanumFocus.addEventListener('click', () => {
+    if (internal.visible) internalToggle.click();
+    snout.visible = true;
+    mouth.visible = true;
+    tongueGroup.visible = false;
+    openMouthGroup.visible = false;
+    tongueFocus.classList.remove('is-selected');
+    const locatorVisible = !tympanumLocatorActive;
+    setTympanumLocator(locatorVisible);
+    if (!locatorVisible) {
+        hideTooltip();
+        restoreOverallView(false);
+        return;
+    }
+    const center = new THREE.Vector3(.82, .79, .28);
+    camera.position.set(3.35, 1.25, 4.15);
+    controls.target.copy(center);
+    showTympanumInfo();
+});
+
+tongueFocus.addEventListener('click', () => {
+    if (internal.visible) internalToggle.click();
+    if (tongueGroup.visible && openMouthGroup.visible) {
+        tongueGroup.visible = false;
+        openMouthGroup.visible = false;
+        snout.visible = true;
+        mouth.visible = true;
+        tongueFocus.classList.remove('is-selected');
+        restoreOverallView(false);
+        hideTooltip();
+        return;
+    }
+    tympanumMarker.visible = false;
+    leftTympanumLocator.visible = false;
+    setTympanumLocator(false);
+    tympanumFocus.classList.remove('is-selected');
+    snout.visible = false;
+    mouth.visible = false;
+    openMouthGroup.visible = true;
+    tongueGroup.visible = true;
+    tongueFocus.classList.add('is-selected');
+    const bounds = new THREE.Box3().setFromObject(openMouthGroup);
+    bounds.expandByObject(tongueGroup);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const sphere = bounds.getBoundingSphere(new THREE.Sphere());
+    const direction = camera.position.clone().sub(controls.target).normalize();
+    camera.position.copy(center).add(direction.multiplyScalar(Math.max(4.1, sphere.radius * 5)));
+    controls.target.copy(center);
+    const anatomy = tongueGroup.userData.anatomy;
+    tooltipTitle.textContent = anatomy.name;
+    tooltipRole.textContent = anatomy.role;
+    tooltipFact.textContent = anatomy.fact;
+    tooltip.classList.add('is-visible');
+});
+
+function hideTooltip() {
+    tooltip.classList.remove('is-visible');
+    renderer.domElement.style.cursor = 'grab';
+}
+
+function findAnatomy(object) {
+    let current = object;
+    while (current) {
+        if (current.userData.anatomy) return current.userData.anatomy;
+        current = current.parent;
+    }
+    return null;
+}
+
+function isVisibleInScene(object) {
+    let current = object;
+    while (current) {
+        if (!current.visible) return false;
+        current = current.parent;
+    }
+    return true;
+}
+
+renderer.domElement.addEventListener('pointermove', (event) => {
+    const bounds = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+    pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const activeLayer = internal.visible ? internal : frog;
+    const hits = raycaster.intersectObjects([activeLayer], true);
+    const anatomy = hits.filter((hit) => isVisibleInScene(hit.object)).map((hit) => findAnatomy(hit.object)).find(Boolean);
+    if (!anatomy) {
+        hideTooltip();
+        return;
+    }
+    tooltipTitle.textContent = anatomy.name;
+    tooltipRole.textContent = anatomy.role;
+    tooltipFact.textContent = anatomy.fact;
+    const left = Math.min(event.clientX + 18, innerWidth - tooltip.offsetWidth - 14);
+    const top = Math.min(event.clientY + 18, innerHeight - tooltip.offsetHeight - 14);
+    tooltip.style.left = `${Math.max(14, left)}px`;
+    tooltip.style.top = `${Math.max(14, top)}px`;
+    tooltip.classList.add('is-visible');
+    renderer.domElement.style.cursor = 'help';
+});
+renderer.domElement.addEventListener('pointerleave', hideTooltip);
+
+const ground = new THREE.Mesh(new THREE.CircleGeometry(3.8, 64), new THREE.MeshStandardMaterial({ color: 0xb8cdb4, roughness: 1, transparent: true, opacity: .62 }));
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -1.18;
+ground.receiveShadow = true;
+scene.add(ground);
+
+addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    updateTympanumMarkers();
+    renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

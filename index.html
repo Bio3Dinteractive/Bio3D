@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio3D - Interactive Biology</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap');
+
+        :root {
+            --forest: #193b32;
+            --moss: #466b50;
+            --paper: #f4f1e7;
+            --sage: #d9e4d3;
+            --line: rgba(25, 59, 50, .16);
+            --coral: #d76058;
+            --gold: #d2a24d;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { min-height: 100%; }
+
+        body {
+            margin: 0;
+            color: var(--forest);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--paper);
+        }
+
+        .page {
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background:
+                linear-gradient(135deg, rgba(217, 228, 211, .86), rgba(244, 241, 231, .95) 52%, rgba(236, 218, 190, .58)),
+                repeating-linear-gradient(0deg, rgba(25, 59, 50, .025) 0 1px, transparent 1px 5px);
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            width: 42vw;
+            height: 42vw;
+            right: -18vw;
+            top: -19vw;
+            border: 1px solid rgba(25, 59, 50, .12);
+            border-radius: 50%;
+            box-shadow: 0 0 0 34px rgba(25, 59, 50, .025), 0 0 0 68px rgba(25, 59, 50, .025);
+        }
+
+        .nav {
+            position: relative;
+            z-index: 1;
+            width: min(1180px, calc(100% - 56px));
+            margin: 0 auto;
+            padding: 28px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--forest);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--forest);
+            border-radius: 50%;
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+            letter-spacing: 0;
+        }
+
+        .nav-note {
+            color: var(--moss);
+            font-size: 12px;
+            letter-spacing: .04em;
+        }
+
+        .hero {
+            position: relative;
+            z-index: 1;
+            width: min(1180px, calc(100% - 56px));
+            min-height: 45vh;
+            margin: 0 auto;
+            padding: clamp(68px, 11vh, 132px) 0 64px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 280px;
+            gap: 70px;
+            align-items: end;
+        }
+
+        .hero h1 {
+            max-width: 760px;
+            margin: 0;
+            font-family: 'Fraunces', serif;
+            font-size: clamp(54px, 8vw, 106px);
+            font-weight: 500;
+            line-height: .9;
+            letter-spacing: -.045em;
+        }
+
+        .hero h1 em {
+            color: var(--coral);
+            font-style: normal;
+        }
+
+        .hero-copy {
+            align-self: end;
+            padding-bottom: 7px;
+        }
+
+        .hero-copy p {
+            margin: 0;
+            color: var(--moss);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .hero-copy::before {
+            content: '01 / 02';
+            display: block;
+            margin-bottom: 18px;
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .18em;
+        }
+
+        .explore {
+            position: relative;
+            z-index: 1;
+            width: min(1180px, calc(100% - 56px));
+            margin: 0 auto;
+            padding: 24px 0 66px;
+            border-top: 1px solid var(--line);
+        }
+
+        .section-label {
+            margin: 0 0 22px;
+            color: var(--moss);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            min-height: 210px;
+            padding: 24px 26px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 253, 247, .58);
+            cursor: pointer;
+            transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 253, 247, .9);
+            box-shadow: 0 18px 36px rgba(25, 59, 50, .12);
+        }
+
+        .card:focus-visible {
+            outline: 3px solid rgba(210, 162, 77, .7);
+            outline-offset: 3px;
+        }
+
+        .emoji {
+            font-size: 42px;
+            line-height: 1;
+        }
+
+        .card h2 {
+            margin: 24px 0 5px;
+            font-family: 'Fraunces', serif;
+            font-size: 27px;
+            font-weight: 500;
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--moss);
+            font-size: 13px;
+        }
+
+        .card::after {
+            content: 'Explore  ↗';
+            align-self: flex-end;
+            color: var(--forest);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+
+        @media (max-width: 700px) {
+            .nav, .hero, .explore { width: min(100% - 36px, 560px); }
+            .nav { padding: 19px 0; }
+            .nav-note { display: none; }
+            .hero { min-height: auto; padding: 72px 0 58px; display: block; }
+            .hero h1 { font-size: clamp(52px, 16vw, 78px); }
+            .hero-copy { max-width: 290px; margin-top: 32px; }
+            .cards { grid-template-columns: 1fr; }
+            .card { min-height: 175px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <nav class="nav" aria-label="Bio3D navigation">
+            <div class="brand"><span class="brand-mark">B</span> Bio3D</div>
+            <div class="nav-note">Interactive biology, in dimension</div>
+        </nav>
+
+        <section class="hero">
+            <h1>See life<br><em>in another</em><br>dimension.</h1>
+            <div class="hero-copy">
+                <p>Explore living structures through interactive 3D models made for curiosity, study, and close observation.</p>
+            </div>
+        </section>
+
+        <section class="explore" aria-labelledby="explore-title">
+            <p class="section-label" id="explore-title">Choose a study</p>
+            <div class="cards">
+                <div class="card" tabindex="0" role="button" onclick="window.location.href='flower.html'" onkeydown="if (event.key === 'Enter' || event.key === ' ') window.location.href='flower.html'">
+                    <div class="emoji">🌸</div>
+                    <div>
+                        <h2>Flower Anatomy</h2>
+                        <p>Explore the parts of a flower</p>
+                    </div>
+                </div>
+
+                <div class="card" tabindex="0" role="button" onclick="window.location.href='frog.html'" onkeydown="if (event.key === 'Enter' || event.key === ' ') window.location.href='frog.html'">
+                    <div class="emoji">🐸</div>
+                    <div>
+                        <h2>Frog Anatomy</h2>
+                        <p>Explore the internal anatomy of a frog</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+<footer>
+    Bio3D · Interactive Biology
+    <br>
+    Created by Shivali M.
+</footer>
+</html>
