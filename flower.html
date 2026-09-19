@@ -204,6 +204,12 @@ h1 {
     background: #fffaf0;
 }
 
+.anatomy-button.is-hidden {
+    color: #9a716f;
+    text-decoration: line-through;
+    opacity: .7;
+}
+
 .dissection-list {
     display: grid;
     gap: 5px;
@@ -357,7 +363,14 @@ h1 {
     line-height: 1.42;
 }
 
+/* HOVER HIGHLIGHT */
+
+.anatomy-highlight {
+    filter: brightness(1.18);
+}
+
 @media (max-width: 700px) {
+
     .anatomy-panel {
         top: auto;
         right: 18px;
@@ -379,6 +392,7 @@ h1 {
 }
 
 @media (max-width: 600px) {
+
     .header {
         padding: 18px;
     }
@@ -412,17 +426,31 @@ h1 {
 <main id="app">
 
     <header class="header">
+
         <div class="title-block">
-            <p class="eyebrow">Botanical study / Bio3D</p>
-            <h1>Hibiscus rosa-sinensis</h1>
+
+            <p class="eyebrow">
+                Botanical study / Bio3D
+            </p>
+
+            <h1>
+                Hibiscus rosa-sinensis
+            </h1>
+
             <p class="subtitle">
                 A layered study of the Chinese hibiscus, built for close inspection.
             </p>
 
-            <button class="info-toggle" id="infoToggle" aria-expanded="false">
-                Related notes
+            <button
+                class="info-toggle"
+                id="infoToggle"
+                aria-expanded="true"
+            >
+                Close related notes
             </button>
+
         </div>
+
     </header>
 
     <div class="control-note">
@@ -431,58 +459,87 @@ h1 {
         <strong>Scroll</strong> to zoom
     </div>
 
-    <section class="info-panel" id="infoPanel" hidden>
-        <h2>Hibiscus biology essentials</h2>
+    <section
+        class="info-panel"
+        id="infoPanel"
+    >
 
-        <h3>Classification</h3>
+        <h2>
+            Hibiscus biology essentials
+        </h2>
+
+        <h3>
+            Classification
+        </h3>
+
         <p>
             <strong>Scientific name:</strong>
             <em>Hibiscus rosa-sinensis</em>
         </p>
+
         <ul>
             <li>Kingdom Plantae</li>
-            <li>Angiosperms</li>
+            <li>Phylum Angiosperms</li>
             <li>Class Eudicots</li>
             <li>Order Malvales</li>
             <li>Family Malvaceae</li>
         </ul>
 
-        <h3>Flower structure</h3>
+        <h3>
+            Flower structure
+        </h3>
+
         <p>
             The hibiscus flower is bisexual and contains both androecium and
             gynoecium. The five petals form the conspicuous corolla, while
             sepals form the calyx.
         </p>
 
-        <h3>Androecium</h3>
+        <h3>
+            Androecium
+        </h3>
+
         <p>
             Numerous stamens surround the central style. Their filaments are
             united into a staminal column, a condition called monadelphous.
             The anthers produce pollen grains.
         </p>
 
-        <h3>Gynoecium</h3>
+        <h3>
+            Gynoecium
+        </h3>
+
         <p>
             The gynoecium consists of the ovary, style and stigma. The ovary
             is superior and contains ovules arranged in locules with axile
             placentation.
         </p>
 
-        <h3>Pollination</h3>
+        <h3>
+            Pollination
+        </h3>
+
         <p>
             The colourful petals and floral form help attract pollinators.
             Pollen reaching the stigma can germinate and produce a pollen
             tube that grows through the style toward an ovule.
         </p>
 
-        <h3>Fruit and seed formation</h3>
+        <h3>
+            Fruit and seed formation
+        </h3>
+
         <p>
             After fertilisation, ovules develop into seeds and the ovary
             develops into the fruit. The embryo develops within the seed.
         </p>
+
     </section>
 
-    <aside class="anatomy-panel" aria-label="Flower anatomy controls">
+    <aside
+        class="anatomy-panel"
+        aria-label="Flower anatomy controls"
+    >
 
         <button
             class="panel-toggle"
@@ -491,69 +548,125 @@ h1 {
             aria-expanded="true"
         >→</button>
 
-        <h2>Inspect flower</h2>
+        <h2>
+            Inspect flower
+        </h2>
 
         <p>
             Click a part to focus it. Click it again to hide it.
         </p>
 
-        <button class="anatomy-button" data-part="petals">
+        <button
+            class="anatomy-button"
+            data-part="petals"
+        >
             Petals
         </button>
 
-        <button class="anatomy-button" data-part="calyx">
+        <button
+            class="anatomy-button"
+            data-part="calyx"
+        >
             Calyx &amp; sepals
         </button>
 
-        <button class="anatomy-button" data-part="androecium">
+        <button
+            class="anatomy-button"
+            data-part="androecium"
+        >
             Androecium
         </button>
 
-        <button class="anatomy-button" data-part="gynoecium">
+        <button
+            class="anatomy-button"
+            data-part="gynoecium"
+        >
             Gynoecium
         </button>
 
-        <button class="anatomy-button" data-part="stem">
+        <button
+            class="anatomy-button"
+            data-part="stem"
+        >
             Stem
         </button>
 
-        <button class="anatomy-button" id="ovaryFocus">
+        <button
+            class="anatomy-button"
+            id="ovaryFocus"
+        >
             Dissect ovary
         </button>
 
-        <div class="dissection-list" id="ovaryTools" hidden>
+        <div
+            class="dissection-list"
+            id="ovaryTools"
+            hidden
+        >
 
-            <button class="dissection-button" data-ovary-layer="wall">
+            <button
+                class="dissection-button"
+                data-ovary-layer="wall"
+            >
                 Ovary wall
             </button>
 
-            <button class="dissection-button" data-ovary-layer="septa">
+            <button
+                class="dissection-button"
+                data-ovary-layer="septa"
+            >
                 Septa &amp; locules
             </button>
 
-            <button class="dissection-button" data-ovary-layer="ovules">
+            <button
+                class="dissection-button"
+                data-ovary-layer="ovules"
+            >
                 Ovules &amp; placenta
             </button>
 
-            <button class="dissection-button" data-ovary-layer="style">
+            <button
+                class="dissection-button"
+                data-ovary-layer="style"
+            >
                 Style &amp; stigma
             </button>
 
         </div>
 
-        <button class="dissection-reset" id="resetView">
+        <button
+            class="dissection-reset"
+            id="resetView"
+        >
             Show all parts
         </button>
 
     </aside>
 
-    <aside class="anatomy-tooltip" id="anatomyTooltip" aria-live="polite">
+    <aside
+        class="anatomy-tooltip"
+        id="anatomyTooltip"
+        aria-live="polite"
+    >
+
         <h3 id="tooltipTitle"></h3>
-        <p class="role" id="tooltipRole"></p>
-        <p class="fact" id="tooltipFact"></p>
+
+        <p
+            class="role"
+            id="tooltipRole"
+        ></p>
+
+        <p
+            class="fact"
+            id="tooltipFact"
+        ></p>
+
     </aside>
 
-    <button id="backButton" onclick="location.href='index.html'">
+    <button
+        id="backButton"
+        onclick="location.href='index.html'"
+    >
         Back to Bio3D
     </button>
 
@@ -585,65 +698,105 @@ import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.j
 
 const scene = new THREE.Scene();
 
-scene.background = new THREE.Color(0xd8e3d2);
-scene.fog = new THREE.Fog(0xd8e3d2, 8, 17);
+scene.background =
+    new THREE.Color(0xd8e3d2);
 
-const camera = new THREE.PerspectiveCamera(
-    38,
-    innerWidth / innerHeight,
-    .1,
-    50
+scene.fog =
+    new THREE.Fog(
+        0xd8e3d2,
+        8,
+        17
+    );
+
+const camera =
+    new THREE.PerspectiveCamera(
+        38,
+        innerWidth / innerHeight,
+        .1,
+        50
+    );
+
+camera.position.set(
+    0,
+    2.05,
+    9.1
 );
 
-camera.position.set(0, 2.05, 9.1);
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false
+    });
 
-const renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    alpha: false
-});
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
 
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(
+    Math.min(
+        devicePixelRatio,
+        2
+    )
+);
 
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled =
+    true;
 
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.type =
+    THREE.PCFSoftShadowMap;
 
-document.getElementById('app').appendChild(renderer.domElement);
+renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+renderer.toneMapping =
+    THREE.ACESFilmicToneMapping;
+
+renderer.toneMappingExposure =
+    1.05;
+
+document
+    .getElementById('app')
+    .appendChild(
+        renderer.domElement
+    );
 
 
 /* =========================================================
    CONTROLS
 ========================================================= */
 
-const controls = new OrbitControls(
-    camera,
-    renderer.domElement
+const controls =
+    new OrbitControls(
+        camera,
+        renderer.domElement
+    );
+
+controls.enableDamping =
+    true;
+
+controls.dampingFactor =
+    .055;
+
+controls.enablePan =
+    false;
+
+controls.minDistance =
+    5.4;
+
+controls.maxDistance =
+    11;
+
+controls.target.set(
+    0,
+    .55,
+    0
 );
-
-controls.enableDamping = true;
-controls.dampingFactor = .055;
-
-controls.enablePan = false;
-
-controls.minDistance = 5.4;
-controls.maxDistance = 11;
-
-controls.target.set(0, .55, 0);
 
 
 /* =========================================================
    LIGHTING
 ========================================================= */
-
-/*
-   Ambient light keeps the flower consistently illuminated
-   when the camera moves closer to individual parts.
-   The other lights are kept for depth, highlights and shadows.
-*/
 
 scene.add(
     new THREE.AmbientLight(
@@ -660,33 +813,53 @@ scene.add(
     )
 );
 
-const key = new THREE.DirectionalLight(
-    0xffefd7,
-    3.2
+const key =
+    new THREE.DirectionalLight(
+        0xffefd7,
+        3.2
+    );
+
+key.position.set(
+    4,
+    8,
+    5
 );
 
-key.position.set(4, 8, 5);
-key.castShadow = true;
+key.castShadow =
+    true;
 
-key.shadow.mapSize.set(2048, 2048);
+key.shadow.mapSize.set(
+    2048,
+    2048
+);
 
 scene.add(key);
 
-const rim = new THREE.DirectionalLight(
-    0xa8c7ff,
-    1.1
-);
+const rim =
+    new THREE.DirectionalLight(
+        0xa8c7ff,
+        1.1
+    );
 
-rim.position.set(-5, 3, -4);
+rim.position.set(
+    -5,
+    3,
+    -4
+);
 
 scene.add(rim);
 
-const frontFill = new THREE.DirectionalLight(
-    0xffe9e2,
-    1.35
-);
+const frontFill =
+    new THREE.DirectionalLight(
+        0xffe9e2,
+        1.35
+    );
 
-frontFill.position.set(0, 5, 7);
+frontFill.position.set(
+    0,
+    5,
+    7
+);
 
 scene.add(frontFill);
 
@@ -695,16 +868,25 @@ scene.add(frontFill);
    FLOWER GROUPS
 ========================================================= */
 
-const flower = new THREE.Group();
+const flower =
+    new THREE.Group();
 
-flower.position.y = .15;
+flower.position.y =
+    .15;
 
 scene.add(flower);
 
-const petalsGroup = new THREE.Group();
-const gynoeciumGroup = new THREE.Group();
-const androeciumGroup = new THREE.Group();
-const stemGroup = new THREE.Group();
+const petalsGroup =
+    new THREE.Group();
+
+const gynoeciumGroup =
+    new THREE.Group();
+
+const androeciumGroup =
+    new THREE.Group();
+
+const stemGroup =
+    new THREE.Group();
 
 flower.add(
     petalsGroup,
@@ -742,56 +924,70 @@ stemGroup.userData.anatomy = {
    MATERIALS
 ========================================================= */
 
-const petalMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xd94161,
-    roughness: .62,
-    sheen: .32,
-    sheenColor: new THREE.Color(0xf07891),
-    side: THREE.DoubleSide
-});
+const petalMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xd94161,
+        roughness: .62,
+        sheen: .32,
+        sheenColor:
+            new THREE.Color(0xf07891),
+        side: THREE.DoubleSide
+    });
 
-const petalLight = new THREE.MeshPhysicalMaterial({
-    color: 0xf05e7e,
-    roughness: .58,
-    sheen: .34,
-    sheenColor: new THREE.Color(0xff9aab),
-    side: THREE.DoubleSide
-});
+const petalLight =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xf05e7e,
+        roughness: .58,
+        sheen: .34,
+        sheenColor:
+            new THREE.Color(0xff9aab),
+        side: THREE.DoubleSide
+    });
 
-const throatMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x8d203c,
-    roughness: .72
-});
+const throatMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x8d203c,
+        roughness: .72
+    });
 
-const greenMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x315d3c,
-    roughness: .82
-});
+const greenMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x315d3c,
+        roughness: .82
+    });
 
-const leafMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x3d7449,
-    roughness: .78,
-    sheen: .16,
-    side: THREE.DoubleSide
-});
+const leafMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x3d7449,
+        roughness: .78,
+        sheen: .16,
+        side: THREE.DoubleSide
+    });
 
-const goldMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xe5a52f,
-    roughness: .46
-});
+const goldMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xe5a52f,
+        roughness: .46
+    });
 
-const filamentMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xf0a8a1,
-    roughness: .52,
-    sheen: .22
-});
+const filamentMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xf0a8a1,
+        roughness: .52,
+        sheen: .22
+    });
 
 
 /* =========================================================
    ANATOMY HELPER
 ========================================================= */
 
-function mark(mesh, name, role, fact) {
+function mark(
+    mesh,
+    name,
+    role,
+    fact
+) {
 
     mesh.userData.anatomy = {
         name,
@@ -816,80 +1012,100 @@ function makePetal(
     phase = 0
 ) {
 
-    const geometry = new ParametricGeometry(
-        (u, v, target) => {
+    const geometry =
+        new ParametricGeometry(
+            (u, v, target) => {
 
-            const t = u;
-            const across = v * 2 - 1;
+                const t = u;
 
-            const radius =
-                .15 +
-                length * Math.pow(t, .82);
+                const across =
+                    v * 2 - 1;
 
-            const flare =
-                Math.pow(
-                    Math.sin(Math.PI * t),
-                    .62
+                const radius =
+                    .15 +
+                    length *
+                    Math.pow(
+                        t,
+                        .82
+                    );
+
+                const flare =
+                    Math.pow(
+                        Math.sin(
+                            Math.PI * t
+                        ),
+                        .62
+                    );
+
+                const crown =
+                    .15 *
+                    flare *
+                    (1 - across * across);
+
+                const droop =
+                    -.23 *
+                    Math.pow(
+                        t,
+                        3
+                    );
+
+                const ripple =
+                    .035 *
+                    Math.sin(
+                        t * 12 + phase
+                    ) *
+                    flare *
+                    (1 - Math.abs(across));
+
+                const x =
+                    radius +
+                    .035 * crown;
+
+                const y =
+                    1.62 +
+                    lift *
+                    Math.sin(
+                        Math.PI * t
+                    ) +
+                    crown +
+                    droop +
+                    ripple;
+
+                const z =
+                    across *
+                    width *
+                    flare;
+
+                target.set(
+                    x * Math.cos(angle) -
+                        z * Math.sin(angle),
+
+                    y,
+
+                    x * Math.sin(angle) +
+                        z * Math.cos(angle)
                 );
+            },
+            30,
+            14
+        );
 
-            const crown =
-                .15 *
-                flare *
-                (1 - across * across);
+    const mesh =
+        mark(
+            new THREE.Mesh(
+                geometry,
+                material
+            ),
+            'Petal',
+            'Corolla whorl',
+            'A petal is part of the corolla. Its colour and shape support pollination, while its surface protects the inner floral organs.'
+        );
 
-            const droop =
-                -.23 *
-                Math.pow(t, 3);
+    mesh.castShadow =
+        true;
 
-            const ripple =
-                .035 *
-                Math.sin(t * 12 + phase) *
-                flare *
-                (1 - Math.abs(across));
-
-            const x =
-                radius +
-                .035 * crown;
-
-            const y =
-                1.62 +
-                lift *
-                Math.sin(Math.PI * t) +
-                crown +
-                droop +
-                ripple;
-
-            const z =
-                across *
-                width *
-                flare;
-
-            target.set(
-                x * Math.cos(angle) -
-                    z * Math.sin(angle),
-
-                y,
-
-                x * Math.sin(angle) +
-                    z * Math.cos(angle)
-            );
-        },
-        30,
-        14
-    );
-
-    const mesh = mark(
-        new THREE.Mesh(
-            geometry,
-            material
-        ),
-        'Petal',
-        'Corolla whorl',
-        'A petal is part of the corolla. Its colour and shape support pollination, while its surface protects the inner floral organs.'
-    );
-
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
+    mesh.receiveShadow =
+        true;
 
     return mesh;
 }
@@ -912,7 +1128,8 @@ for (let i = 0; i < 5; i++) {
 
     petalsGroup.add(
         makePetal(
-            i * Math.PI * 2 / 5 + Math.PI / 5,
+            i * Math.PI * 2 / 5 +
+                Math.PI / 5,
             1.86,
             .83,
             .48,
@@ -927,58 +1144,81 @@ for (let i = 0; i < 5; i++) {
    FLORAL THROAT
 ========================================================= */
 
-const throat = mark(
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .61,
-            40,
-            24
+const throat =
+    mark(
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .61,
+                40,
+                24
+            ),
+            throatMaterial
         ),
-        throatMaterial
-    ),
-    'Floral throat',
-    'Pollinator guidance',
-    'The darker floral throat guides pollinators toward nectar and the reproductive structures.'
+        'Floral throat',
+        'Pollinator guidance',
+        'The darker floral throat guides pollinators toward nectar and the reproductive structures.'
+    );
+
+throat.scale.set(
+    1,
+    .5,
+    1
 );
 
-throat.scale.set(1, .5, 1);
-throat.position.y = 1.53;
-throat.castShadow = true;
+throat.position.y =
+    1.53;
 
-petalsGroup.add(throat);
+throat.castShadow =
+    true;
+
+petalsGroup.add(
+    throat
+);
 
 
 /* =========================================================
    OVARY
 ========================================================= */
 
-const ovaryMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xc94f69,
-    roughness: .5,
-    transparent: true,
-    opacity: .62,
-    side: THREE.DoubleSide
-});
+const ovaryMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xc94f69,
+        roughness: .5,
+        transparent: true,
+        opacity: .62,
+        side: THREE.DoubleSide
+    });
 
-const ovary = mark(
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .43,
-            32,
-            22
+const ovary =
+    mark(
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .43,
+                32,
+                22
+            ),
+            ovaryMaterial
         ),
-        ovaryMaterial
-    ),
-    'Ovary',
-    'Contains ovules',
-    'The ovary is the swollen basal part of the carpel. In Hibiscus it is superior and contains locules with ovules attached by axile placentation.'
+        'Ovary',
+        'Contains ovules',
+        'The ovary is the swollen basal part of the carpel. In Hibiscus it is superior and contains locules with ovules attached by axile placentation.'
+    );
+
+ovary.scale.set(
+    1,
+    1.12,
+    1
 );
 
-ovary.scale.set(1, 1.12, 1);
-ovary.position.y = 1.26;
-ovary.castShadow = true;
+ovary.position.y =
+    1.26;
 
-gynoeciumGroup.add(ovary);
+ovary.castShadow =
+    true;
+
+gynoeciumGroup.add(
+    ovary
+);
 
 
 /* =========================================================
@@ -994,31 +1234,37 @@ const ovuleMaterial =
 for (let i = 0; i < 5; i++) {
 
     const angle =
-        i * Math.PI * 2 / 5 + .2;
+        i * Math.PI * 2 / 5 +
+        .2;
 
-    const ovule = mark(
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .065,
-                14,
-                10
+    const ovule =
+        mark(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    .065,
+                    14,
+                    10
+                ),
+                ovuleMaterial
             ),
-            ovuleMaterial
-        ),
-        'Ovule',
-        'Seed formation',
-        'The ovule contains the embryo sac. After double fertilisation it develops into a seed; integuments form the seed coat.'
-    );
+            'Ovule',
+            'Seed formation',
+            'The ovule contains the embryo sac. After double fertilisation it develops into a seed; integuments form the seed coat.'
+        );
 
     ovule.position.set(
         Math.cos(angle) * .22,
-        1.25 + (i % 2) * .12,
+        1.25 +
+            (i % 2) * .12,
         Math.sin(angle) * .22
     );
 
-    ovule.castShadow = true;
+    ovule.castShadow =
+        true;
 
-    gynoeciumGroup.add(ovule);
+    gynoeciumGroup.add(
+        ovule
+    );
 }
 
 
@@ -1036,7 +1282,10 @@ function cylinderBetween(
 
     const direction =
         new THREE.Vector3()
-            .subVectors(end, start);
+            .subVectors(
+                end,
+                start
+            );
 
     const mesh =
         new THREE.Mesh(
@@ -1055,11 +1304,16 @@ function cylinderBetween(
         .multiplyScalar(.5);
 
     mesh.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
         direction.normalize()
     );
 
-    mesh.castShadow = true;
+    mesh.castShadow =
+        true;
 
     return mesh;
 }
@@ -1069,59 +1323,75 @@ function cylinderBetween(
    STYLE + STIGMA
 ========================================================= */
 
-const column = new THREE.Group();
+const column =
+    new THREE.Group();
 
-column.position.y = 1.55;
+column.position.y =
+    1.55;
 
-gynoeciumGroup.add(column);
-
-const style = mark(
-    new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .055,
-            .085,
-            .74,
-            22
-        ),
-        filamentMaterial
-    ),
-    'Style',
-    'Pollen tube pathway',
-    'The style connects stigma to ovary. After pollination, the pollen tube grows through the style toward an ovule.'
+gynoeciumGroup.add(
+    column
 );
 
-style.position.y = .32;
-style.castShadow = true;
+const style =
+    mark(
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                .055,
+                .085,
+                .74,
+                22
+            ),
+            filamentMaterial
+        ),
+        'Style',
+        'Pollen tube pathway',
+        'The style connects stigma to ovary. After pollination, the pollen tube grows through the style toward an ovule.'
+    );
 
-column.add(style);
+style.position.y =
+    .32;
 
-const stigma = new THREE.Group();
+style.castShadow =
+    true;
 
-stigma.position.y = .69;
+column.add(
+    style
+);
 
-column.add(stigma);
+const stigma =
+    new THREE.Group();
+
+stigma.position.y =
+    .69;
+
+column.add(
+    stigma
+);
 
 for (let i = 0; i < 5; i++) {
 
     const a =
-        i * Math.PI * 2 / 5 + .16;
+        i * Math.PI * 2 / 5 +
+        .16;
 
-    const lobe = mark(
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .145,
-                20,
-                14
+    const lobe =
+        mark(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    .145,
+                    20,
+                    14
+                ),
+                new THREE.MeshPhysicalMaterial({
+                    color: 0xf28c9e,
+                    roughness: .42
+                })
             ),
-            new THREE.MeshPhysicalMaterial({
-                color: 0xf28c9e,
-                roughness: .42
-            })
-        ),
-        'Stigma lobe',
-        'Pollen reception',
-        'The stigma is the receptive tip of the carpel. Its surface traps compatible pollen grains for germination.'
-    );
+            'Stigma lobe',
+            'Pollen reception',
+            'The stigma is the receptive tip of the carpel. Its surface traps compatible pollen grains for germination.'
+        );
 
     lobe.scale.set(
         1.2,
@@ -1135,9 +1405,12 @@ for (let i = 0; i < 5; i++) {
         Math.sin(a) * .19
     );
 
-    lobe.castShadow = true;
+    lobe.castShadow =
+        true;
 
-    stigma.add(lobe);
+    stigma.add(
+        lobe
+    );
 }
 
 
@@ -1145,31 +1418,39 @@ for (let i = 0; i < 5; i++) {
    STAMENS
 ========================================================= */
 
-const stamenParts = new THREE.Group();
+const stamenParts =
+    new THREE.Group();
 
-androeciumGroup.add(stamenParts);
+androeciumGroup.add(
+    stamenParts
+);
 
 for (let i = 0; i < 11; i++) {
 
     const a =
-        i * Math.PI * 2 / 11 + .18;
+        i * Math.PI * 2 / 11 +
+        .18;
 
     const start =
         new THREE.Vector3(
             Math.cos(a) * .13,
-            1.72 + (i % 3) * .05,
+            1.72 +
+                (i % 3) * .05,
             Math.sin(a) * .13
         );
 
     const end =
         new THREE.Vector3(
             Math.cos(a) *
-                (.45 + (i % 2) * .08),
+                (.45 +
+                    (i % 2) * .08),
 
-            2.05 + (i % 3) * .04,
+            2.05 +
+                (i % 3) * .04,
 
             Math.sin(a) *
-                (.45 + (i % 2) * .08)
+                (.45 +
+                    (i % 2) * .08)
         );
 
     const filament =
@@ -1187,21 +1468,24 @@ for (let i = 0; i < 11; i++) {
         fact: 'The filament is the stalk of a stamen. In Hibiscus, filaments unite into a staminal column, a monadelphous condition.'
     };
 
-    stamenParts.add(filament);
-
-    const anther = mark(
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .085,
-                16,
-                10
-            ),
-            goldMaterial
-        ),
-        'Anther',
-        'Pollen production',
-        'The anther contains pollen sacs or microsporangia. Meiosis produces microspores that develop into pollen grains.'
+    stamenParts.add(
+        filament
     );
+
+    const anther =
+        mark(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    .085,
+                    16,
+                    10
+                ),
+                goldMaterial
+            ),
+            'Anther',
+            'Pollen production',
+            'The anther contains pollen sacs or microsporangia. Meiosis produces microspores that develop into pollen grains.'
+        );
 
     anther.scale.set(
         .7,
@@ -1209,11 +1493,16 @@ for (let i = 0; i < 11; i++) {
         .7
     );
 
-    anther.position.copy(end);
+    anther.position.copy(
+        end
+    );
 
-    anther.castShadow = true;
+    anther.castShadow =
+        true;
 
-    stamenParts.add(anther);
+    stamenParts.add(
+        anther
+    );
 }
 
 
@@ -1221,26 +1510,29 @@ for (let i = 0; i < 11; i++) {
    CALYX + SEPALS
 ========================================================= */
 
-const calyx = new THREE.Group();
+const calyx =
+    new THREE.Group();
 
 for (let i = 0; i < 5; i++) {
 
     const a =
-        i * Math.PI * 2 / 5 + .2;
+        i * Math.PI * 2 / 5 +
+        .2;
 
-    const sepal = mark(
-        new THREE.Mesh(
-            new THREE.ConeGeometry(
-                .18,
-                .78,
-                18
+    const sepal =
+        mark(
+            new THREE.Mesh(
+                new THREE.ConeGeometry(
+                    .18,
+                    .78,
+                    18
+                ),
+                greenMaterial
             ),
-            greenMaterial
-        ),
-        'Sepal',
-        'Calyx whorl',
-        'Sepals form the calyx and protect the flower bud before anthesis. In Hibiscus the five sepals are united at the base.'
-    );
+            'Sepal',
+            'Calyx whorl',
+            'Sepals form the calyx and protect the flower bud before anthesis. In Hibiscus the five sepals are united at the base.'
+        );
 
     sepal.position.set(
         Math.cos(a) * .38,
@@ -1254,33 +1546,49 @@ for (let i = 0; i < 5; i++) {
     sepal.rotation.y =
         -a;
 
-    sepal.castShadow = true;
+    sepal.castShadow =
+        true;
 
-    calyx.add(sepal);
+    calyx.add(
+        sepal
+    );
 }
 
-flower.add(calyx);
+flower.add(
+    calyx
+);
 
 
 /* =========================================================
    STEM
 ========================================================= */
 
-const stem = new THREE.Mesh(
-    new THREE.CylinderGeometry(
-        .13,
-        .19,
-        3.9,
-        22
-    ),
-    greenMaterial
+const stem =
+    new THREE.Mesh(
+        new THREE.CylinderGeometry(
+            .13,
+            .19,
+            3.9,
+            22
+        ),
+        greenMaterial
+    );
+
+stem.position.y =
+    -.93;
+
+stem.castShadow =
+    true;
+
+stem.userData.anatomy = {
+    name: 'Stem',
+    role: 'Support and transport',
+    fact: 'The stem supports the flower and transports water, minerals and photosynthetic products through vascular tissues.'
+};
+
+stemGroup.add(
+    stem
 );
-
-stem.position.y = -.93;
-
-stem.castShadow = true;
-
-stemGroup.add(stem);
 
 
 /* =========================================================
@@ -1293,20 +1601,30 @@ function makeLeaf(
     scale
 ) {
 
-    const shape = new THREE.Shape();
+    const shape =
+        new THREE.Shape();
 
-    shape.moveTo(0, 0);
-
-    shape.bezierCurveTo(
-        .48, .42,
-        1.28, .34,
-        1.9, 0
+    shape.moveTo(
+        0,
+        0
     );
 
     shape.bezierCurveTo(
-        1.24, -.48,
-        .46, -.42,
-        0, 0
+        .48,
+        .42,
+        1.28,
+        .34,
+        1.9,
+        0
+    );
+
+    shape.bezierCurveTo(
+        1.24,
+        -.48,
+        .46,
+        -.42,
+        0,
+        0
     );
 
     const leaf =
@@ -1318,7 +1636,9 @@ function makeLeaf(
             leafMaterial
         );
 
-    leaf.position.copy(position);
+    leaf.position.copy(
+        position
+    );
 
     leaf.rotation.set(
         -.23,
@@ -1326,10 +1646,21 @@ function makeLeaf(
         .10
     );
 
-    leaf.scale.setScalar(scale);
+    leaf.scale.setScalar(
+        scale
+    );
 
-    leaf.castShadow = true;
-    leaf.receiveShadow = true;
+    leaf.castShadow =
+        true;
+
+    leaf.receiveShadow =
+        true;
+
+    leaf.userData.anatomy = {
+        name: 'Leaf',
+        role: 'Photosynthesis and transport',
+        fact: 'Leaves carry out photosynthesis and exchange gases with the environment. Veins transport water and dissolved minerals into the leaf and carry photosynthetic products away.'
+    };
 
     leaf.add(
         cylinderBetween(
@@ -1397,9 +1728,12 @@ const ground =
 ground.rotation.x =
     -Math.PI / 2;
 
-ground.position.y = -2.9;
+ground.position.y =
+    -2.9;
 
-scene.add(ground);
+scene.add(
+    ground
+);
 
 
 /* =========================================================
@@ -1409,9 +1743,12 @@ scene.add(ground);
 const ovaryDissection =
     new THREE.Group();
 
-ovaryDissection.visible = false;
+ovaryDissection.visible =
+    false;
 
-scene.add(ovaryDissection);
+scene.add(
+    ovaryDissection
+);
 
 const ovaryLayers = {
     wall: new THREE.Group(),
@@ -1420,8 +1757,13 @@ const ovaryLayers = {
     style: new THREE.Group()
 };
 
-Object.values(ovaryLayers).forEach(
-    layer => ovaryDissection.add(layer)
+Object.values(
+    ovaryLayers
+).forEach(
+    layer =>
+        ovaryDissection.add(
+            layer
+        )
 );
 
 function ovaryPart(
@@ -1438,7 +1780,9 @@ function ovaryPart(
         fact
     };
 
-    layer.add(mesh);
+    layer.add(
+        mesh
+    );
 
     return mesh;
 }
@@ -1572,7 +1916,8 @@ const placenta =
 placenta.rotation.x =
     Math.PI / 2;
 
-placenta.position.z = 0;
+placenta.position.z =
+    0;
 
 ovaryPart(
     placenta,
@@ -1589,9 +1934,6 @@ for (let i = 0; i < 10; i++) {
 
     const a =
         i * Math.PI * 2 / 10;
-
-    const side =
-        i % 2 === 0 ? 1 : .72;
 
     const start =
         new THREE.Vector3(
@@ -1634,7 +1976,9 @@ for (let i = 0; i < 10; i++) {
             ovuleMaterial
         );
 
-    ovule.position.copy(end);
+    ovule.position.copy(
+        end
+    );
 
     ovaryPart(
         ovule,
@@ -1688,22 +2032,23 @@ for (let i = 0; i < 5; i++) {
     const a =
         i * Math.PI * 2 / 5;
 
-    const lobe = mark(
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .13,
-                18,
-                12
+    const lobe =
+        mark(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    .13,
+                    18,
+                    12
+                ),
+                new THREE.MeshPhysicalMaterial({
+                    color: 0xf28c9e,
+                    roughness: .42
+                })
             ),
-            new THREE.MeshPhysicalMaterial({
-                color: 0xf28c9e,
-                roughness: .42
-            })
-        ),
-        'Stigma lobe',
-        'Pollen reception',
-        'The stigma receives compatible pollen and allows pollen grains to germinate.'
-    );
+            'Stigma lobe',
+            'Pollen reception',
+            'The stigma receives compatible pollen and allows pollen grains to germinate.'
+        );
 
     lobe.position.set(
         Math.cos(a) * .17,
@@ -1711,7 +2056,9 @@ for (let i = 0; i < 5; i++) {
         Math.sin(a) * .17
     );
 
-    dissectedStigma.add(lobe);
+    dissectedStigma.add(
+        lobe
+    );
 }
 
 
@@ -1813,7 +2160,7 @@ const resetView =
 
 
 /* =========================================================
-   PANEL ARROW — SAME BEHAVIOUR AS FROG
+   PANEL ARROW
 ========================================================= */
 
 panelToggle.addEventListener(
@@ -1826,7 +2173,9 @@ panelToggle.addEventListener(
             );
 
         panelToggle.textContent =
-            collapsed ? '←' : '→';
+            collapsed
+                ? '←'
+                : '→';
 
         panelToggle.setAttribute(
             'aria-label',
@@ -1845,6 +2194,7 @@ panelToggle.addEventListener(
 
 /* =========================================================
    RELATED NOTES
+   OPEN BY DEFAULT
 ========================================================= */
 
 infoToggle.addEventListener(
@@ -1880,14 +2230,214 @@ const defaultCameraPosition =
 const defaultTarget =
     controls.target.clone();
 
-let ovaryViewActive = false;
+let ovaryViewActive =
+    false;
+
+
+/* =========================================================
+   HOVER HIGHLIGHT SYSTEM
+========================================================= */
+
+let highlightedObjects = [];
+
+function clearHighlight() {
+
+    highlightedObjects.forEach(
+        object => {
+
+            object.classList?.remove?.(
+                'anatomy-highlight'
+            );
+
+            if (
+                object.material &&
+                object.userData &&
+                object.userData.originalColor
+            ) {
+
+                object.material.color.copy(
+                    object.userData.originalColor
+                );
+
+                delete object.userData.originalColor;
+            }
+
+            if (
+                object.material &&
+                object.userData &&
+                object.userData.originalEmissive
+            ) {
+
+                if (
+                    object.material.emissive
+                ) {
+
+                    object.material.emissive.copy(
+                        object.userData.originalEmissive
+                    );
+
+                    object.material.emissiveIntensity =
+                        object.userData.originalEmissiveIntensity;
+
+                }
+
+                delete object.userData.originalEmissive;
+                delete object.userData.originalEmissiveIntensity;
+            }
+
+            object.scale.copy(
+                object.userData.originalHighlightScale ||
+                object.scale
+            );
+
+            delete object.userData.originalHighlightScale;
+        }
+    );
+
+    highlightedObjects =
+        [];
+}
+
+function highlightObject(
+    object
+) {
+
+    clearHighlight();
+
+    let target =
+        object;
+
+    /*
+       Walk upward until we reach the meaningful
+       anatomical mesh. This lets a hover over a
+       filament, anther, petal, sepal, leaf, etc.
+       highlight that actual structure rather than
+       the whole flower.
+    */
+
+    while (
+        target.parent &&
+        target.parent !== flower &&
+        target.parent !== ovaryDissection
+    ) {
+
+        if (
+            target.parent.userData &&
+            target.parent.userData.anatomy &&
+            !target.parent.isGroup
+        ) {
+            break;
+        }
+
+        if (
+            target.userData &&
+            target.userData.anatomy
+        ) {
+            break;
+        }
+
+        target =
+            target.parent;
+    }
+
+    if (
+        !target.isMesh &&
+        object.isMesh
+    ) {
+
+        target =
+            object;
+    }
+
+    const targets = [];
+
+    if (
+        target.isMesh &&
+        target.userData &&
+        target.userData.anatomy
+    ) {
+
+        targets.push(
+            target
+        );
+
+    } else if (
+        target.userData &&
+        target.userData.anatomy
+    ) {
+
+        target.traverse(
+            child => {
+
+                if (
+                    child.isMesh
+                ) {
+                    targets.push(
+                        child
+                    );
+                }
+            }
+        );
+    }
+
+    targets.forEach(
+        mesh => {
+
+            mesh.userData.originalHighlightScale =
+                mesh.scale.clone();
+
+            mesh.scale.multiplyScalar(
+                1.035
+            );
+
+            if (
+                mesh.material &&
+                mesh.material.emissive
+            ) {
+
+                mesh.userData.originalEmissive =
+                    mesh.material.emissive.clone();
+
+                mesh.userData.originalEmissiveIntensity =
+                    mesh.material.emissiveIntensity;
+
+                mesh.material.emissive.set(
+                    0xffc978
+                );
+
+                mesh.material.emissiveIntensity =
+                    .42;
+            } else if (
+                mesh.material &&
+                mesh.material.color
+            ) {
+
+                mesh.userData.originalColor =
+                    mesh.material.color.clone();
+
+                mesh.material.color.offsetHSL(
+                    0,
+                    0,
+                    .13
+                );
+            }
+
+            highlightedObjects.push(
+                mesh
+            );
+        }
+    );
+}
 
 
 /* =========================================================
    ANATOMY TOOLTIP
 ========================================================= */
 
-function showAnatomy(anatomy) {
+function showAnatomy(
+    anatomy,
+    object = null
+) {
 
     tooltipTitle.textContent =
         anatomy.name;
@@ -1901,6 +2451,12 @@ function showAnatomy(anatomy) {
     tooltip.classList.add(
         'is-visible'
     );
+
+    if (object) {
+        highlightObject(
+            object
+        );
+    }
 }
 
 function hideAnatomy() {
@@ -1908,6 +2464,8 @@ function hideAnatomy() {
     tooltip.classList.remove(
         'is-visible'
     );
+
+    clearHighlight();
 
     renderer.domElement.style.cursor =
         'grab';
@@ -1918,15 +2476,20 @@ function hideAnatomy() {
    MOVE TOOLTIP WITH CURSOR
 ========================================================= */
 
-function moveTooltip(event) {
+function moveTooltip(
+    event
+) {
 
-    const offset = 18;
+    const offset =
+        18;
 
     let left =
-        event.clientX + offset;
+        event.clientX +
+        offset;
 
     let top =
-        event.clientY + offset;
+        event.clientY +
+        offset;
 
     const tooltipWidth =
         tooltip.offsetWidth;
@@ -1957,10 +2520,16 @@ function moveTooltip(event) {
     }
 
     tooltip.style.left =
-        `${Math.max(14, left)}px`;
+        `${Math.max(
+            14,
+            left
+        )}px`;
 
     tooltip.style.top =
-        `${Math.max(14, top)}px`;
+        `${Math.max(
+            14,
+            top
+        )}px`;
 }
 
 
@@ -1968,12 +2537,15 @@ function moveTooltip(event) {
    FOCUS MAIN PART
 ========================================================= */
 
-function focusPart(part) {
+function focusPart(
+    part
+) {
 
     const entry =
         inspectParts[part];
 
-    if (!entry) return;
+    if (!entry)
+        return;
 
     const bounds =
         new THREE.Box3()
@@ -1994,7 +2566,9 @@ function focusPart(part) {
     const direction =
         camera.position
             .clone()
-            .sub(controls.target)
+            .sub(
+                controls.target
+            )
             .normalize();
 
     camera.position
@@ -2008,9 +2582,15 @@ function focusPart(part) {
             )
         );
 
-    controls.target.copy(center);
+    controls.target.copy(
+        center
+    );
 
-    let firstAnatomy = null;
+    let firstAnatomy =
+        null;
+
+    let firstMesh =
+        null;
 
     entry.object.traverse(
         object => {
@@ -2023,6 +2603,9 @@ function focusPart(part) {
 
                 firstAnatomy =
                     object.userData.anatomy;
+
+                firstMesh =
+                    object;
             }
         }
     );
@@ -2030,9 +2613,28 @@ function focusPart(part) {
     if (firstAnatomy) {
 
         showAnatomy(
-            firstAnatomy
+            firstAnatomy,
+            firstMesh
         );
     }
+}
+
+
+/* =========================================================
+   CAMERA ONLY RESET
+========================================================= */
+
+function restoreCameraOnly() {
+
+    camera.position.copy(
+        defaultCameraPosition
+    );
+
+    controls.target.copy(
+        defaultTarget
+    );
+
+    hideAnatomy();
 }
 
 
@@ -2044,56 +2646,95 @@ document
     .querySelectorAll(
         '[data-part]'
     )
-    .forEach(button => {
+    .forEach(
+        button => {
 
-        button.addEventListener(
-            'click',
-            () => {
+            button.addEventListener(
+                'click',
+                () => {
 
-                const part =
-                    button.dataset.part;
+                    const part =
+                        button.dataset.part;
 
-                const entry =
-                    inspectParts[part];
+                    const entry =
+                        inspectParts[part];
 
-                if (!entry) return;
+                    if (!entry)
+                        return;
 
-                const object =
-                    entry.object;
+                    const object =
+                        entry.object;
 
-                if (
-                    object.visible &&
-                    button.classList.contains(
-                        'is-selected'
-                    )
-                ) {
+                    /*
+                       SECOND CLICK:
+                       If this part is currently
+                       selected and visible, remove it.
+                    */
 
-                    restoreFlowerView();
+                    if (
+                        object.visible &&
+                        button.classList.contains(
+                            'is-selected'
+                        )
+                    ) {
 
-                    return;
-                }
+                        object.visible =
+                            false;
 
-                object.visible = true;
+                        button.classList.remove(
+                            'is-selected'
+                        );
 
-                document
-                    .querySelectorAll(
-                        '[data-part]'
-                    )
-                    .forEach(
-                        other =>
-                            other.classList.remove(
-                                'is-selected'
-                            )
+                        button.classList.add(
+                            'is-hidden'
+                        );
+
+                        restoreCameraOnly();
+
+                        return;
+                    }
+
+                    /*
+                       If the part was hidden, bring
+                       it back and focus it.
+                    */
+
+                    object.visible =
+                        true;
+
+                    document
+                        .querySelectorAll(
+                            '[data-part]'
+                        )
+                        .forEach(
+                            other => {
+
+                                if (
+                                    other !== button
+                                ) {
+
+                                    other.classList.remove(
+                                        'is-selected'
+                                    );
+                                }
+                            }
+                        );
+
+                    button.classList.remove(
+                        'is-hidden'
                     );
 
-                button.classList.add(
-                    'is-selected'
-                );
+                    button.classList.add(
+                        'is-selected'
+                    );
 
-                focusPart(part);
-            }
-        );
-    });
+                    focusPart(
+                        part
+                    );
+                }
+            );
+        }
+    );
 
 
 /* =========================================================
@@ -2126,12 +2767,15 @@ function restoreFlowerView() {
         .querySelectorAll(
             '[data-part]'
         )
-        .forEach(button => {
+        .forEach(
+            button => {
 
-            button.classList.remove(
-                'is-selected'
-            );
-        });
+                button.classList.remove(
+                    'is-selected',
+                    'is-hidden'
+                );
+            }
+        );
 
     hideAnatomy();
 }
@@ -2172,7 +2816,9 @@ ovaryFocus.addEventListener(
             ovaryLayers
         ).forEach(
             layer => {
-                layer.visible = true;
+
+                layer.visible =
+                    true;
             }
         );
 
@@ -2209,68 +2855,84 @@ document
     .querySelectorAll(
         '[data-ovary-layer]'
     )
-    .forEach(button => {
+    .forEach(
+        button => {
 
-        button.addEventListener(
-            'click',
-            () => {
+            button.addEventListener(
+                'click',
+                () => {
 
-                const layerName =
-                    button.dataset.ovaryLayer;
+                    const layerName =
+                        button.dataset
+                            .ovaryLayer;
 
-                const layer =
-                    ovaryLayers[layerName];
+                    const layer =
+                        ovaryLayers[
+                            layerName
+                        ];
 
-                if (!layer) return;
+                    if (!layer)
+                        return;
 
-                const isVisible =
-                    layer.visible;
+                    const isVisible =
+                        layer.visible;
 
-                layer.visible =
-                    !isVisible;
+                    layer.visible =
+                        !isVisible;
 
-                button.classList.toggle(
-                    'is-hidden',
-                    !layer.visible
-                );
-
-                button.classList.toggle(
-                    'is-selected',
-                    layer.visible
-                );
-
-                if (!layer.visible) {
-
-                    hideAnatomy();
-
-                    return;
-                }
-
-                let anatomy = null;
-
-                layer.traverse(
-                    object => {
-
-                        if (
-                            !anatomy &&
-                            object.userData.anatomy
-                        ) {
-
-                            anatomy =
-                                object.userData.anatomy;
-                        }
-                    }
-                );
-
-                if (anatomy) {
-
-                    showAnatomy(
-                        anatomy
+                    button.classList.toggle(
+                        'is-hidden',
+                        !layer.visible
                     );
+
+                    button.classList.toggle(
+                        'is-selected',
+                        layer.visible
+                    );
+
+                    if (
+                        !layer.visible
+                    ) {
+
+                        hideAnatomy();
+
+                        return;
+                    }
+
+                    let anatomy =
+                        null;
+
+                    let anatomyObject =
+                        null;
+
+                    layer.traverse(
+                        object => {
+
+                            if (
+                                !anatomy &&
+                                object.userData.anatomy
+                            ) {
+
+                                anatomy =
+                                    object.userData.anatomy;
+
+                                anatomyObject =
+                                    object;
+                            }
+                        }
+                    );
+
+                    if (anatomy) {
+
+                        showAnatomy(
+                            anatomy,
+                            anatomyObject
+                        );
+                    }
                 }
-            }
-        );
-    });
+            );
+        }
+    );
 
 
 /* =========================================================
@@ -2285,6 +2947,7 @@ resetView.addEventListener(
             inspectParts
         ).forEach(
             entry => {
+
                 entry.object.visible =
                     true;
             }
@@ -2294,6 +2957,7 @@ resetView.addEventListener(
             ovaryLayers
         ).forEach(
             layer => {
+
                 layer.visible =
                     true;
             }
@@ -2303,13 +2967,15 @@ resetView.addEventListener(
             .querySelectorAll(
                 '[data-part], [data-ovary-layer]'
             )
-            .forEach(button => {
+            .forEach(
+                button => {
 
-                button.classList.remove(
-                    'is-hidden',
-                    'is-selected'
-                );
-            });
+                    button.classList.remove(
+                        'is-hidden',
+                        'is-selected'
+                    );
+                }
+            );
 
         restoreFlowerView();
     }
@@ -2318,8 +2984,6 @@ resetView.addEventListener(
 
 /* =========================================================
    HOVER RAYCASTING
-   IMPORTANT:
-   HIDDEN OVARY WALL DOES NOT BLOCK OTHER PARTS
 ========================================================= */
 
 const raycaster =
@@ -2328,7 +2992,9 @@ const raycaster =
 const pointer =
     new THREE.Vector2();
 
-function findAnatomy(object) {
+function findAnatomy(
+    object
+) {
 
     let current =
         object;
@@ -2350,14 +3016,18 @@ function findAnatomy(object) {
     return null;
 }
 
-function isVisibleInScene(object) {
+function isVisibleInScene(
+    object
+) {
 
     let current =
         object;
 
     while (current) {
 
-        if (!current.visible) {
+        if (
+            !current.visible
+        ) {
 
             return false;
         }
@@ -2374,17 +3044,20 @@ renderer.domElement.addEventListener(
     event => {
 
         const bounds =
-            renderer.domElement.getBoundingClientRect();
+            renderer.domElement
+                .getBoundingClientRect();
 
         pointer.x =
             (
-                (event.clientX - bounds.left) /
+                (event.clientX -
+                    bounds.left) /
                 bounds.width
             ) * 2 - 1;
 
         pointer.y =
             -(
-                (event.clientY - bounds.top) /
+                (event.clientY -
+                    bounds.top) /
                 bounds.height
             ) * 2 + 1;
 
@@ -2404,9 +3077,15 @@ renderer.domElement.addEventListener(
                 true
             );
 
-        let anatomy = null;
+        let anatomy =
+            null;
 
-        for (const hit of hits) {
+        let anatomyObject =
+            null;
+
+        for (
+            const hit of hits
+        ) {
 
             if (
                 !isVisibleInScene(
@@ -2427,6 +3106,9 @@ renderer.domElement.addEventListener(
                 anatomy =
                     found;
 
+                anatomyObject =
+                    hit.object;
+
                 break;
             }
         }
@@ -2439,7 +3121,8 @@ renderer.domElement.addEventListener(
         }
 
         showAnatomy(
-            anatomy
+            anatomy,
+            anatomyObject
         );
 
         moveTooltip(
@@ -2498,7 +3181,9 @@ function animate() {
 
     controls.update();
 
-    if (ovaryViewActive) {
+    if (
+        ovaryViewActive
+    ) {
 
         ovaryDissection.rotation.y +=
             .0015;
