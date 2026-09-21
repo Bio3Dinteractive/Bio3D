@@ -1921,14 +1921,13 @@ function makeWebbedFoot(
 
     /*
         IMPORTANT:
-        Exactly FOUR digits exist.
+        Exactly FIVE hind digits exist.
 
         digit 1
         digit 2
         digit 3
         digit 4
-
-        There is NO fifth digit.
+        digit 5
     */
 
     /*
@@ -2062,7 +2061,7 @@ function makeWebbedFoot(
         web.userData.anatomy = {
             name: 'Webbing between hind digits',
             role: 'Swimming adaptation',
-            fact: 'Broad webbing stretches between the four hind digits. It increases the surface area of the foot, allowing the frog to push against water more effectively during swimming.'
+            fact: 'Broad webbing stretches between all five hind digits. It increases the surface area of the foot, allowing the frog to push against water more effectively during swimming.'
         };
 
 
@@ -2259,13 +2258,21 @@ for (
 
 
     /*
-        Front hand: three simplified visible digits.
+        FOUR FORE-LIMB DIGITS.
+
+        The fourth digit is added while the original
+        two webbing panels are kept unchanged.
     */
 
+    const frontToeOffsets = [
+        -1.5,
+        -0.5,
+         0.5,
+         1.5
+    ];
+
     for (
-        let toe = -1;
-        toe <= 1;
-        toe++
+        const toe of frontToeOffsets
     ) {
 
         const fingertip =
@@ -2300,6 +2307,15 @@ for (
         );
     }
 
+
+    /*
+        Web all four fore digits together. This creates
+        one webbing panel between each adjacent pair:
+
+        1 ↔ 2
+        2 ↔ 3
+        3 ↔ 4
+    */
 
     makeFrontWebbing(
         side,
@@ -2364,25 +2380,29 @@ for (
 
 
     /*
-        EXACTLY FOUR HIND DIGITS.
+        EXACTLY FIVE HIND DIGITS.
 
-        They are deliberately spread out so that all four
+        They are deliberately spread out so that all five
         can be seen individually.
 
         Positions:
-            digit 1 = -1.5
-            digit 2 = -0.5
-            digit 3 =  0.5
-            digit 4 =  1.5
+            digit 1 = -2
+            digit 2 = -1
+            digit 3 =  0
+            digit 4 =  1
+            digit 5 =  2
 
-        No fifth digit exists.
+        All four adjacent webbing panels are included
+        below so every one of the five digits is connected
+        by webbing.
     */
 
     const hindToeOffsets = [
-        -1.5,
-        -0.5,
-         0.5,
-         1.5
+        -2,
+        -1,
+         0,
+         1,
+         2
     ];
 
 
@@ -2402,7 +2422,7 @@ for (
 
 
         /*
-            More spacing between the four digits makes
+            More spacing between the five digits makes
             the individual toes visually obvious.
         */
 
@@ -2432,7 +2452,7 @@ for (
                 {
                     name: 'Hind digit',
                     role: 'Swimming and propulsion',
-                    fact: 'The hind foot has four long digits. The digits spread during swimming while the webbing between them increases the effective surface area of the foot.'
+                    fact: 'The hind foot has five long digits. The digits spread during swimming while the webbing between them increases the effective surface area of the foot.'
                 }
             )
         );
@@ -2440,12 +2460,13 @@ for (
 
 
     /*
-        The webbing is created AFTER all four digits.
-        Three membranes connect:
+        Web all five hind digits together. This creates
+        one webbing panel between each adjacent pair:
 
         1 ↔ 2
         2 ↔ 3
         3 ↔ 4
+        4 ↔ 5
     */
 
     makeWebbedFoot(
