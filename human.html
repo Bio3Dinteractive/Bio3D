@@ -1,0 +1,8622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio3D - Human Anatomy</title>
+
+<style>
+@import url(
+'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600&display=swap'
+);
+
+:root {
+    --ink: #20312a;
+    --muted: #68766d;
+    --glass: rgba(248,244,232,.88);
+    --line: rgba(55,76,58,.14);
+    --sage: #dfe9df;
+    --cream: #f5f0e3;
+    --accent: #b77a63;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    background: #dfe9df;
+}
+
+#app {
+    position: relative;
+}
+
+canvas {
+    display: block;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    padding: 24px 28px;
+    pointer-events: none;
+}
+
+.eyebrow {
+    margin: 0 0 7px;
+    color: #7b4a4a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+
+h1 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(34px,5vw,58px);
+    font-weight: 600;
+    line-height: .98;
+    color: #20312a;
+}
+
+.subtitle {
+    margin: 11px 0 0;
+    color: #68766d;
+    font-size: 14px;
+}
+
+/* =========================================================
+   CONTROL NOTE
+========================================================= */
+
+.control-note {
+    position: absolute;
+    top: 26px;
+    right: 28px;
+    z-index: 5;
+    padding: 11px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: #506057;
+    background: var(--glass);
+    box-shadow: 0 10px 28px rgba(0,0,0,.12);
+    font-size: 12px;
+    backdrop-filter: blur(12px);
+}
+
+.control-note strong {
+    color: var(--ink);
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+#backButton {
+    position: absolute;
+    left: 26px;
+    bottom: 25px;
+    z-index: 6;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 10px 14px;
+    color: var(--ink);
+    background: var(--glass);
+    font: 500 12px 'DM Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(0,0,0,.12);
+    backdrop-filter: blur(12px);
+}
+
+#backButton:hover {
+    background: #fffaf0;
+}
+
+.species-tag {
+    position: absolute;
+    right: 27px;
+    bottom: 27px;
+    z-index: 3;
+    color: #687d70;
+    font-size: 12px;
+    letter-spacing: .04em;
+}
+
+/* =========================================================
+   RIGHT PANEL
+========================================================= */
+
+.anatomy-panel {
+    position: absolute;
+    right: 28px;
+    top: 138px;
+    z-index: 7;
+    width: 235px;
+    padding: 15px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--glass);
+    box-shadow: 0 10px 28px rgba(0,0,0,.12);
+    backdrop-filter: blur(12px);
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+}
+
+.panel-toggle {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--ink);
+    background: rgba(255,255,255,.42);
+    font: 700 15px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.anatomy-panel.is-collapsed {
+    width: 48px;
+    height: 45px;
+    padding: 9px;
+}
+
+.anatomy-panel.is-collapsed > :not(.panel-toggle) {
+    display: none;
+}
+
+.anatomy-panel h2 {
+    margin: 0 0 6px;
+    font: 600 17px 'Fraunces', serif;
+}
+
+.anatomy-panel p {
+    margin: 0 0 11px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.mode-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.mode-button,
+.anatomy-button {
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--ink);
+    background: rgba(255,255,255,.38);
+    font: 700 10px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.mode-button {
+    padding: 7px 5px;
+}
+
+.anatomy-button {
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 9px 10px;
+    text-align: left;
+    font-size: 11px;
+}
+
+.mode-button:hover,
+.mode-button.active,
+.anatomy-button:hover,
+.anatomy-button.is-selected {
+    background: #fffaf0;
+    border-color: var(--accent);
+}
+
+.layer-label {
+    margin: 11px 0 5px !important;
+    color: #7b4a4a !important;
+    font-size: 10px !important;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.layer-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 7px;
+}
+
+.layer-button {
+    padding: 8px 5px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--ink);
+    background: rgba(255,255,255,.38);
+    font: 700 10px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.layer-button:hover,
+.layer-button.active {
+    background: #fffaf0;
+    border-color: var(--accent);
+}
+
+.detail-views {
+    margin-top: 10px;
+    border-top: 1px solid var(--line);
+    padding-top: 9px;
+}
+
+.detail-views summary {
+    color: #7b4a4a;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.detail-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.detail-button {
+    min-height: 32px;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--ink);
+    background: rgba(255,255,255,.38);
+    font: 700 10px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.detail-button:hover,
+.detail-button[aria-pressed="true"] {
+    background: #fffaf0;
+    border-color: var(--accent);
+}
+
+.skeleton-dialog {
+    width: min(360px, calc(100vw - 32px));
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    background: #fffaf0;
+    box-shadow: 0 18px 50px rgba(0,0,0,.24);
+}
+
+.skeleton-dialog::backdrop {
+    background: rgba(24,34,29,.45);
+    backdrop-filter: blur(3px);
+}
+
+.skeleton-dialog h2 {
+    margin: 0 0 6px;
+    font: 600 20px 'Fraunces', serif;
+}
+
+.skeleton-dialog p {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.skull-choice {
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--ink);
+    background: #f4efe4;
+    text-align: left;
+    font: 700 12px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.skull-choice:hover {
+    border-color: var(--accent);
+    background: #fff;
+}
+
+.skeleton-dialog .dialog-cancel {
+    margin-top: 12px;
+    padding: 7px 10px;
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+    font: 500 11px 'DM Sans', sans-serif;
+    cursor: pointer;
+}
+
+.organ-list {
+    margin: 9px 0 0;
+    color: #7b4a4a;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   NOTES
+========================================================= */
+
+.info-toggle {
+    position: absolute;
+    left: 28px;
+    top: 148px;
+    z-index: 8;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    color: var(--ink);
+    background: var(--glass);
+    font: 700 11px 'DM Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(0,0,0,.12);
+    backdrop-filter: blur(12px);
+}
+
+.info-panel {
+    position: absolute;
+    left: 28px;
+    top: 195px;
+    z-index: 8;
+    width: min(350px, calc(100vw - 56px));
+    max-height: 54vh;
+    overflow: auto;
+    padding: 17px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    background: rgba(255,251,241,.97);
+    box-shadow: 0 16px 34px rgba(0,0,0,.16);
+}
+
+.info-panel[hidden] {
+    display: none;
+}
+
+.info-panel h2 {
+    margin: 0 0 10px;
+    font: 600 20px 'Fraunces', serif;
+}
+
+.info-panel h3 {
+    margin: 15px 0 4px;
+    color: #7b4a4a;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.info-panel p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.48;
+}
+
+/* =========================================================
+   TOOLTIP
+========================================================= */
+
+.anatomy-tooltip {
+    position: fixed;
+    z-index: 20;
+    width: min(290px, calc(100vw - 28px));
+    padding: 13px 14px;
+    border: 1px solid rgba(55,76,58,.2);
+    border-radius: 8px;
+    color: var(--ink);
+    background: rgba(255,251,241,.97);
+    box-shadow: 0 16px 34px rgba(0,0,0,.18);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity .14s ease, transform .14s ease;
+}
+
+.anatomy-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.anatomy-tooltip h3 {
+    margin: 0 0 4px;
+    font: 600 18px 'Fraunces', serif;
+}
+
+.anatomy-tooltip .role {
+    margin: 0 0 7px;
+    color: #7b4a4a;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.anatomy-tooltip .fact {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.42;
+}
+
+@media (max-width:700px) {
+    .anatomy-panel {
+        top: auto;
+        right: 18px;
+        bottom: 18px;
+        width: 205px;
+        padding: 11px;
+        max-height: 66vh;
+    }
+
+    .anatomy-panel p {
+        display: none;
+    }
+
+    .info-panel {
+        left: 18px;
+        top: 195px;
+        width: calc(100vw - 36px);
+        max-height: 45vh;
+        z-index: 6;
+    }
+}
+
+@media (max-width:600px) {
+    .header {
+        padding: 18px;
+    }
+
+    .control-note {
+        top: 18px;
+        right: 18px;
+        padding: 9px 10px;
+        font-size: 11px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    #backButton {
+        left: 18px;
+        bottom: 18px;
+    }
+
+    .species-tag {
+        right: 18px;
+        bottom: 22px;
+    }
+
+    .info-toggle {
+        left: 18px;
+        top: 145px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<main id="app">
+
+<header class="header">
+    <p class="eyebrow">Human study / Bio3D</p>
+    <h1 id="pageTitle">Human Anatomy</h1>
+    <p class="subtitle">
+        Explore the realistic anatomical systems of the human body.
+    </p>
+</header>
+
+<div class="control-note">
+    <strong>Drag</strong> to turn
+    <span>&nbsp;·&nbsp;</span>
+    <strong>Scroll</strong> to zoom
+</div>
+
+<button class="info-toggle" id="infoToggle" aria-expanded="true">
+    Close related notes
+</button>
+
+<section class="info-panel" id="infoPanel">
+
+    <h2>Human anatomy essentials</h2>
+
+    <h3>Organisation</h3>
+    <p>
+        The human body is organised into cells, tissues,
+        organs and organ systems. Different systems work
+        together to maintain homeostasis and support life.
+    </p>
+
+    <h3>Skeletal system</h3>
+    <p>
+        The adult human skeleton normally contains 206 bones.
+        Bones provide support, protect organs, allow movement
+        with muscles and store minerals.
+    </p>
+
+    <h3>Muscular system</h3>
+    <p>
+        Skeletal muscles attach to bones and produce movement.
+        Smooth and cardiac muscle perform involuntary functions.
+    </p>
+
+    <h3>Circulatory system</h3>
+    <p>
+        The heart pumps blood through pulmonary and systemic
+        circuits.
+    </p>
+
+    <h3>Respiratory system</h3>
+    <p>
+        Air travels through the respiratory tract to the lungs.
+        Gas exchange occurs across the alveoli.
+    </p>
+
+    <h3>Digestive system</h3>
+    <p>
+        The digestive tract breaks food into smaller molecules
+        that can be absorbed.
+    </p>
+
+    <h3>Nervous system</h3>
+    <p>
+        The brain, spinal cord and peripheral nerves coordinate
+        sensation, movement and responses.
+    </p>
+
+    <div id="femaleNotes">
+        <h3>Female reproductive system</h3>
+        <p>
+            The ovaries, uterine tubes, uterus, cervix and vagina
+            form the major reproductive structures.
+        </p>
+    </div>
+
+    <div id="maleNotes">
+        <h3>Male reproductive system</h3>
+        <p>
+            The testes, epididymides, ductus deferens and
+            accessory glands form major reproductive structures.
+        </p>
+    </div>
+
+</section>
+
+<aside class="anatomy-panel" id="anatomyPanel">
+
+    <button class="panel-toggle" id="panelToggle">→</button>
+
+    <h2>Study view</h2>
+
+    <p>
+        Choose a layer or system, then click the model to inspect
+        an anatomical structure.
+    </p>
+
+    <div class="mode-buttons">
+        <button class="mode-button active" id="maleMode">Male</button>
+        <button class="mode-button" id="femaleMode">Female</button>
+    </div>
+
+    <p class="layer-label">Anatomical layers</p>
+
+    <div class="layer-buttons">
+        <button class="layer-button active" id="skinButton">Skin</button>
+        <button class="layer-button" id="muscleButton">Muscles</button>
+        <button class="layer-button" id="skeletonButton">Skeleton</button>
+        <button class="layer-button" id="allButton">Full body</button>
+    </div>
+
+    <p class="layer-label">Systems</p>
+
+    <button class="anatomy-button" data-system="organs">
+        Internal organs
+    </button>
+
+    <button class="anatomy-button" data-system="circulation">
+        Heart & circulation
+    </button>
+
+    <button class="anatomy-button" data-system="respiratory">
+        Respiratory system
+    </button>
+
+    <button class="anatomy-button" data-system="digestive">
+        Digestive system
+    </button>
+
+    <button class="anatomy-button" data-system="nervous">
+        Brain & nervous system
+    </button>
+
+    <button class="anatomy-button" data-system="reproductive">
+        Reproductive system
+    </button>
+
+    <details class="detail-views">
+        <summary>View in detail</summary>
+        <div class="detail-buttons">
+            <button class="detail-button" data-detail="whole">Whole skeleton</button>
+            <button class="detail-button" data-detail="skull">Skull</button>
+            <button class="detail-button" data-detail="hyoid">Hyoid & ossicles</button>
+            <button class="detail-button" data-detail="spine">Vertebral column</button>
+            <button class="detail-button" data-detail="thorax">Thoracic cage</button>
+            <button class="detail-button" data-detail="shoulder">Pectoral girdle</button>
+            <button class="detail-button" data-detail="upperLimb">Upper limbs</button>
+            <button class="detail-button" data-detail="hand">Hands · Carpals</button>
+            <button class="detail-button" data-detail="pelvis">Pelvic girdle</button>
+            <button class="detail-button" data-detail="lowerLimb">Lower limbs</button>
+            <button class="detail-button" data-detail="foot">Feet · Tarsals</button>
+        </div>
+    </details>
+
+    <p class="organ-list" id="organList">
+        Hover or click an anatomical structure to view its role.
+    </p>
+
+</aside>
+
+<dialog class="skeleton-dialog" id="skullDetailDialog" aria-labelledby="skullDialogTitle">
+    <h2 id="skullDialogTitle">Choose a skull region</h2>
+    <p>Which group of skull bones would you like to inspect?</p>
+    <button class="skull-choice" data-skull-region="neurocranium">
+        Neurocranium · braincase bones
+    </button>
+    <button class="skull-choice" data-skull-region="viscerocranium">
+        Viscerocranium · facial bones
+    </button>
+    <button class="dialog-cancel" id="cancelSkullDetail">Cancel</button>
+</dialog>
+
+<aside class="anatomy-tooltip" id="tooltip">
+    <h3 id="tooltipTitle"></h3>
+    <p class="role" id="tooltipRole"></p>
+    <p class="fact" id="tooltipFact"></p>
+</aside>
+
+<button id="backButton" onclick="location.href='index.html'">
+    Back to Bio3D
+</button>
+
+<div class="species-tag" id="speciesTag">
+    Human anatomy · male study
+</div>
+
+</main>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+}
+</script>
+
+<script type="module">
+
+import * as THREE from 'three';
+
+import {
+    OrbitControls
+} from 'three/addons/controls/OrbitControls.js';
+
+/* =========================================================
+   URL / SEX
+========================================================= */
+
+const params = new URLSearchParams(
+    window.location.search
+);
+
+let sex =
+    params.get('sex') === 'female'
+        ? 'female'
+        : 'male';
+
+/* =========================================================
+   SCENE
+========================================================= */
+
+const scene = new THREE.Scene();
+
+/* OLD LIGHT SAGE GREEN BACKGROUND */
+scene.background =
+    new THREE.Color(0xdfe9df);
+
+scene.fog =
+    new THREE.FogExp2(
+        0xdfe9df,
+        0.045
+    );
+
+const camera =
+    new THREE.PerspectiveCamera(
+        40,
+        innerWidth / innerHeight,
+        .1,
+        60
+    );
+
+camera.position.set(
+    0,
+    1.0,
+    9.1
+);
+
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false
+    });
+
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(
+        devicePixelRatio,
+        2
+    )
+);
+
+renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+renderer.toneMapping =
+    THREE.ACESFilmicToneMapping;
+
+renderer.toneMappingExposure =
+    1.15;
+
+renderer.shadowMap.enabled = true;
+
+renderer.shadowMap.type =
+    THREE.PCFSoftShadowMap;
+
+document
+    .getElementById('app')
+    .appendChild(
+        renderer.domElement
+    );
+
+renderer.domElement.style.position =
+    'absolute';
+
+renderer.domElement.style.left =
+    '0';
+
+renderer.domElement.style.top =
+    '0';
+
+renderer.domElement.style.zIndex =
+    '0';
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+const controls =
+    new OrbitControls(
+        camera,
+        renderer.domElement
+    );
+
+controls.enableDamping = true;
+controls.dampingFactor = .055;
+controls.enablePan = false;
+
+controls.minDistance = 4.4;
+controls.maxDistance = 13;
+
+controls.target.set(
+    0,
+    1.0,
+    0
+);
+
+/* =========================================================
+   LIGHTING
+========================================================= */
+
+scene.add(
+    new THREE.HemisphereLight(
+        0xfff7e8,
+        0x87998b,
+        2.1
+    )
+);
+
+const keyLight =
+    new THREE.DirectionalLight(
+        0xfff0dd,
+        3.2
+    );
+
+keyLight.position.set(
+    4,
+    8,
+    5
+);
+
+keyLight.castShadow = true;
+
+keyLight.shadow.mapSize.width =
+    2048;
+
+keyLight.shadow.mapSize.height =
+    2048;
+
+scene.add(keyLight);
+
+const fillLight =
+    new THREE.DirectionalLight(
+        0xc4d8ca,
+        2.2
+    );
+
+fillLight.position.set(
+    -5,
+    4,
+    -4
+);
+
+scene.add(fillLight);
+
+const rimLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        2
+    );
+
+rimLight.position.set(
+    0,
+    5,
+    -6
+);
+
+scene.add(rimLight);
+
+/* =========================================================
+   TEXTURES
+========================================================= */
+
+function createMuscleTexture() {
+
+    const canvas =
+        document.createElement(
+            'canvas'
+        );
+
+    canvas.width = 256;
+    canvas.height = 256;
+
+    const ctx =
+        canvas.getContext('2d');
+
+    ctx.fillStyle = '#832829';
+
+    ctx.fillRect(
+        0,
+        0,
+        256,
+        256
+    );
+
+    ctx.fillStyle = '#b04a4b';
+
+    for (
+        let i = 0;
+        i < 500;
+        i++
+    ) {
+
+        const x =
+            Math.random() * 256;
+
+        const y =
+            Math.random() * 256;
+
+        const len =
+            15 +
+            Math.random() * 45;
+
+        ctx.fillRect(
+            x,
+            y,
+            1.2,
+            len
+        );
+    }
+
+    const texture =
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+    texture.wrapS =
+        THREE.RepeatWrapping;
+
+    texture.wrapT =
+        THREE.RepeatWrapping;
+
+    texture.repeat.set(
+        2,
+        4
+    );
+
+    return texture;
+}
+
+function createBoneBumpTexture() {
+
+    const canvas =
+        document.createElement(
+            'canvas'
+        );
+
+    canvas.width = 256;
+    canvas.height = 256;
+
+    const ctx =
+        canvas.getContext('2d');
+
+    ctx.fillStyle = '#808080';
+
+    ctx.fillRect(
+        0,
+        0,
+        256,
+        256
+    );
+
+    const image =
+        ctx.getImageData(
+            0,
+            0,
+            256,
+            256
+        );
+
+    for (
+        let i = 0;
+        i < image.data.length;
+        i += 4
+    ) {
+
+        const noise =
+            (Math.random() - .5) * 35;
+
+        image.data[i] += noise;
+        image.data[i + 1] += noise;
+        image.data[i + 2] += noise;
+    }
+
+    ctx.putImageData(
+        image,
+        0,
+        0
+    );
+
+    const texture =
+        new THREE.CanvasTexture(
+            canvas
+        );
+
+    texture.wrapS =
+        THREE.RepeatWrapping;
+
+    texture.wrapT =
+        THREE.RepeatWrapping;
+
+    texture.repeat.set(
+        4,
+        4
+    );
+
+    return texture;
+}
+
+const muscleTexture =
+    createMuscleTexture();
+
+const boneBumpTexture =
+    createBoneBumpTexture();
+
+/* =========================================================
+   MATERIALS
+========================================================= */
+
+const skinMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xc89270,
+        roughness: .58,
+        metalness: .04,
+        clearcoat: .15,
+        clearcoatRoughness: .4
+    });
+
+const skinLightMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xdca686,
+        roughness: .6,
+        clearcoat: .1
+    });
+
+const eyeWhiteMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xf0e8dc,
+        roughness: .24
+    });
+
+const irisMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x59412f,
+        roughness: .32
+    });
+
+const pupilMaterial =
+    new THREE.MeshBasicMaterial({
+        color: 0x171411
+    });
+
+const lipMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x9b5b55,
+        roughness: .56
+    });
+
+const boneMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xe3dac9,
+        roughness: .45,
+        bumpMap: boneBumpTexture,
+        bumpScale: .012,
+        clearcoat: .08
+    });
+
+const boneLightMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xf0e8d9,
+        roughness: .46,
+        bumpMap: boneBumpTexture,
+        bumpScale: .01,
+        clearcoat: .08
+    });
+
+const boneDarkMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xc4b9a3,
+        roughness: .55,
+        bumpMap: boneBumpTexture,
+        bumpScale: .015
+    });
+
+const muscleMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x8f2d2e,
+        roughness: .52,
+        map: muscleTexture,
+        clearcoat: .12
+    });
+
+const muscleLightMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xa83f3f,
+        roughness: .55,
+        map: muscleTexture
+    });
+
+const organMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x8e4242,
+        roughness: .45,
+        clearcoat: .2
+    });
+
+const heartMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x6e1b23,
+        roughness: .35,
+        clearcoat: .4
+    });
+
+const heartLightMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x982f37,
+        roughness: .4,
+        clearcoat: .3
+    });
+
+const lungMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xa6575e,
+        roughness: .6,
+        transparent: true,
+        opacity: .88
+    });
+
+const brainMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xc9868a,
+        roughness: .48,
+        clearcoat: .25
+    });
+
+const liverMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x5a2929,
+        roughness: .4,
+        clearcoat: .2
+    });
+
+const digestiveMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xb3635d,
+        roughness: .5
+    });
+
+const reproductiveMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x8a4759,
+        roughness: .5
+    });
+
+const scrotalMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xc89270,
+        roughness: .62,
+        transparent: true,
+        opacity: .48,
+        depthWrite: false
+    });
+
+const bloodMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x7a1821,
+        roughness: .2,
+        clearcoat: .5
+    });
+
+const arteryMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xc4473d,
+        roughness: .32,
+        clearcoat: .2
+    });
+
+const veinMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x527fa3,
+        roughness: .38,
+        clearcoat: .15
+    });
+
+const nerveMaterial =
+    new THREE.MeshBasicMaterial({
+        color: 0xe0b34d
+    });
+
+const cartilageMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xd7cdb9,
+        roughness: .52
+    });
+
+const hairMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0x221814,
+        roughness: .82
+    });
+
+/* =========================================================
+   GROUPS
+========================================================= */
+
+const human =
+    new THREE.Group();
+
+human.position.y =
+    -.18;
+
+scene.add(human);
+
+const skin =
+    new THREE.Group();
+
+const muscles =
+    new THREE.Group();
+
+const skeleton =
+    new THREE.Group();
+
+const organs =
+    new THREE.Group();
+
+const circulation =
+    new THREE.Group();
+
+const respiratory =
+    new THREE.Group();
+
+const digestive =
+    new THREE.Group();
+
+const nervous =
+    new THREE.Group();
+
+const reproductive =
+    new THREE.Group();
+
+const hair =
+    new THREE.Group();
+
+const handFootContext =
+    new THREE.Group();
+
+const handFootContextMaterial =
+    new THREE.MeshPhysicalMaterial({
+        color: 0xb77a63,
+        roughness: .65,
+        transparent: true,
+        opacity: .24,
+        depthWrite: false
+    });
+
+function addHandFootContour(
+    position,
+    scale,
+    rotationY = 0
+) {
+
+    const contour =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(1, 20, 14),
+            handFootContextMaterial
+        );
+
+    contour.position.set(...position);
+    contour.scale.set(...scale);
+    contour.rotation.y = rotationY;
+    handFootContext.add(contour);
+}
+
+for (const side of [-1, 1]) {
+    const handCenter =
+        side * .12;
+
+    addHandFootContour(
+        [handCenter, .32, .12],
+        [.11, .012, .15]
+    );
+
+    for (let finger = 0; finger < 4; finger++) {
+        addHandFootContour(
+            [
+                handCenter + side * ((finger - 1.5) * .05),
+                .32,
+                .245
+            ],
+            [.021, .01, .11]
+        );
+    }
+
+    addHandFootContour(
+        [side * .245, .32, .10],
+        [.05, .01, .08],
+        side * .4
+    );
+
+    const footCenter =
+        side * .20;
+
+    addHandFootContour(
+        [footCenter, -1.39, .32],
+        [.14, .012, .30]
+    );
+
+    for (let toe = 0; toe < 5; toe++) {
+        addHandFootContour(
+            [
+                footCenter + side * ((toe - 2) * .075),
+                -1.39,
+                .51 - Math.abs(toe - 2) * .025
+            ],
+            [.025, .01, .11 - Math.abs(toe - 2) * .012]
+        );
+    }
+}
+
+human.add(
+    skin,
+    muscles,
+    skeleton,
+    organs,
+    circulation,
+    respiratory,
+    digestive,
+    nervous,
+    reproductive,
+    hair,
+    handFootContext
+);
+
+/* =========================================================
+   ANATOMY DATA
+========================================================= */
+
+function anatomy(
+    name,
+    role,
+    fact
+) {
+
+    return {
+        name,
+        role,
+        fact
+    };
+}
+
+/* =========================================================
+   GEOMETRY HELPERS
+========================================================= */
+
+function mesh(
+    geometry,
+    material,
+    position,
+    scale = null,
+    parent = skin,
+    data = null
+) {
+
+    const object =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+    object.position.copy(
+        position
+    );
+
+    if (scale) {
+        object.scale.copy(
+            scale
+        );
+    }
+
+    object.castShadow = true;
+    object.receiveShadow = true;
+
+    if (data) {
+        object.userData.anatomy =
+            data;
+    }
+
+    parent.add(object);
+
+    return object;
+}
+
+function sphere(
+    material,
+    position,
+    scale,
+    parent,
+    data
+) {
+
+    return mesh(
+        new THREE.SphereGeometry(
+            1,
+            32,
+            24
+        ),
+        material,
+        position,
+        scale,
+        parent,
+        data
+    );
+}
+
+function cylinder(
+    material,
+    position,
+    radius,
+    height,
+    parent,
+    data
+) {
+
+    return mesh(
+        new THREE.CylinderGeometry(
+            radius,
+            radius,
+            height,
+            24
+        ),
+        material,
+        position,
+        null,
+        parent,
+        data
+    );
+}
+
+function tube(
+    material,
+    start,
+    end,
+    radius,
+    parent,
+    data
+) {
+
+    const direction =
+        new THREE.Vector3()
+            .subVectors(
+                end,
+                start
+            );
+
+    const length =
+        direction.length();
+
+    const object =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                radius,
+                radius,
+                length,
+                18
+            ),
+            material
+        );
+
+    object.position.copy(
+        start
+    );
+
+    object.position.add(
+        direction
+            .clone()
+            .multiplyScalar(.5)
+    );
+
+    object.quaternion.setFromUnitVectors(
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+        direction.normalize()
+    );
+
+    object.castShadow = true;
+    object.receiveShadow = true;
+
+    if (data) {
+        object.userData.anatomy =
+            data;
+    }
+
+    parent.add(object);
+
+    return object;
+}
+
+function capsule(
+    material,
+    start,
+    end,
+    radius,
+    parent,
+    data
+) {
+
+    const direction =
+        new THREE.Vector3()
+            .subVectors(
+                end,
+                start
+            );
+
+    const length =
+        direction.length();
+
+    const group =
+        new THREE.Group();
+
+    group.position.copy(
+        start
+    );
+
+    group.quaternion.setFromUnitVectors(
+        new THREE.Vector3(
+            0,
+            1,
+            0
+        ),
+        direction
+            .clone()
+            .normalize()
+    );
+
+    const shaftLength =
+        Math.max(
+            .01,
+            length - radius * 2
+        );
+
+    const shaft =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                radius,
+                radius,
+                shaftLength,
+                20
+            ),
+            material
+        );
+
+    shaft.position.y =
+        length / 2;
+
+    shaft.castShadow = true;
+    shaft.receiveShadow = true;
+
+    group.add(shaft);
+
+    const cap1 =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                radius,
+                20,
+                16
+            ),
+            material
+        );
+
+    cap1.position.y =
+        radius;
+
+    cap1.castShadow = true;
+
+    group.add(cap1);
+
+    const cap2 =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                radius,
+                20,
+                16
+            ),
+            material
+        );
+
+    cap2.position.y =
+        length - radius;
+
+    cap2.castShadow = true;
+
+    group.add(cap2);
+
+    if (data) {
+        group.userData.anatomy =
+            data;
+    }
+
+    parent.add(group);
+
+    return group;
+}
+
+/* =========================================================
+   CURVED TUBE
+========================================================= */
+
+function curvedTube(
+    material,
+    points,
+    radius,
+    parent,
+    data
+) {
+
+    const curve =
+        new THREE.CatmullRomCurve3(
+            points
+        );
+
+    const geometry =
+        new THREE.TubeGeometry(
+            curve,
+            24,
+            radius,
+            10,
+            false
+        );
+
+    const object =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+    object.castShadow = true;
+    object.receiveShadow = true;
+
+    if (data) {
+        object.userData.anatomy =
+            data;
+    }
+
+    parent.add(object);
+
+    return object;
+}
+
+/* =========================================================
+   SKIN
+========================================================= */
+
+sphere(
+    skinMaterial,
+    new THREE.Vector3(
+        0,
+        3.00,
+        0
+    ),
+    new THREE.Vector3(
+        .49,
+        .58,
+        .45
+    ),
+    skin,
+    anatomy(
+        'Head',
+        'External covering',
+        'The skin of the head protects the skull and underlying tissues.'
+    )
+);
+
+for (const side of [-1, 1]) {
+    sphere(
+        eyeWhiteMaterial,
+        new THREE.Vector3(
+            side * .17,
+            3.04,
+            .39
+        ),
+        new THREE.Vector3(
+            .075,
+            .048,
+            .04
+        ),
+        skin,
+        anatomy(
+            side < 0 ? 'Left eye' : 'Right eye',
+            'Vision',
+            'The eye detects light and sends visual information to the brain.'
+        )
+    );
+
+    sphere(
+        irisMaterial,
+        new THREE.Vector3(
+            side * .17,
+            3.04,
+            .426
+        ),
+        new THREE.Vector3(
+            .032,
+            .032,
+            .014
+        ),
+        skin
+    );
+
+    sphere(
+        pupilMaterial,
+        new THREE.Vector3(
+            side * .17,
+            3.04,
+            .438
+        ),
+        new THREE.Vector3(
+            .014,
+            .018,
+            .008
+        ),
+        skin
+    );
+
+    sphere(
+        skinLightMaterial,
+        new THREE.Vector3(
+            side * .47,
+            3.00,
+            0
+        ),
+        new THREE.Vector3(
+            .075,
+            .12,
+            .075
+        ),
+        skin,
+        anatomy(
+            side < 0 ? 'Left ear' : 'Right ear',
+            'Hearing',
+            'The external ear collects sound and directs it into the ear canal.'
+        )
+    );
+}
+
+sphere(
+    skinLightMaterial,
+    new THREE.Vector3(
+        0,
+        2.91,
+        .43
+    ),
+    new THREE.Vector3(
+        .055,
+        .11,
+        .065
+    ),
+    skin,
+    anatomy(
+        'Nose',
+        'Smell and airflow',
+        'The nose provides an airway and contains sensory structures for smell.'
+    )
+);
+
+sphere(
+    lipMaterial,
+    new THREE.Vector3(
+        0,
+        2.79,
+        .43
+    ),
+    new THREE.Vector3(
+        .105,
+        .027,
+        .025
+    ),
+    skin,
+    anatomy(
+        'Lips',
+        'Oral opening',
+        'The lips help form speech sounds and assist with food intake.'
+    )
+);
+
+cylinder(
+    skinMaterial,
+    new THREE.Vector3(
+        0,
+        2.43,
+        0
+    ),
+    .235,
+    .55,
+    skin,
+    anatomy(
+        'Neck',
+        'Connection between head and trunk',
+        'The neck contains the cervical vertebrae, airway, oesophagus, blood vessels and nerves.'
+    )
+);
+
+sphere(
+    skinMaterial,
+    new THREE.Vector3(
+        0,
+        1.75,
+        0
+    ),
+    new THREE.Vector3(
+        .84,
+        .75,
+        .48
+    ),
+    skin,
+    anatomy(
+        'Chest',
+        'Protection',
+        'The thoracic region contains the heart and lungs beneath the chest wall.'
+    )
+);
+
+const femaleBodyDetails =
+    new THREE.Group();
+
+skin.add(
+    femaleBodyDetails
+);
+
+for (const side of [-1, 1]) {
+    sphere(
+        skinLightMaterial,
+        new THREE.Vector3(
+            side * .30,
+            1.78,
+            .37
+        ),
+        new THREE.Vector3(
+            .23,
+            .22,
+            .14
+        ),
+        femaleBodyDetails,
+        anatomy(
+            side < 0 ? 'Left breast' : 'Right breast',
+            'External anatomy',
+            'Breast tissue overlies the pectoral muscles of the chest.'
+        )
+    );
+
+    sphere(
+        skinMaterial,
+        new THREE.Vector3(
+            side * .34,
+            .56,
+            -.01
+        ),
+        new THREE.Vector3(
+            .31,
+            .36,
+            .34
+        ),
+        femaleBodyDetails
+    );
+}
+
+sphere(
+    skinMaterial,
+    new THREE.Vector3(
+        0,
+        1.05,
+        0
+    ),
+    new THREE.Vector3(
+        .70,
+        .70,
+        .42
+    ),
+    skin,
+    anatomy(
+        'Abdomen',
+        'External covering',
+        'The abdominal wall covers and protects many internal organs.'
+    )
+);
+
+/* shoulders */
+
+sphere(
+    skinLightMaterial,
+    new THREE.Vector3(
+        -.70,
+        2.02,
+        0
+    ),
+    new THREE.Vector3(
+        .28,
+        .27,
+        .29
+    ),
+    skin
+);
+
+sphere(
+    skinLightMaterial,
+    new THREE.Vector3(
+        .70,
+        2.02,
+        0
+    ),
+    new THREE.Vector3(
+        .28,
+        .27,
+        .29
+    ),
+    skin
+);
+
+/* arms */
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        -.73,
+        1.98,
+        0
+    ),
+    new THREE.Vector3(
+        -1.00,
+        1.22,
+        0
+    ),
+    .19,
+    skin,
+    anatomy(
+        'Upper arm',
+        'Movement',
+        'The upper arm contains the humerus and muscles responsible for movement of the shoulder and elbow.'
+    )
+);
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        .73,
+        1.98,
+        0
+    ),
+    new THREE.Vector3(
+        1.00,
+        1.22,
+        0
+    ),
+    .19,
+    skin
+);
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        -1.00,
+        1.22,
+        0
+    ),
+    new THREE.Vector3(
+        -1.08,
+        .48,
+        0
+    ),
+    .155,
+    skin
+);
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        1.00,
+        1.22,
+        0
+    ),
+    new THREE.Vector3(
+        1.08,
+        .48,
+        0
+    ),
+    .155,
+    skin
+);
+
+/* hands */
+
+sphere(
+    skinLightMaterial,
+    new THREE.Vector3(
+        -1.08,
+        .28,
+        0
+    ),
+    new THREE.Vector3(
+        .18,
+        .27,
+        .15
+    ),
+    skin,
+    anatomy(
+        'Hand',
+        'Fine movement',
+        'The hand contains 27 bones and numerous joints allowing precise movements.'
+    )
+);
+
+sphere(
+    skinLightMaterial,
+    new THREE.Vector3(
+        1.08,
+        .28,
+        0
+    ),
+    new THREE.Vector3(
+        .18,
+        .27,
+        .15
+    ),
+    skin
+);
+
+/* legs */
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        -.38,
+        .72,
+        0
+    ),
+    new THREE.Vector3(
+        -.45,
+        -.22,
+        0
+    ),
+    .255,
+    skin,
+    anatomy(
+        'Thigh',
+        'Support and movement',
+        'The thigh contains the femur and powerful muscles involved in standing and movement.'
+    )
+);
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        .38,
+        .72,
+        0
+    ),
+    new THREE.Vector3(
+        .45,
+        -.22,
+        0
+    ),
+    .255,
+    skin
+);
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        -.45,
+        -.22,
+        0
+    ),
+    new THREE.Vector3(
+        -.47,
+        -1.25,
+        0
+    ),
+    .185,
+    skin,
+    anatomy(
+        'Lower leg',
+        'Support and movement',
+        'The lower leg contains the tibia and fibula.'
+    )
+);
+
+capsule(
+    skinMaterial,
+    new THREE.Vector3(
+        .45,
+        -.22,
+        0
+    ),
+    new THREE.Vector3(
+        .47,
+        -1.25,
+        0
+    ),
+    .185,
+    skin
+);
+
+/* feet */
+
+sphere(
+    skinLightMaterial,
+    new THREE.Vector3(
+        -.47,
+        -1.39,
+        .10
+    ),
+    new THREE.Vector3(
+        .27,
+        .14,
+        .46
+    ),
+    skin,
+    anatomy(
+        'Foot',
+        'Support and movement',
+        'The foot supports body weight and contributes to balance and movement.'
+    )
+);
+
+sphere(
+    skinLightMaterial,
+    new THREE.Vector3(
+        .47,
+        -1.39,
+        .10
+    ),
+    new THREE.Vector3(
+        .27,
+        .14,
+        .46
+    ),
+    skin
+);
+
+/* =========================================================
+   FEMALE HAIR
+========================================================= */
+
+sphere(
+    hairMaterial,
+    new THREE.Vector3(
+        0,
+        3.10,
+        -.16
+    ),
+    new THREE.Vector3(
+        .54,
+        .66,
+        .38
+    ),
+    hair,
+    anatomy(
+        'Hair',
+        'External structure',
+        'Hair grows from follicles in the skin of the scalp.'
+    )
+);
+
+sphere(
+    hairMaterial,
+    new THREE.Vector3(
+        0,
+        2.76,
+        -.28
+    ),
+    new THREE.Vector3(
+        .42,
+        .28,
+        .18
+    ),
+    hair
+);
+
+sphere(
+    hairMaterial,
+    new THREE.Vector3(
+        0,
+        3.48,
+        -.08
+    ),
+    new THREE.Vector3(
+        .43,
+        .16,
+        .32
+    ),
+    hair
+);
+
+sphere(
+    hairMaterial,
+    new THREE.Vector3(
+        -.43,
+        3.05,
+        -.18
+    ),
+    new THREE.Vector3(
+        .08,
+        .32,
+        .17
+    ),
+    hair
+);
+
+sphere(
+    hairMaterial,
+    new THREE.Vector3(
+        .43,
+        3.05,
+        -.18
+    ),
+    new THREE.Vector3(
+        .08,
+        .32,
+        .17
+    ),
+    hair
+);
+
+/* =========================================================
+   SKELETON — SKULL
+========================================================= */
+
+/*
+    Structured skull:
+    - cranial vault
+    - frontal
+    - parietals
+    - temporals
+    - occipital
+    - sphenoid
+    - ethmoid
+    - nasal bones
+    - zygomatics
+    - maxillae
+    - lacrimals
+    - palatines
+    - inferior nasal conchae
+    - vomer
+    - mandible
+    - ear ossicles
+*/
+
+/* cranial vault */
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        0,
+        3.10,
+        -.05
+    ),
+    new THREE.Vector3(
+        .40,
+        .43,
+        .35
+    ),
+    skeleton,
+    anatomy(
+        'Cranium',
+        'Brain protection',
+        'The cranium forms the bony case surrounding and protecting the brain.'
+    )
+);
+
+/* frontal bone */
+
+sphere(
+    boneLightMaterial,
+    new THREE.Vector3(
+        0,
+        3.25,
+        .22
+    ),
+    new THREE.Vector3(
+        .32,
+        .20,
+        .13
+    ),
+    skeleton,
+    anatomy(
+        'Frontal bone',
+        'Cranial bone',
+        'The frontal bone forms the forehead and contributes to the roof of the orbits.'
+    )
+);
+
+/* left/right parietals */
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        -.23,
+        3.18,
+        -.03
+    ),
+    new THREE.Vector3(
+        .22,
+        .31,
+        .31
+    ),
+    skeleton,
+    anatomy(
+        'Left parietal bone',
+        'Cranial bone',
+        'The parietal bones form much of the superior and lateral skull.'
+    )
+);
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        .23,
+        3.18,
+        -.03
+    ),
+    new THREE.Vector3(
+        .22,
+        .31,
+        .31
+    ),
+    skeleton,
+    anatomy(
+        'Right parietal bone',
+        'Cranial bone',
+        'The parietal bones form much of the superior and lateral skull.'
+    )
+);
+
+/* temporal bones */
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        -.37,
+        3.00,
+        .01
+    ),
+    new THREE.Vector3(
+        .11,
+        .20,
+        .27
+    ),
+    skeleton,
+    anatomy(
+        'Left temporal bone',
+        'Cranial bone',
+        'The temporal bone forms part of the lateral skull and contains structures associated with hearing and balance.'
+    )
+);
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        .37,
+        3.00,
+        .01
+    ),
+    new THREE.Vector3(
+        .11,
+        .20,
+        .27
+    ),
+    skeleton,
+    anatomy(
+        'Right temporal bone',
+        'Cranial bone',
+        'The temporal bone forms part of the lateral skull and contains structures associated with hearing and balance.'
+    )
+);
+
+/* occipital */
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        2.88,
+        -.28
+    ),
+    new THREE.Vector3(
+        .34,
+        .25,
+        .13
+    ),
+    skeleton,
+    anatomy(
+        'Occipital bone',
+        'Cranial bone',
+        'The occipital bone forms the posterior and inferior skull and surrounds the foramen magnum.'
+    )
+);
+
+/* sphenoid */
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        3.00,
+        .16
+    ),
+    new THREE.Vector3(
+        .18,
+        .11,
+        .11
+    ),
+    skeleton,
+    anatomy(
+        'Sphenoid bone',
+        'Cranial bone',
+        'The sphenoid occupies a central position at the base of the skull.'
+    )
+);
+
+/* ethmoid */
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        2.99,
+        .29
+    ),
+    new THREE.Vector3(
+        .09,
+        .12,
+        .07
+    ),
+    skeleton,
+    anatomy(
+        'Ethmoid bone',
+        'Cranial / facial bone',
+        'The ethmoid contributes to the nasal cavity, orbit and anterior cranial base.'
+    )
+);
+
+/* =========================================================
+   ORBITAL RINGS
+========================================================= */
+
+function orbitalRing(side) {
+
+    const ring =
+        new THREE.Mesh(
+            new THREE.TorusGeometry(
+                .105,
+                .018,
+                10,
+                24
+            ),
+            boneMaterial
+        );
+
+    ring.position.set(
+        side * .18,
+        2.98,
+        .35
+    );
+
+    ring.scale.y =
+        1.15;
+
+    ring.userData.anatomy =
+        anatomy(
+            side < 0
+                ? 'Left orbit'
+                : 'Right orbit',
+            'Skull opening',
+            'The orbit is the bony cavity that contains and protects the eye and associated structures.'
+        );
+
+    skeleton.add(ring);
+}
+
+orbitalRing(-1);
+orbitalRing(1);
+
+/* =========================================================
+   FACIAL BONES
+========================================================= */
+
+/* nasal bones */
+
+capsule(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        -.035,
+        3.02,
+        .37
+    ),
+    new THREE.Vector3(
+        -.015,
+        2.87,
+        .40
+    ),
+    .026,
+    skeleton,
+    anatomy(
+        'Left nasal bone',
+        'Facial bone',
+        'The nasal bones form the bony bridge of the nose.'
+    )
+);
+
+capsule(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        .035,
+        3.02,
+        .37
+    ),
+    new THREE.Vector3(
+        .015,
+        2.87,
+        .40
+    ),
+    .026,
+    skeleton,
+    anatomy(
+        'Right nasal bone',
+        'Facial bone',
+        'The nasal bones form the bony bridge of the nose.'
+    )
+);
+
+/* zygomatics */
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        -.28,
+        2.90,
+        .31
+    ),
+    new THREE.Vector3(
+        .14,
+        .10,
+        .10
+    ),
+    skeleton,
+    anatomy(
+        'Left zygomatic bone',
+        'Facial bone',
+        'The zygomatic bone forms the cheek prominence and part of the orbit.'
+    )
+);
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        .28,
+        2.90,
+        .31
+    ),
+    new THREE.Vector3(
+        .14,
+        .10,
+        .10
+    ),
+    skeleton,
+    anatomy(
+        'Right zygomatic bone',
+        'Facial bone',
+        'The zygomatic bone forms the cheek prominence and part of the orbit.'
+    )
+);
+
+/* maxillae */
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        -.13,
+        2.79,
+        .32
+    ),
+    new THREE.Vector3(
+        .15,
+        .14,
+        .12
+    ),
+    skeleton,
+    anatomy(
+        'Left maxilla',
+        'Facial bone',
+        'The maxilla forms the upper jaw and contributes to the nasal cavity and orbit.'
+    )
+);
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        .13,
+        2.79,
+        .32
+    ),
+    new THREE.Vector3(
+        .15,
+        .14,
+        .12
+    ),
+    skeleton,
+    anatomy(
+        'Right maxilla',
+        'Facial bone',
+        'The maxilla forms the upper jaw and contributes to the nasal cavity and orbit.'
+    )
+);
+
+/* lacrimals */
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        -.17,
+        2.91,
+        .37
+    ),
+    new THREE.Vector3(
+        .04,
+        .07,
+        .035
+    ),
+    skeleton,
+    anatomy(
+        'Left lacrimal bone',
+        'Facial bone',
+        'The lacrimal bone forms a small part of the medial wall of the orbit.'
+    )
+);
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        .17,
+        2.91,
+        .37
+    ),
+    new THREE.Vector3(
+        .04,
+        .07,
+        .035
+    ),
+    skeleton,
+    anatomy(
+        'Right lacrimal bone',
+        'Facial bone',
+        'The lacrimal bone forms a small part of the medial wall of the orbit.'
+    )
+);
+
+/* palatine bones */
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        -.10,
+        2.69,
+        .26
+    ),
+    new THREE.Vector3(
+        .11,
+        .035,
+        .08
+    ),
+    skeleton,
+    anatomy(
+        'Left palatine bone',
+        'Facial bone',
+        'The palatine bone contributes to the posterior hard palate.'
+    )
+);
+
+sphere(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        .10,
+        2.69,
+        .26
+    ),
+    new THREE.Vector3(
+        .11,
+        .035,
+        .08
+    ),
+    skeleton,
+    anatomy(
+        'Right palatine bone',
+        'Facial bone',
+        'The palatine bone contributes to the posterior hard palate.'
+    )
+);
+
+/* inferior nasal conchae */
+
+capsule(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        -.16,
+        2.87,
+        .36
+    ),
+    new THREE.Vector3(
+        -.07,
+        2.85,
+        .36
+    ),
+    .018,
+    skeleton,
+    anatomy(
+        'Left inferior nasal concha',
+        'Facial bone',
+        'The inferior nasal concha helps increase the internal nasal surface area.'
+    )
+);
+
+capsule(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        .16,
+        2.87,
+        .36
+    ),
+    new THREE.Vector3(
+        .07,
+        2.85,
+        .36
+    ),
+    .018,
+    skeleton,
+    anatomy(
+        'Right inferior nasal concha',
+        'Facial bone',
+        'The inferior nasal concha helps increase the internal nasal surface area.'
+    )
+);
+
+/* vomer */
+
+capsule(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        2.91,
+        .37
+    ),
+    new THREE.Vector3(
+        0,
+        2.73,
+        .34
+    ),
+    .018,
+    skeleton,
+    anatomy(
+        'Vomer',
+        'Facial bone',
+        'The vomer forms part of the bony nasal septum.'
+    )
+);
+
+/* =========================================================
+   MANDIBLE
+========================================================= */
+
+const mandible =
+    new THREE.Group();
+
+mandible.userData.anatomy =
+    anatomy(
+        'Mandible',
+        'Facial bone',
+        'The mandible is the lower jaw and participates in chewing and speech.'
+    );
+
+skeleton.add(
+    mandible
+);
+
+curvedTube(
+    boneMaterial,
+    [
+        new THREE.Vector3(
+            -.22,
+            2.77,
+            .30
+        ),
+        new THREE.Vector3(
+            -.16,
+            2.68,
+            .37
+        ),
+        new THREE.Vector3(
+            0,
+            2.64,
+            .39
+        ),
+        new THREE.Vector3(
+            .16,
+            2.68,
+            .37
+        ),
+        new THREE.Vector3(
+            .22,
+            2.77,
+            .30
+        )
+    ],
+    .045,
+    mandible
+);
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        -.22,
+        2.77,
+        .30
+    ),
+    new THREE.Vector3(
+        -.23,
+        2.94,
+        .16
+    ),
+    .043,
+    mandible
+);
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        .22,
+        2.77,
+        .30
+    ),
+    new THREE.Vector3(
+        .23,
+        2.94,
+        .16
+    ),
+    .043,
+    mandible
+);
+
+/* =========================================================
+   MIDDLE EAR OSSICLES
+========================================================= */
+
+function addEarOssicles(side) {
+
+    const x =
+        side * .37;
+
+    sphere(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            x,
+            2.98,
+            .19
+        ),
+        new THREE.Vector3(
+            .024,
+            .035,
+            .024
+        ),
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left malleus'
+                : 'Right malleus',
+            'Middle ear bone',
+            'The malleus transmits vibrations from the tympanic membrane to the incus.'
+        )
+    );
+
+    sphere(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            x + side * .035,
+            2.96,
+            .22
+        ),
+        new THREE.Vector3(
+            .021,
+            .032,
+            .021
+        ),
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left incus'
+                : 'Right incus',
+            'Middle ear bone',
+            'The incus transmits vibrations from the malleus to the stapes.'
+        )
+    );
+
+    sphere(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            x + side * .065,
+            2.95,
+            .24
+        ),
+        new THREE.Vector3(
+            .017,
+            .024,
+            .017
+        ),
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left stapes'
+                : 'Right stapes',
+            'Middle ear bone',
+            'The stapes transmits vibrations to the inner ear.'
+        )
+    );
+}
+
+addEarOssicles(-1);
+addEarOssicles(1);
+
+/* =========================================================
+   HYOID
+========================================================= */
+
+curvedTube(
+    boneDarkMaterial,
+    [
+        new THREE.Vector3(
+            -.12,
+            2.43,
+            .18
+        ),
+        new THREE.Vector3(
+            0,
+            2.38,
+            .20
+        ),
+        new THREE.Vector3(
+            .12,
+            2.43,
+            .18
+        )
+    ],
+    .025,
+    skeleton,
+    anatomy(
+        'Hyoid bone',
+        'Neck bone',
+        'The hyoid supports the tongue and contributes to swallowing and speech.'
+    )
+);
+
+/* =========================================================
+   VERTEBRAL COLUMN
+========================================================= */
+
+/* C1-C7 */
+
+for (
+    let i = 0;
+    i < 7;
+    i++
+) {
+
+    const y =
+        2.65 -
+        i * .105;
+
+    const name =
+        i === 0
+            ? 'Atlas / C1'
+            : i === 1
+                ? 'Axis / C2'
+                : `Cervical vertebra C${i + 1}`;
+
+    const fact =
+        i === 0
+            ? 'The atlas supports the skull and participates in nodding movements.'
+            : i === 1
+                ? 'The axis contains the dens and allows rotation of the head.'
+                : 'The cervical vertebrae form the upper portion of the vertebral column.';
+
+    sphere(
+        boneMaterial,
+        new THREE.Vector3(
+            0,
+            y,
+            -.14
+        ),
+        new THREE.Vector3(
+            .08,
+            .045,
+            .07
+        ),
+        skeleton,
+        anatomy(
+            name,
+            'Cervical vertebra',
+            fact
+        )
+    );
+}
+
+/* CERVICAL SPINOUS PROCESSES */
+
+for (
+    let i = 0;
+    i < 7;
+    i++
+) {
+
+    const y =
+        2.65 -
+        i * .105;
+
+    capsule(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            0,
+            y,
+            -.19
+        ),
+        new THREE.Vector3(
+            0,
+            y,
+            -.28
+        ),
+        .012,
+        skeleton
+    );
+}
+
+/* T1-T12 */
+
+for (
+    let i = 0;
+    i < 12;
+    i++
+) {
+
+    const y =
+        1.91 -
+        i * .105;
+
+    sphere(
+        boneMaterial,
+        new THREE.Vector3(
+            0,
+            y,
+            -.14
+        ),
+        new THREE.Vector3(
+            .09,
+            .047,
+            .078
+        ),
+        skeleton,
+        anatomy(
+            `Thoracic vertebra T${i + 1}`,
+            'Thoracic vertebra',
+            'The twelve thoracic vertebrae articulate with the ribs and form the middle section of the vertebral column.'
+        )
+    );
+}
+
+/* L1-L5 */
+
+for (
+    let i = 0;
+    i < 5;
+    i++
+) {
+
+    const y =
+        .66 -
+        i * .12;
+
+    sphere(
+        boneMaterial,
+        new THREE.Vector3(
+            0,
+            y,
+            -.10
+        ),
+        new THREE.Vector3(
+            .11,
+            .058,
+            .095
+        ),
+        skeleton,
+        anatomy(
+            `Lumbar vertebra L${i + 1}`,
+            'Lumbar vertebra',
+            'The lumbar vertebrae are large weight-bearing vertebrae of the lower back.'
+        )
+    );
+}
+
+/* =========================================================
+   SACRUM — FIVE FUSED SACRAL VERTEBRAE
+========================================================= */
+
+const sacrumGroup =
+    new THREE.Group();
+
+sacrumGroup.userData.anatomy =
+    anatomy(
+        'Sacrum',
+        'Vertebral column',
+        'The sacrum consists of five fused sacral vertebrae and forms the posterior part of the pelvic ring.'
+    );
+
+skeleton.add(
+    sacrumGroup
+);
+
+/* sacral body */
+
+const sacrumShape =
+    new THREE.Shape();
+
+sacrumShape.moveTo(
+    -.20,
+    .23
+);
+
+sacrumShape.quadraticCurveTo(
+    0,
+    .32,
+    .20,
+    .23
+);
+
+sacrumShape.lineTo(
+    .15,
+    -.25
+);
+
+sacrumShape.quadraticCurveTo(
+    0,
+    -.35,
+    -.15,
+    -.25
+);
+
+sacrumShape.closePath();
+
+const sacrumMesh =
+    new THREE.Mesh(
+        new THREE.ExtrudeGeometry(
+            sacrumShape,
+            {
+                depth: .12,
+                bevelEnabled: true,
+                bevelSegments: 2,
+                bevelSize: .015,
+                bevelThickness: .015
+            }
+        ),
+        boneMaterial
+    );
+
+sacrumMesh.position.set(
+    0,
+    .18,
+    -.16
+);
+
+sacrumMesh.rotation.x =
+    Math.PI / 2;
+
+sacrumMesh.userData.anatomy =
+    sacrumGroup.userData.anatomy;
+
+sacrumGroup.add(
+    sacrumMesh
+);
+
+/* five sacral segments */
+
+for (
+    let i = 0;
+    i < 5;
+    i++
+) {
+
+    const y =
+        .38 -
+        i * .095;
+
+    sphere(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            0,
+            y,
+            -.25
+        ),
+        new THREE.Vector3(
+            .12,
+            .035,
+            .025
+        ),
+        sacrumGroup
+    );
+}
+
+/* sacral foramina */
+
+for (
+    let i = 0;
+    i < 4;
+    i++
+) {
+
+    const y =
+        .31 -
+        i * .095;
+
+    for (
+        const side of [-1, 1]
+    ) {
+
+        sphere(
+            boneDarkMaterial,
+            new THREE.Vector3(
+                side * .095,
+                y,
+                -.27
+            ),
+            new THREE.Vector3(
+                .018,
+                .022,
+                .012
+            ),
+            sacrumGroup
+        );
+    }
+}
+
+/* =========================================================
+   COCCYX — DISTINCT TERMINAL VERTEBRAE
+========================================================= */
+
+const coccyxGroup =
+    new THREE.Group();
+
+coccyxGroup.userData.anatomy =
+    anatomy(
+        'Coccyx',
+        'Terminal vertebral region',
+        'The coccyx is the small terminal portion of the vertebral column, formed by fused coccygeal vertebrae.'
+    );
+
+skeleton.add(
+    coccyxGroup
+);
+
+for (
+    let i = 0;
+    i < 4;
+    i++
+) {
+
+    const y =
+        -.04 -
+        i * .07;
+
+    sphere(
+        boneMaterial,
+        new THREE.Vector3(
+            0,
+            y,
+            -.14
+        ),
+        new THREE.Vector3(
+            .075 - i * .012,
+            .035,
+            .055 - i * .008
+        ),
+        coccyxGroup
+    );
+}
+
+/* =========================================================
+   STERNUM
+========================================================= */
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        0,
+        2.30,
+        .25
+    ),
+    new THREE.Vector3(
+        0,
+        2.05,
+        .25
+    ),
+    .058,
+    skeleton,
+    anatomy(
+        'Manubrium',
+        'Sternum',
+        'The manubrium is the superior portion of the sternum and articulates with the clavicles and first ribs.'
+    )
+);
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        0,
+        2.05,
+        .25
+    ),
+    new THREE.Vector3(
+        0,
+        1.60,
+        .25
+    ),
+    .054,
+    skeleton,
+    anatomy(
+        'Body of sternum',
+        'Sternum',
+        'The body is the long central portion of the sternum and receives costal cartilage from several ribs.'
+    )
+);
+
+capsule(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        1.60,
+        .25
+    ),
+    new THREE.Vector3(
+        0,
+        1.46,
+        .25
+    ),
+    .043,
+    skeleton,
+    anatomy(
+        'Xiphoid process',
+        'Sternum',
+        'The xiphoid process is the inferior part of the sternum.'
+    )
+);
+
+/* =========================================================
+   RIBS — EXACTLY 12 PAIRS
+========================================================= */
+
+/*
+    RIB CLASSIFICATION:
+
+    Ribs 1–7  = TRUE RIBS
+    Ribs 8–10 = FALSE RIBS
+    Ribs 11–12 = FLOATING RIBS
+
+    Each pair is created independently.
+
+    The posterior end attaches near the corresponding
+    thoracic vertebra.
+
+    True ribs continue anteriorly to the sternum through
+    their own costal cartilage.
+
+    False ribs 8–10 connect anteriorly to the cartilage
+    of the rib above.
+
+    Floating ribs 11–12 have no anterior attachment.
+*/
+
+const ribData = [];
+
+for (
+    let i = 1;
+    i <= 12;
+    i++
+) {
+
+    let type;
+    let fact;
+
+    if (i <= 7) {
+
+        type = 'True rib';
+
+        fact =
+            `Rib ${i} is a true rib. It attaches posteriorly to the thoracic vertebra and anteriorly to the sternum through its own costal cartilage.`;
+
+    } else if (i <= 10) {
+
+        type = 'False rib';
+
+        fact =
+            `Rib ${i} is a false rib. Its costal cartilage connects indirectly to the sternum through the cartilage of the rib above.`;
+
+    } else {
+
+        type = 'Floating rib';
+
+        fact =
+            `Rib ${i} is a floating rib. It attaches posteriorly to the vertebral column but has no anterior attachment to the sternum.`;
+    }
+
+    ribData.push({
+        number: i,
+        type,
+        fact
+    });
+}
+
+for (
+    const side of [-1, 1]
+) {
+
+    for (
+        let i = 1;
+        i <= 12;
+        i++
+    ) {
+
+        const y =
+            2.29 -
+            (i - 1) * .112;
+
+        const sideName =
+            side < 0
+                ? 'Left'
+                : 'Right';
+
+        const info =
+            ribData[i - 1];
+
+        /*
+            Posterior attachment:
+            slightly lateral to the vertebral column.
+        */
+
+        const posterior =
+            new THREE.Vector3(
+                side * .075,
+                y,
+                -.12
+            );
+
+        /*
+            Mid rib:
+            travels laterally and curves
+            around the thorax.
+        */
+
+        const lateral =
+            new THREE.Vector3(
+                side * (
+                    .28 +
+                    (12 - i) * .008
+                ),
+                y - .015,
+                .02
+            );
+
+        const widest =
+            new THREE.Vector3(
+                side * (
+                    .58 +
+                    (12 - i) * .012
+                ),
+                y - .035,
+                .08
+            );
+
+        const anterior =
+            new THREE.Vector3(
+                side * (
+                    .12 +
+                    (12 - i) * .006
+                ),
+                y - .025,
+                .30
+            );
+
+        /*
+            Make the rib curve around the body.
+        */
+
+        const ribCurve =
+            new THREE.CatmullRomCurve3([
+                posterior,
+                lateral,
+                widest,
+                anterior
+            ]);
+
+        const rib =
+            new THREE.Mesh(
+                new THREE.TubeGeometry(
+                    ribCurve,
+                    28,
+                    .019,
+                    10,
+                    false
+                ),
+                boneMaterial
+            );
+
+        rib.userData.anatomy =
+            anatomy(
+                `${sideName} rib ${i}`,
+                `${info.type} · rib ${i}`,
+                info.fact
+            );
+
+        rib.castShadow = true;
+        rib.receiveShadow = true;
+
+        skeleton.add(rib);
+
+        /*
+            Costal cartilage for ribs 1–10.
+        */
+
+        if (i <= 10) {
+
+            let cartilageEnd;
+
+            if (i <= 7) {
+
+                /*
+                    TRUE RIB:
+                    own direct sternum connection.
+                */
+
+                cartilageEnd =
+                    new THREE.Vector3(
+                        side * .035,
+                        y - .025,
+                        .27
+                    );
+
+            } else {
+
+                /*
+                    FALSE RIB:
+                    connects to the cartilage
+                    of the rib above.
+                */
+
+                const superiorY =
+                    2.29 -
+                    (i - 2) * .112;
+
+                cartilageEnd =
+                    new THREE.Vector3(
+                        side * .12,
+                        superiorY - .025,
+                        .30
+                    );
+            }
+
+            const cartilageStart =
+                anterior.clone();
+
+            const cartilageCurve =
+                new THREE.CatmullRomCurve3([
+                    cartilageStart,
+                    cartilageStart
+                        .clone()
+                        .lerp(
+                            cartilageEnd,
+                            .5
+                        ),
+                    cartilageEnd
+                ]);
+
+            const cartilage =
+                new THREE.Mesh(
+                    new THREE.TubeGeometry(
+                        cartilageCurve,
+                        14,
+                        .014,
+                        8,
+                        false
+                    ),
+                    cartilageMaterial
+                );
+
+            cartilage.userData.anatomy =
+                anatomy(
+                    `${sideName} rib ${i} costal cartilage`,
+                    'Costal cartilage',
+                    i <= 7
+                        ? `The costal cartilage of rib ${i} provides the direct anterior connection between the rib and sternum.`
+                        : `The costal cartilage of rib ${i} connects indirectly with the sternum through the costal margin.`
+                );
+
+            cartilage.castShadow = true;
+
+            skeleton.add(
+                cartilage
+            );
+        }
+    }
+}
+
+/* =========================================================
+   SHOULDER GIRDLE
+========================================================= */
+
+/* clavicles */
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        -.03,
+        2.28,
+        .10
+    ),
+    new THREE.Vector3(
+        -.68,
+        2.18,
+        -.02
+    ),
+    .043,
+    skeleton,
+    anatomy(
+        'Left clavicle',
+        'Pectoral girdle',
+        'The clavicle connects the sternum to the scapula and helps position the upper limb.'
+    )
+);
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        .03,
+        2.28,
+        .10
+    ),
+    new THREE.Vector3(
+        .68,
+        2.18,
+        -.02
+    ),
+    .043,
+    skeleton,
+    anatomy(
+        'Right clavicle',
+        'Pectoral girdle',
+        'The clavicle connects the sternum to the scapula and helps position the upper limb.'
+    )
+);
+
+/* =========================================================
+   SCAPULAE
+========================================================= */
+
+function addScapula(side) {
+
+    const x =
+        side * .72;
+
+    const shape =
+        new THREE.Shape();
+
+    shape.moveTo(
+        0,
+        .27
+    );
+
+    shape.quadraticCurveTo(
+        .20,
+        .12,
+        .17,
+        -.18
+    );
+
+    shape.quadraticCurveTo(
+        .08,
+        -.34,
+        0,
+        -.38
+    );
+
+    shape.quadraticCurveTo(
+        -.16,
+        -.24,
+        -.19,
+        .12
+    );
+
+    shape.closePath();
+
+    const blade =
+        new THREE.Mesh(
+            new THREE.ExtrudeGeometry(
+                shape,
+                {
+                    depth: .055,
+                    bevelEnabled: true,
+                    bevelSegments: 2,
+                    bevelSize: .012,
+                    bevelThickness: .01
+                }
+            ),
+            boneMaterial
+        );
+
+    blade.position.set(
+        x,
+        1.83,
+        -.19
+    );
+
+    blade.rotation.y =
+        side * .12;
+
+    blade.scale.set(
+        .9,
+        .9,
+        .8
+    );
+
+    blade.userData.anatomy =
+        anatomy(
+            side < 0
+                ? 'Left scapula'
+                : 'Right scapula',
+            'Pectoral girdle',
+            'The scapula is the triangular shoulder blade and articulates with the humerus and clavicle.'
+        );
+
+    blade.castShadow = true;
+
+    skeleton.add(
+        blade
+    );
+
+    /* scapular spine */
+
+    capsule(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            x - side * .16,
+            1.87,
+            -.22
+        ),
+        new THREE.Vector3(
+            x + side * .18,
+            1.97,
+            -.22
+        ),
+        .026,
+        skeleton
+    );
+
+    /* glenoid cavity */
+
+    sphere(
+        boneMaterial,
+        new THREE.Vector3(
+            x + side * .20,
+            1.99,
+            .01
+        ),
+        new THREE.Vector3(
+            .075,
+            .095,
+            .075
+        ),
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left glenoid cavity'
+                : 'Right glenoid cavity',
+            'Shoulder joint',
+            'The glenoid cavity of the scapula articulates with the head of the humerus.'
+        )
+    );
+}
+
+addScapula(-1);
+addScapula(1);
+
+/* =========================================================
+   PROPER PELVIC GIRDLE
+========================================================= */
+
+function addPelvicSide(side) {
+
+    const sideName =
+        side < 0
+            ? 'Left'
+            : 'Right';
+
+    const x =
+        side * .24;
+
+    /*
+        ILium:
+        broad superior plate.
+    */
+
+    const ilium =
+        new THREE.Mesh(
+            new THREE.TorusGeometry(
+                .24,
+                .045,
+                10,
+                28,
+                Math.PI * 1.35
+            ),
+            boneMaterial
+        );
+
+    ilium.position.set(
+        x,
+        .37,
+        -.07
+    );
+
+    ilium.rotation.x =
+        Math.PI / 2;
+
+    ilium.rotation.z =
+        side * .16;
+
+    ilium.scale.y =
+        1.25;
+
+    ilium.userData.anatomy =
+        anatomy(
+            `${sideName} ilium`,
+            'Hip bone',
+            'The ilium is the broad superior portion of the hip bone and forms much of the acetabulum.'
+        );
+
+    skeleton.add(
+        ilium
+    );
+
+    /*
+        ISCHIUM:
+        inferior posterior portion.
+    */
+
+    curvedTube(
+        boneDarkMaterial,
+        [
+            new THREE.Vector3(
+                x + side * .14,
+                .22,
+                .02
+            ),
+            new THREE.Vector3(
+                x + side * .13,
+                .05,
+                .04
+            ),
+            new THREE.Vector3(
+                x,
+                -.02,
+                .02
+            )
+        ],
+        .043,
+        skeleton,
+        anatomy(
+            `${sideName} ischium`,
+            'Hip bone',
+            'The ischium forms the posteroinferior portion of the hip bone.'
+        )
+    );
+
+    /*
+        PUBIS:
+        anterior portion.
+    */
+
+    capsule(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            x,
+            .22,
+            .16
+        ),
+        new THREE.Vector3(
+            side * .055,
+            .22,
+            .18
+        ),
+        .043,
+        skeleton,
+        anatomy(
+            `${sideName} pubis`,
+            'Hip bone',
+            'The pubis forms the anterior part of the hip bone.'
+        )
+    );
+
+    /*
+        ACETABULUM:
+        socket for femoral head.
+    */
+
+    const acetabulum =
+        new THREE.Mesh(
+            new THREE.TorusGeometry(
+                .095,
+                .025,
+                10,
+                20
+            ),
+            boneMaterial
+        );
+
+    acetabulum.position.set(
+        x + side * .03,
+        .28,
+        .16
+    );
+
+    acetabulum.rotation.x =
+        Math.PI / 2;
+
+    acetabulum.userData.anatomy =
+        anatomy(
+            `${sideName} acetabulum`,
+            'Hip joint',
+            'The acetabulum is the socket of the hip joint and receives the head of the femur.'
+        );
+
+    skeleton.add(
+        acetabulum
+    );
+}
+
+addPelvicSide(-1);
+addPelvicSide(1);
+
+/* pubic symphysis */
+
+capsule(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        -.055,
+        .22,
+        .18
+    ),
+    new THREE.Vector3(
+        .055,
+        .22,
+        .18
+    ),
+    .035,
+    skeleton,
+    anatomy(
+        'Pubic symphysis',
+        'Pelvic joint',
+        'The pubic symphysis joins the left and right pubic bones at the front of the pelvis.'
+    )
+);
+
+/* =========================================================
+   UPPER LIMBS
+========================================================= */
+
+/* humeri */
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        -.66,
+        2.02,
+        0
+    ),
+    new THREE.Vector3(
+        -.99,
+        1.22,
+        0
+    ),
+    .052,
+    skeleton,
+    anatomy(
+        'Left humerus',
+        'Upper limb bone',
+        'The humerus is the long bone of the upper arm.'
+    )
+);
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        .66,
+        2.02,
+        0
+    ),
+    new THREE.Vector3(
+        .99,
+        1.22,
+        0
+    ),
+    .052,
+    skeleton,
+    anatomy(
+        'Right humerus',
+        'Upper limb bone',
+        'The humerus is the long bone of the upper arm.'
+    )
+);
+
+/* radius + ulna */
+
+for (
+    const side of [-1, 1]
+) {
+
+    capsule(
+        boneMaterial,
+        new THREE.Vector3(
+            side * .99,
+            1.22,
+            .025
+        ),
+        new THREE.Vector3(
+            side * 1.07,
+            .47,
+            .025
+        ),
+        .032,
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left radius'
+                : 'Right radius',
+            'Forearm bone',
+            'The radius is one of the two bones of the forearm and participates in rotation of the forearm.'
+        )
+    );
+
+    capsule(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            side * 1.03,
+            1.22,
+            -.025
+        ),
+        new THREE.Vector3(
+            side * 1.11,
+            .47,
+            -.025
+        ),
+        .032,
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left ulna'
+                : 'Right ulna',
+            'Forearm bone',
+            'The ulna forms the medial side of the forearm and contributes to the elbow joint.'
+        )
+    );
+}
+
+/* =========================================================
+   COMPLETE HANDS
+========================================================= */
+
+function addHand(side) {
+
+    const sideName =
+        side < 0
+            ? 'Left'
+            : 'Right';
+
+    const wristX =
+        side * 1.09;
+
+    /*
+        8 CARPALS
+    */
+
+    const carpals = [
+        {
+            name: 'Scaphoid',
+            x: -.075,
+            z: .03
+        },
+        {
+            name: 'Lunate',
+            x: -.025,
+            z: .03
+        },
+        {
+            name: 'Triquetrum',
+            x: .025,
+            z: .03
+        },
+        {
+            name: 'Pisiform',
+            x: .075,
+            z: .03
+        },
+        {
+            name: 'Trapezium',
+            x: -.075,
+            z: -.035
+        },
+        {
+            name: 'Trapezoid',
+            x: -.025,
+            z: -.035
+        },
+        {
+            name: 'Capitate',
+            x: .025,
+            z: -.035
+        },
+        {
+            name: 'Hamate',
+            x: .075,
+            z: -.035
+        }
+    ];
+
+    carpals.forEach(
+        carpal => {
+
+            sphere(
+                boneMaterial,
+                new THREE.Vector3(
+                    wristX +
+                        side *
+                        carpal.x,
+                    .39,
+                    carpal.z
+                ),
+                new THREE.Vector3(
+                    .027,
+                    .035,
+                    .027
+                ),
+                skeleton,
+                anatomy(
+                    `${sideName} ${carpal.name}`,
+                    'Carpal bone',
+                    `${carpal.name} is one of the eight carpal bones of the wrist.`
+                )
+            );
+        }
+    );
+
+    /*
+        5 METACARPALS
+    */
+
+    const metacarpalNames = [
+        'First',
+        'Second',
+        'Third',
+        'Fourth',
+        'Fifth'
+    ];
+
+    for (
+        let i = 0;
+        i < 5;
+        i++
+    ) {
+
+        const offset =
+            (i - 2) * .055;
+
+        capsule(
+            boneMaterial,
+            new THREE.Vector3(
+                wristX +
+                    side *
+                    offset,
+                .35,
+                .015
+            ),
+            new THREE.Vector3(
+                wristX +
+                    side *
+                    offset,
+                .20,
+                .015
+            ),
+            .016,
+            skeleton,
+            anatomy(
+                `${sideName} ${metacarpalNames[i]} metacarpal`,
+                'Metacarpal bone',
+                'The metacarpals form the framework of the palm.'
+            )
+        );
+
+        /*
+            PROXIMAL PHALANX
+        */
+
+        capsule(
+            boneMaterial,
+            new THREE.Vector3(
+                wristX +
+                    side *
+                    offset,
+                .20,
+                .015
+            ),
+            new THREE.Vector3(
+                wristX +
+                    side *
+                    offset,
+                .13,
+                .015
+            ),
+            .012,
+            skeleton,
+            anatomy(
+                `${sideName} digit ${i + 1} proximal phalanx`,
+                'Finger bone',
+                `The proximal phalanx is the first phalanx of digit ${i + 1}.`
+            )
+        );
+
+        /*
+            MIDDLE PHALANX:
+            absent in thumb.
+        */
+
+        if (i !== 0) {
+
+            capsule(
+                boneMaterial,
+                new THREE.Vector3(
+                    wristX +
+                        side *
+                        offset,
+                    .13,
+                    .015
+                ),
+                new THREE.Vector3(
+                    wristX +
+                        side *
+                        offset,
+                    .075,
+                    .015
+                ),
+                .010,
+                skeleton,
+                anatomy(
+                    `${sideName} digit ${i + 1} middle phalanx`,
+                    'Finger bone',
+                    `The middle phalanx is the intermediate segment of digit ${i + 1}.`
+                )
+            );
+        }
+
+        /*
+            DISTAL PHALANX
+        */
+
+        capsule(
+            boneMaterial,
+            new THREE.Vector3(
+                wristX +
+                    side *
+                    offset,
+                i === 0
+                    ? .13
+                    : .075,
+                .015
+            ),
+            new THREE.Vector3(
+                wristX +
+                    side *
+                    offset,
+                i === 0
+                    ? .055
+                    : .02,
+                .015
+            ),
+            .008,
+            skeleton,
+            anatomy(
+                `${sideName} digit ${i + 1} distal phalanx`,
+                'Finger bone',
+                `The distal phalanx forms the tip of digit ${i + 1}.`
+            )
+        );
+    }
+}
+
+addHand(-1);
+addHand(1);
+
+/* =========================================================
+   LOWER LIMBS
+========================================================= */
+
+/* femurs */
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        -.30,
+        .58,
+        0
+    ),
+    new THREE.Vector3(
+        -.45,
+        -.23,
+        0
+    ),
+    .075,
+    skeleton,
+    anatomy(
+        'Left femur',
+        'Thigh bone',
+        'The femur is the longest and strongest bone in the human body.'
+    )
+);
+
+capsule(
+    boneMaterial,
+    new THREE.Vector3(
+        .30,
+        .58,
+        0
+    ),
+    new THREE.Vector3(
+        .45,
+        -.23,
+        0
+    ),
+    .075,
+    skeleton,
+    anatomy(
+        'Right femur',
+        'Thigh bone',
+        'The femur is the longest and strongest bone in the human body.'
+    )
+);
+
+/* femoral heads */
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        -.30,
+        .58,
+        .01
+    ),
+    new THREE.Vector3(
+        .10,
+        .10,
+        .10
+    ),
+    skeleton,
+    anatomy(
+        'Left femoral head',
+        'Hip joint',
+        'The femoral head fits into the acetabulum to form the hip joint.'
+    )
+);
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        .30,
+        .58,
+        .01
+    ),
+    new THREE.Vector3(
+        .10,
+        .10,
+        .10
+    ),
+    skeleton,
+    anatomy(
+        'Right femoral head',
+        'Hip joint',
+        'The femoral head fits into the acetabulum to form the hip joint.'
+    )
+);
+
+/* patellae */
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        -.45,
+        -.20,
+        .075
+    ),
+    new THREE.Vector3(
+        .075,
+        .075,
+        .035
+    ),
+    skeleton,
+    anatomy(
+        'Left patella',
+        'Knee bone',
+        'The patella protects the anterior knee and improves the leverage of the quadriceps.'
+    )
+);
+
+sphere(
+    boneMaterial,
+    new THREE.Vector3(
+        .45,
+        -.20,
+        .075
+    ),
+    new THREE.Vector3(
+        .075,
+        .075,
+        .035
+    ),
+    skeleton,
+    anatomy(
+        'Right patella',
+        'Knee bone',
+        'The patella protects the anterior knee and improves the leverage of the quadriceps.'
+    )
+);
+
+/* tibiae and fibulae */
+
+for (
+    const side of [-1, 1]
+) {
+
+    capsule(
+        boneMaterial,
+        new THREE.Vector3(
+            side * .45,
+            -.23,
+            .02
+        ),
+        new THREE.Vector3(
+            side * .47,
+            -1.24,
+            .02
+        ),
+        .048,
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left tibia'
+                : 'Right tibia',
+            'Lower leg bone',
+            'The tibia is the larger weight-bearing bone of the lower leg.'
+        )
+    );
+
+    capsule(
+        boneDarkMaterial,
+        new THREE.Vector3(
+            side * .50,
+            -.23,
+            -.02
+        ),
+        new THREE.Vector3(
+            side * .51,
+            -1.24,
+            -.02
+        ),
+        .025,
+        skeleton,
+        anatomy(
+            side < 0
+                ? 'Left fibula'
+                : 'Right fibula',
+            'Lower leg bone',
+            'The fibula is the slender lateral bone of the lower leg.'
+        )
+    );
+}
+
+/* =========================================================
+   COMPLETE FEET
+========================================================= */
+
+function addFoot(side) {
+
+    const sideName =
+        side < 0
+            ? 'Left'
+            : 'Right';
+
+    const x =
+        side * .49;
+
+    /*
+        7 TARSALS
+    */
+
+    const tarsals = [
+        {
+            name: 'Calcaneus',
+            x: -.02,
+            z: .06
+        },
+        {
+            name: 'Talus',
+            x: .03,
+            z: .12
+        },
+        {
+            name: 'Navicular',
+            x: .02,
+            z: .19
+        },
+        {
+            name: 'Medial cuneiform',
+            x: -.10,
+            z: .20
+        },
+        {
+            name: 'Intermediate cuneiform',
+            x: 0,
+            z: .22
+        },
+        {
+            name: 'Lateral cuneiform',
+            x: .10,
+            z: .20
+        },
+        {
+            name: 'Cuboid',
+            x: .13,
+            z: .10
+        }
+    ];
+
+    tarsals.forEach(
+        tarsal => {
+
+            sphere(
+                boneMaterial,
+                new THREE.Vector3(
+                    x +
+                        side *
+                        tarsal.x,
+                    -1.32,
+                    tarsal.z
+                ),
+                new THREE.Vector3(
+                    .055,
+                    .045,
+                    .065
+                ),
+                skeleton,
+                anatomy(
+                    `${sideName} ${tarsal.name}`,
+                    'Tarsal bone',
+                    `${tarsal.name} is one of the seven tarsal bones of the foot.`
+                )
+            );
+        }
+    );
+
+    /*
+        5 METATARSALS
+    */
+
+    const metatarsalNames = [
+        'First',
+        'Second',
+        'Third',
+        'Fourth',
+        'Fifth'
+    ];
+
+    for (
+        let i = 0;
+        i < 5;
+        i++
+    ) {
+
+        const offset =
+            (i - 2) * .075;
+
+        capsule(
+            boneMaterial,
+            new THREE.Vector3(
+                x +
+                    side *
+                    offset,
+                -1.34,
+                .20
+            ),
+            new THREE.Vector3(
+                x +
+                    side *
+                    offset,
+                -1.36,
+                .40
+            ),
+            .018,
+            skeleton,
+            anatomy(
+                `${sideName} ${metatarsalNames[i]} metatarsal`,
+                'Metatarsal bone',
+                'The metatarsals form the framework of the forefoot.'
+            )
+        );
+
+        /*
+            PROXIMAL TOE PHALANX
+        */
+
+        capsule(
+            boneMaterial,
+            new THREE.Vector3(
+                x +
+                    side *
+                    offset,
+                -1.36,
+                .40
+            ),
+            new THREE.Vector3(
+                x +
+                    side *
+                    offset,
+                -1.36,
+                .49
+            ),
+            .014,
+            skeleton,
+            anatomy(
+                `${sideName} toe ${i + 1} proximal phalanx`,
+                'Toe bone',
+                `The proximal phalanx is the first phalanx of toe ${i + 1}.`
+            )
+        );
+
+        /*
+            MIDDLE PHALANX:
+            absent in great toe.
+        */
+
+        if (i !== 0) {
+
+            capsule(
+                boneMaterial,
+                new THREE.Vector3(
+                    x +
+                        side *
+                        offset,
+                    -1.36,
+                    .49
+                ),
+                new THREE.Vector3(
+                    x +
+                        side *
+                        offset,
+                    -1.36,
+                    .56
+                ),
+                .011,
+                skeleton,
+                anatomy(
+                    `${sideName} toe ${i + 1} middle phalanx`,
+                    'Toe bone',
+                    `The middle phalanx is the intermediate segment of toe ${i + 1}.`
+                )
+            );
+        }
+
+        /*
+            DISTAL PHALANX
+        */
+
+        capsule(
+            boneMaterial,
+            new THREE.Vector3(
+                x +
+                    side *
+                    offset,
+                -1.36,
+                i === 0
+                    ? .49
+                    : .56
+            ),
+            new THREE.Vector3(
+                x +
+                    side *
+                    offset,
+                -1.36,
+                i === 0
+                    ? .58
+                    : .64
+            ),
+            .009,
+            skeleton,
+            anatomy(
+                `${sideName} toe ${i + 1} distal phalanx`,
+                'Toe bone',
+                `The distal phalanx forms the end of toe ${i + 1}.`
+            )
+        );
+    }
+}
+
+addFoot(-1);
+addFoot(1);
+
+/* =========================================================
+   MUSCLES
+========================================================= */
+
+sphere(
+    muscleMaterial,
+    new THREE.Vector3(
+        -.30,
+        1.94,
+        .34
+    ),
+    new THREE.Vector3(
+        .34,
+        .29,
+        .13
+    ),
+    muscles,
+    anatomy(
+        'Left pectoralis major',
+        'Chest movement',
+        'The pectoralis major helps move the upper limb.'
+    )
+);
+
+sphere(
+    muscleMaterial,
+    new THREE.Vector3(
+        .30,
+        1.94,
+        .34
+    ),
+    new THREE.Vector3(
+        .34,
+        .29,
+        .13
+    ),
+    muscles,
+    anatomy(
+        'Right pectoralis major',
+        'Chest movement',
+        'The pectoralis major helps move the upper limb.'
+    )
+);
+
+sphere(
+    muscleLightMaterial,
+    new THREE.Vector3(
+        -.70,
+        1.99,
+        .03
+    ),
+    new THREE.Vector3(
+        .22,
+        .25,
+        .22
+    ),
+    muscles,
+    anatomy(
+        'Left deltoid',
+        'Shoulder movement',
+        'The deltoid covers the shoulder and helps abduct the arm.'
+    )
+);
+
+sphere(
+    muscleLightMaterial,
+    new THREE.Vector3(
+        .70,
+        1.99,
+        .03
+    ),
+    new THREE.Vector3(
+        .22,
+        .25,
+        .22
+    ),
+    muscles,
+    anatomy(
+        'Right deltoid',
+        'Shoulder movement',
+        'The deltoid covers the shoulder and helps abduct the arm.'
+    )
+);
+
+/* biceps */
+
+capsule(
+    muscleMaterial,
+    new THREE.Vector3(
+        -.73,
+        1.92,
+        .20
+    ),
+    new THREE.Vector3(
+        -.99,
+        1.25,
+        .20
+    ),
+    .115,
+    muscles,
+    anatomy(
+        'Left biceps brachii',
+        'Elbow flexion',
+        'The biceps brachii flexes the elbow and assists forearm supination.'
+    )
+);
+
+capsule(
+    muscleMaterial,
+    new THREE.Vector3(
+        .73,
+        1.92,
+        .20
+    ),
+    new THREE.Vector3(
+        .99,
+        1.25,
+        .20
+    ),
+    .115,
+    muscles,
+    anatomy(
+        'Right biceps brachii',
+        'Elbow flexion',
+        'The biceps brachii flexes the elbow and assists forearm supination.'
+    )
+);
+
+/* forearms */
+
+capsule(
+    muscleLightMaterial,
+    new THREE.Vector3(
+        -1.00,
+        1.20,
+        .18
+    ),
+    new THREE.Vector3(
+        -1.08,
+        .51,
+        .18
+    ),
+    .085,
+    muscles,
+    anatomy(
+        'Left forearm muscles',
+        'Wrist and finger movement',
+        'The forearm contains muscles that control movements of the wrist and fingers.'
+    )
+);
+
+capsule(
+    muscleLightMaterial,
+    new THREE.Vector3(
+        1.00,
+        1.20,
+        .18
+    ),
+    new THREE.Vector3(
+        1.08,
+        .51,
+        .18
+    ),
+    .085,
+    muscles,
+    anatomy(
+        'Right forearm muscles',
+        'Wrist and finger movement',
+        'The forearm contains muscles that control movements of the wrist and fingers.'
+    )
+);
+
+/* abdominal muscles */
+
+for (
+    let i = 0;
+    i < 3;
+    i++
+) {
+
+    for (
+        const side of [-1, 1]
+    ) {
+
+        sphere(
+            muscleLightMaterial,
+            new THREE.Vector3(
+                side * .17,
+                1.48 -
+                    i * .22,
+                .39
+            ),
+            new THREE.Vector3(
+                .15,
+                .10,
+                .055
+            ),
+            muscles,
+            i === 0 &&
+            side === -1
+                ? anatomy(
+                    'Rectus abdominis',
+                    'Trunk movement',
+                    'The rectus abdominis flexes the trunk and helps stabilise the pelvis.'
+                )
+                : null
+        );
+    }
+}
+
+/* obliques */
+
+capsule(
+    muscleMaterial,
+    new THREE.Vector3(
+        -.53,
+        1.48,
+        .25
+    ),
+    new THREE.Vector3(
+        -.52,
+        .85,
+        .25
+    ),
+    .10,
+    muscles,
+    anatomy(
+        'Left external oblique',
+        'Trunk movement',
+        'The external oblique assists trunk rotation and flexion.'
+    )
+);
+
+capsule(
+    muscleMaterial,
+    new THREE.Vector3(
+        .53,
+        1.48,
+        .25
+    ),
+    new THREE.Vector3(
+        .52,
+        .85,
+        .25
+    ),
+    .10,
+    muscles,
+    anatomy(
+        'Right external oblique',
+        'Trunk movement',
+        'The external oblique assists trunk rotation and flexion.'
+    )
+);
+
+/* quadriceps */
+
+capsule(
+    muscleMaterial,
+    new THREE.Vector3(
+        -.37,
+        .63,
+        .24
+    ),
+    new THREE.Vector3(
+        -.45,
+        -.18,
+        .24
+    ),
+    .18,
+    muscles,
+    anatomy(
+        'Left quadriceps',
+        'Knee extension',
+        'The quadriceps group extends the knee.'
+    )
+);
+
+capsule(
+    muscleMaterial,
+    new THREE.Vector3(
+        .37,
+        .63,
+        .24
+    ),
+    new THREE.Vector3(
+        .45,
+        -.18,
+        .24
+    ),
+    .18,
+    muscles,
+    anatomy(
+        'Right quadriceps',
+        'Knee extension',
+        'The quadriceps group extends the knee.'
+    )
+);
+
+/* calves */
+
+capsule(
+    muscleLightMaterial,
+    new THREE.Vector3(
+        -.46,
+        -.32,
+        .18
+    ),
+    new THREE.Vector3(
+        -.47,
+        -1.18,
+        .18
+    ),
+    .12,
+    muscles,
+    anatomy(
+        'Left gastrocnemius',
+        'Ankle movement',
+        'The gastrocnemius forms a major part of the calf and assists plantar flexion.'
+    )
+);
+
+capsule(
+    muscleLightMaterial,
+    new THREE.Vector3(
+        .46,
+        -.32,
+        .18
+    ),
+    new THREE.Vector3(
+        .47,
+        -1.18,
+        .18
+    ),
+    .12,
+    muscles,
+    anatomy(
+        'Right gastrocnemius',
+        'Ankle movement',
+        'The gastrocnemius forms a major part of the calf and assists plantar flexion.'
+    )
+);
+
+/* =========================================================
+   DETAILED MUSCLE ATLAS
+========================================================= */
+
+muscles.children.forEach(
+    object => {
+        object.visible = false;
+    }
+);
+
+const detailedMuscles =
+    new THREE.Group();
+
+muscles.add(
+    detailedMuscles
+);
+
+const anteriorMuscles =
+    new THREE.Group();
+
+const posteriorMuscles =
+    new THREE.Group();
+
+detailedMuscles.add(
+    anteriorMuscles,
+    posteriorMuscles
+);
+
+const muscleBellyGeometry =
+    new THREE.SphereGeometry(
+        1,
+        24,
+        16
+    );
+
+function addDetailedMuscle(
+    name,
+    region,
+    center,
+    size,
+    angle,
+    side,
+    action,
+    offset
+) {
+
+    const muscle =
+        new THREE.Mesh(
+            muscleBellyGeometry,
+            Math.abs(offset[1]) > .05
+                ? muscleMaterial
+                : muscleLightMaterial
+        );
+
+    muscle.position.set(
+        side * (center[0] + offset[0]),
+        center[1] + offset[1],
+        center[2] + offset[2]
+    );
+
+    muscle.scale.set(
+        size[0] * .82,
+        size[1] * 1.5,
+        size[2] * .82
+    );
+
+    muscle.rotation.z =
+        angle + offset[0] * 1.5;
+
+    muscle.castShadow = true;
+    muscle.receiveShadow = true;
+    muscle.userData.anatomy = anatomy(
+        `${side < 0 ? 'Left' : side > 0 ? 'Right' : ''} ${name}`.trim(),
+        region,
+        `${name} ${action}.`
+    );
+
+    (center[2] < 0
+        ? posteriorMuscles
+        : anteriorMuscles
+    ).add(muscle);
+}
+
+function addDetailedMuscleRegion(
+    region
+) {
+
+    region.names.forEach(
+        (name, index) => {
+
+            const column =
+                index % region.columns;
+
+            const row =
+                Math.floor(index / region.columns);
+
+            const countInRow =
+                Math.min(
+                    region.columns,
+                    region.names.length - row * region.columns
+                );
+
+            const offset = [
+                (column - (countInRow - 1) / 2) * region.spacing[0],
+                (row - (Math.ceil(region.names.length / region.columns) - 1) / 2) * region.spacing[1],
+                (index % 2 ? .012 : -.012)
+            ];
+
+            for (const side of [-1, 1]) {
+                addDetailedMuscle(
+                    name,
+                    region.label,
+                    region.center,
+                    region.size,
+                    region.angle,
+                    side,
+                    region.action,
+                    offset
+                );
+            }
+        }
+    );
+}
+
+function addMuscleSphincter(
+    name,
+    center,
+    width,
+    height,
+    region,
+    action,
+    side
+) {
+
+    const ring =
+        new THREE.Mesh(
+            new THREE.TorusGeometry(
+                .5,
+                .12,
+                10,
+                32
+            ),
+            muscleLightMaterial
+        );
+
+    ring.position.set(
+        center[0] * side,
+        center[1],
+        center[2]
+    );
+
+    ring.scale.set(
+        width / .62,
+        height / .62,
+        .65
+    );
+
+    ring.userData.anatomy = anatomy(
+        side
+            ? `${side < 0 ? 'Left' : 'Right'} ${name}`
+            : name,
+        region,
+        `${name} ${action}.`
+    );
+
+    (center[2] < 0
+        ? posteriorMuscles
+        : anteriorMuscles
+    ).add(ring);
+}
+
+function updateMuscleViewSide() {
+
+    const viewSide =
+        camera.position.z - controls.target.z;
+
+    if (viewSide > .15) {
+        anteriorMuscles.visible = true;
+        posteriorMuscles.visible = false;
+        return;
+    }
+
+    if (viewSide < -.15) {
+        anteriorMuscles.visible = false;
+        posteriorMuscles.visible = true;
+        return;
+    }
+
+    anteriorMuscles.visible = true;
+    posteriorMuscles.visible = true;
+}
+
+const muscleAtlas = [
+    {
+        label: 'Head and face muscle',
+        names: ['Frontalis', 'Zygomaticus major', 'Zygomaticus minor', 'Buccinator', 'Masseter', 'Temporalis', 'Risorius', 'Levator labii superioris', 'Depressor anguli oris', 'Mentalis', 'Platysma', 'Occipitalis'],
+        center: [.20, 3.00, .40],
+        size: [.035, .065, .03],
+        columns: 3,
+        spacing: [.075, .085],
+        angle: 0,
+        action: 'contributes to facial expression or chewing'
+    },
+    {
+        label: 'Neck muscle',
+        names: ['Sternocleidomastoid', 'Anterior scalene', 'Middle scalene', 'Posterior scalene', 'Levator scapulae', 'Splenius capitis', 'Semispinalis capitis'],
+        center: [.17, 2.38, .10],
+        size: [.035, .10, .03],
+        columns: 2,
+        spacing: [.08, .12],
+        angle: .28,
+        action: 'supports neck movement and stability'
+    },
+    {
+        label: 'Shoulder muscle',
+        names: ['Deltoid', 'Supraspinatus', 'Infraspinatus', 'Teres major', 'Teres minor', 'Subscapularis'],
+        center: [.65, 1.95, .08],
+        size: [.06, .09, .05],
+        columns: 3,
+        spacing: [.09, .11],
+        angle: .12,
+        action: 'moves or stabilizes the shoulder'
+    },
+    {
+        label: 'Upper back muscle',
+        names: ['Trapezius', 'Rhomboid major', 'Rhomboid minor', 'Latissimus dorsi'],
+        center: [.38, 1.82, -.26],
+        size: [.075, .13, .045],
+        columns: 2,
+        spacing: [.14, .14],
+        angle: -.24,
+        action: 'moves or stabilizes the back and scapula'
+    },
+    {
+        label: 'Chest muscle',
+        names: ['Pectoralis major', 'Pectoralis minor', 'Serratus anterior', 'Subclavius'],
+        center: [.33, 1.83, .31],
+        size: [.075, .12, .045],
+        columns: 2,
+        spacing: [.14, .14],
+        angle: -.22,
+        action: 'moves the chest wall or shoulder girdle'
+    },
+    {
+        label: 'Upper arm muscle',
+        names: ['Biceps brachii', 'Brachialis', 'Triceps brachii', 'Anconeus'],
+        center: [.82, 1.60, .14],
+        size: [.045, .13, .035],
+        columns: 2,
+        spacing: [.08, .16],
+        angle: .08,
+        action: 'moves or stabilizes the elbow'
+    },
+    {
+        label: 'Forearm muscle',
+        names: ['Brachioradialis', 'Pronator teres', 'Supinator', 'Flexor carpi radialis', 'Flexor carpi ulnaris', 'Palmaris longus', 'Extensor carpi radialis longus', 'Extensor carpi radialis brevis', 'Extensor carpi ulnaris'],
+        center: [1.04, .86, .15],
+        size: [.03, .11, .025],
+        columns: 3,
+        spacing: [.06, .13],
+        angle: .06,
+        action: 'moves the forearm, wrist, or hand'
+    },
+    {
+        label: 'Abdominal muscle',
+        names: ['Rectus abdominis', 'External oblique', 'Internal oblique', 'Transversus abdominis', 'Pyramidalis'],
+        center: [.25, 1.16, .36],
+        size: [.055, .09, .035],
+        columns: 3,
+        spacing: [.12, .12],
+        angle: .12,
+        action: 'compresses the abdomen or moves the trunk'
+    },
+    {
+        label: 'Lower back muscle',
+        names: ['Iliocostalis', 'Longissimus', 'Spinalis', 'Quadratus lumborum', 'Multifidus'],
+        center: [.17, .76, -.24],
+        size: [.04, .13, .035],
+        columns: 3,
+        spacing: [.08, .12],
+        angle: .04,
+        action: 'extends or stabilizes the vertebral column'
+    },
+    {
+        label: 'Hip muscle',
+        names: ['Gluteus maximus', 'Gluteus medius', 'Gluteus minimus', 'Piriformis', 'Obturator internus', 'Gemellus superior', 'Gemellus inferior', 'Quadratus femoris'],
+        center: [.25, .27, -.21],
+        size: [.05, .09, .04],
+        columns: 3,
+        spacing: [.11, .10],
+        angle: -.18,
+        action: 'moves or stabilizes the hip'
+    },
+    {
+        label: 'Hip flexor muscle',
+        names: ['Iliacus', 'Psoas major'],
+        center: [.16, .45, .15],
+        size: [.045, .12, .035],
+        columns: 2,
+        spacing: [.10, .10],
+        angle: .26,
+        action: 'flexes the hip and trunk'
+    },
+    {
+        label: 'Thigh muscle',
+        names: ['Rectus femoris', 'Vastus lateralis', 'Vastus medialis', 'Vastus intermedius', 'Biceps femoris', 'Semitendinosus', 'Semimembranosus', 'Adductor longus', 'Adductor brevis', 'Adductor magnus', 'Gracilis', 'Pectineus', 'Sartorius'],
+        center: [.34, .16, .19],
+        size: [.04, .11, .03],
+        columns: 3,
+        spacing: [.08, .11],
+        angle: .06,
+        action: 'moves the hip or knee'
+    },
+    {
+        label: 'Lower leg muscle',
+        names: ['Gastrocnemius', 'Soleus', 'Tibialis anterior', 'Fibularis longus', 'Fibularis brevis', 'Extensor digitorum longus', 'Flexor digitorum longus', 'Tibialis posterior', 'Popliteus'],
+        center: [.48, -.77, .11],
+        size: [.035, .12, .03],
+        columns: 3,
+        spacing: [.07, .15],
+        angle: .03,
+        action: 'moves the ankle or toes'
+    },
+    {
+        label: 'Foot muscle',
+        names: ['Extensor digitorum brevis', 'Flexor digitorum brevis', 'Abductor hallucis', 'Abductor digiti minimi', 'Lumbricals', 'Dorsal interossei', 'Plantar interossei'],
+        center: [.49, -1.34, .30],
+        size: [.03, .045, .04],
+        columns: 3,
+        spacing: [.065, .055],
+        angle: .04,
+        action: 'moves or stabilizes the toes'
+    }
+];
+
+muscleAtlas.forEach(
+    addDetailedMuscleRegion
+);
+
+for (const side of [-1, 1]) {
+    addMuscleSphincter(
+        'Orbicularis oculi',
+        [.18, 2.99, .44],
+        .10,
+        .075,
+        'Facial expression',
+        'closes the eyelids',
+        side
+    );
+}
+
+addMuscleSphincter(
+    'Orbicularis oris',
+    [0, 2.79, .45],
+    .13,
+    .06,
+    'Facial expression',
+    'closes and protrudes the lips',
+    0
+);
+
+const visceralMuscles = [
+    ['Esophageal smooth muscle', [0, 2.13, .17], [.05, .18, .04], 'propels food toward the stomach by peristalsis'],
+    ['Gastric smooth muscle', [-.27, 1.27, .40], [.16, .20, .09], 'mixes and propels stomach contents'],
+    ['Intestinal smooth muscle', [0, .82, .37], [.24, .15, .04], 'propels intestinal contents and supports segmentation'],
+    ['Urinary bladder smooth muscle', [0, .28, .40], [.12, .11, .06], 'contracts to empty the bladder'],
+    ['Reproductive organ smooth muscle', [0, .20, .42], [.09, .14, .05], 'supports involuntary contractions of reproductive organs'],
+    ['Cardiac muscle / myocardium', [-.12, 1.82, .46], [.16, .23, .08], 'contracts rhythmically to pump blood through the circulation']
+];
+
+visceralMuscles.forEach(
+    ([name, center, size, action]) => {
+        addDetailedMuscle(
+            name,
+            name.includes('Cardiac')
+                ? 'Cardiac muscle'
+                : 'Visceral smooth muscle',
+            center,
+            size,
+            0,
+            0,
+            action,
+            [0, 0, 0]
+        );
+    }
+);
+
+for (const side of [-1, 1]) {
+    addDetailedMuscle(
+        'Ureter smooth muscle',
+        'Visceral smooth muscle',
+        [.13, .45, .34],
+        [.025, .12, .025],
+        .02,
+        side,
+        'propels urine toward the bladder by peristalsis',
+        [0, 0, 0]
+    );
+
+    addMuscleSphincter(
+        'Bronchiolar smooth muscle',
+        [.31, 1.78, .40],
+        .08,
+        .10,
+        'Visceral smooth muscle',
+        'regulates airflow by changing airway diameter',
+        side
+    );
+
+    addMuscleSphincter(
+        'Iris smooth muscle',
+        [.18, 2.99, .46],
+        .045,
+        .035,
+        'Visceral smooth muscle',
+        'adjusts pupil diameter to regulate incoming light',
+        side
+    );
+
+    addMuscleSphincter(
+        'Ciliary body smooth muscle',
+        [.18, 2.99, .45],
+        .065,
+        .05,
+        'Visceral smooth muscle',
+        'changes lens shape for focusing',
+        side
+    );
+}
+
+/* =========================================================
+   BRAIN / NERVOUS SYSTEM
+========================================================= */
+
+sphere(
+    brainMaterial,
+    new THREE.Vector3(
+        0,
+        3.01,
+        .03
+    ),
+    new THREE.Vector3(
+        .28,
+        .33,
+        .24
+    ),
+    nervous,
+    anatomy(
+        'Brain',
+        'Control centre',
+        'The brain processes information and coordinates nervous-system functions.'
+    )
+);
+
+/* brain grooves */
+
+for (
+    let i = 0;
+    i < 6;
+    i++
+) {
+
+    const groove =
+        new THREE.Mesh(
+            new THREE.TorusGeometry(
+                .20,
+                .008,
+                6,
+                24,
+                Math.PI
+            ),
+            nerveMaterial
+        );
+
+    groove.position.set(
+        0,
+        2.90 +
+            i * .055,
+        .25
+    );
+
+    groove.rotation.x =
+        Math.PI / 2;
+
+    nervous.add(
+        groove
+    );
+}
+
+/* spinal cord */
+
+tube(
+    nerveMaterial,
+    new THREE.Vector3(
+        0,
+        2.68,
+        -.19
+    ),
+    new THREE.Vector3(
+        0,
+        .32,
+        -.19
+    ),
+    .025,
+    nervous,
+    anatomy(
+        'Spinal cord',
+        'Signal transmission',
+        'The spinal cord carries information between the brain and the rest of the body.'
+    )
+);
+
+function addPeripheralNerve(
+    name,
+    points,
+    radius,
+    fact
+) {
+
+    curvedTube(
+        nerveMaterial,
+        points.map(
+            point => new THREE.Vector3(...point)
+        ),
+        radius,
+        nervous,
+        anatomy(
+            name,
+            'Peripheral nerve',
+            fact
+        )
+    );
+}
+
+for (const side of [-1, 1]) {
+    const sideName =
+        side < 0 ? 'Left' : 'Right';
+
+    addPeripheralNerve(
+        `${sideName} brachial plexus`,
+        [[side * .08, 2.48, -.13], [side * .18, 2.27, -.14], [side * .52, 2.12, -.16], [side * .75, 1.91, -.14]],
+        .018,
+        'The brachial plexus carries motor and sensory signals between the spinal cord and upper limb.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} median nerve`,
+        [[side * .76, 1.87, -.14], [side * .91, 1.35, -.12], [side * 1.02, .88, -.11], [side * 1.08, .38, -.10]],
+        .012,
+        'Supplies many forearm flexors and provides sensation to part of the hand.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} ulnar nerve`,
+        [[side * .76, 1.86, -.16], [side * .98, 1.22, -.15], [side * 1.12, .79, -.14], [side * 1.14, .37, -.12]],
+        .011,
+        'Supplies selected forearm and hand muscles and sensation to the medial hand.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} radial nerve`,
+        [[side * .74, 1.90, -.18], [side * .89, 1.34, -.16], [side * .98, .84, -.15]],
+        .011,
+        'Supplies the posterior arm and forearm and contributes sensation to the hand.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} lumbar plexus`,
+        [[side * .07, .83, -.16], [side * .14, .60, -.16], [side * .20, .39, -.17]],
+        .016,
+        'Forms nerves that supply the lower abdominal wall and anterior thigh.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} femoral nerve`,
+        [[side * .18, .55, -.16], [side * .29, .20, -.15], [side * .38, -.24, -.14]],
+        .013,
+        'Supplies the anterior thigh and contributes sensation from the lower limb.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} sciatic nerve`,
+        [[side * .12, .33, -.20], [side * .25, .02, -.19], [side * .42, -.32, -.17], [side * .45, -.51, -.15]],
+        .022,
+        'The large nerve of the posterior thigh; it divides into the tibial and common fibular nerves.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} tibial nerve`,
+        [[side * .45, -.49, -.15], [side * .47, -.85, -.14], [side * .49, -1.28, -.12]],
+        .013,
+        'Supplies posterior lower-leg muscles and continues toward the sole of the foot.'
+    );
+
+    addPeripheralNerve(
+        `${sideName} common fibular nerve`,
+        [[side * .44, -.46, -.15], [side * .52, -.56, -.14], [side * .54, -.82, -.13]],
+        .012,
+        'Wraps around the fibular head and divides into branches supplying the anterior and lateral leg.'
+    );
+}
+
+/* =========================================================
+   HEART
+========================================================= */
+
+const heartGroup =
+    new THREE.Group();
+
+heartGroup.position.set(
+    -.12,
+    1.82,
+    .37
+);
+
+heartGroup.userData.anatomy =
+    anatomy(
+        'Heart',
+        'Blood circulation',
+        'The four-chambered heart pumps blood through pulmonary and systemic circulation.'
+    );
+
+circulation.add(
+    heartGroup
+);
+
+sphere(
+    heartMaterial,
+    new THREE.Vector3(
+        -.08,
+        0,
+        0
+    ),
+    new THREE.Vector3(
+        .22,
+        .30,
+        .16
+    ),
+    heartGroup
+);
+
+sphere(
+    heartLightMaterial,
+    new THREE.Vector3(
+        .11,
+        .02,
+        .01
+    ),
+    new THREE.Vector3(
+        .16,
+        .23,
+        .15
+    ),
+    heartGroup
+);
+
+const apex =
+    new THREE.Mesh(
+        new THREE.ConeGeometry(
+            .14,
+            .30,
+            24
+        ),
+        heartMaterial
+    );
+
+apex.position.set(
+    0,
+    -.24,
+    0
+);
+
+apex.rotation.z =
+    Math.PI;
+
+heartGroup.add(
+    apex
+);
+
+tube(
+    bloodMaterial,
+    new THREE.Vector3(
+        0,
+        .22,
+        0
+    ),
+    new THREE.Vector3(
+        0,
+        .58,
+        0
+    ),
+    .035,
+    heartGroup,
+    anatomy(
+        'Aorta',
+        'Major artery',
+        'The aorta carries oxygenated blood from the left ventricle to systemic circulation.'
+    )
+);
+
+function addVessel(
+    name,
+    material,
+    radius,
+    points,
+    fact
+) {
+
+    curvedTube(
+        material,
+        points.map(
+            point => new THREE.Vector3(...point)
+        ),
+        radius,
+        circulation,
+        anatomy(
+            name,
+            material === arteryMaterial
+                ? 'Artery'
+                : 'Vein',
+            fact
+        )
+    );
+}
+
+const arterialPaths = [
+    ['Aortic arch', .035, [[-.12, 2.38, .39], [-.08, 2.49, .40], [.08, 2.50, .40], [.16, 2.40, .39]], 'The aortic arch distributes oxygenated blood to the head and upper limbs.'],
+    ['Descending thoracic aorta', .03, [[.16, 2.40, .39], [.12, 2.10, .39], [.08, 1.75, .39]], 'Carries oxygenated blood through the thorax.'],
+    ['Abdominal aorta', .035, [[.08, 1.75, .39], [.05, 1.18, .40], [.04, .63, .39]], 'Supplies abdominal organs and continues toward the pelvis.'],
+    ['Brachiocephalic trunk', .018, [[-.02, 2.48, .40], [-.13, 2.58, .39], [-.18, 2.55, .37]], 'The first major branch of the aortic arch.'],
+    ['Left common carotid artery', .018, [[-.04, 2.48, .40], [-.08, 2.72, .38], [-.08, 2.98, .32]], 'Carries blood toward the left side of the head.'],
+    ['Right common carotid artery', .018, [[-.15, 2.55, .38], [-.17, 2.76, .37], [-.15, 2.98, .32]], 'Carries blood toward the right side of the head.'],
+    ['Left subclavian artery', .018, [[-.12, 2.48, .39], [-.35, 2.40, .35], [-.62, 2.18, .29]], 'Supplies the left upper limb.'],
+    ['Right subclavian artery', .018, [[-.16, 2.48, .39], [.12, 2.43, .36], [.40, 2.24, .31]], 'Supplies the right upper limb.'],
+    ['Left coronary artery', .012, [[-.17, 1.92, .50], [-.27, 1.84, .50], [-.23, 1.72, .49]], 'Supplies oxygenated blood to the heart muscle.'],
+    ['Right coronary artery', .012, [[-.08, 1.94, .50], [0, 1.85, .50], [-.04, 1.72, .49]], 'Supplies oxygenated blood to the heart muscle.'],
+    ['Pulmonary trunk', .025, [[-.08, 2.00, .43], [-.03, 2.18, .40], [0, 2.30, .34]], 'Carries deoxygenated blood from the heart toward the lungs.'],
+    ['Left pulmonary artery', .018, [[0, 2.30, .34], [-.17, 2.24, .32], [-.34, 2.13, .31]], 'Carries blood from the pulmonary trunk to the left lung.'],
+    ['Right pulmonary artery', .018, [[0, 2.30, .34], [.18, 2.24, .32], [.34, 2.13, .31]], 'Carries blood from the pulmonary trunk to the right lung.'],
+    ['Left pulmonary veins', .016, [[-.34, 1.67, .30], [-.22, 1.75, .34], [-.13, 1.80, .39]], 'Return oxygenated blood from the left lung to the heart.'],
+    ['Right pulmonary veins', .016, [[.34, 1.67, .30], [.22, 1.75, .34], [.03, 1.80, .39]], 'Return oxygenated blood from the right lung to the heart.']
+];
+
+arterialPaths.forEach(
+    ([name, radius, points, fact]) =>
+        addVessel(
+            name,
+            arteryMaterial,
+            radius,
+            points,
+            fact
+        )
+);
+
+addVessel(
+    'Left external iliac artery',
+    arteryMaterial,
+    .022,
+    [[.04, .63, .39], [-.17, .43, .38], [-.27, .18, .34]],
+    'Carries oxygenated blood from the pelvis into the left leg.'
+);
+
+addVessel(
+    'Right external iliac artery',
+    arteryMaterial,
+    .022,
+    [[.04, .63, .39], [.17, .43, .38], [.27, .18, .34]],
+    'Carries oxygenated blood from the pelvis into the right leg.'
+);
+
+for (const side of [-1, 1]) {
+    const sideName =
+        side < 0 ? 'Left' : 'Right';
+
+    addVessel(
+        `${sideName} axillary and brachial artery`,
+        arteryMaterial,
+        .018,
+        [[side * .62, 2.18, .29], [side * .82, 1.80, .30], [side * .99, 1.22, .28]],
+        'Carries oxygenated blood through the shoulder and upper arm.'
+    );
+
+    addVessel(
+        `${sideName} radial artery`,
+        arteryMaterial,
+        .011,
+        [[side * .99, 1.24, .29], [side * 1.04, .85, .29], [side * 1.09, .46, .29]],
+        'Supplies the lateral forearm and hand.'
+    );
+
+    addVessel(
+        `${sideName} ulnar artery`,
+        arteryMaterial,
+        .011,
+        [[side * 1.00, 1.23, .27], [side * 1.12, .83, .27], [side * 1.16, .46, .27]],
+        'Supplies the medial forearm and hand.'
+    );
+
+    addVessel(
+        `${sideName} femoral artery`,
+        arteryMaterial,
+        .022,
+        [[side * .27, .18, .34], [side * .34, -.12, .31], [side * .43, -.25, .29]],
+        'The major artery supplying the thigh.'
+    );
+
+    addVessel(
+        `${sideName} popliteal artery`,
+        arteryMaterial,
+        .016,
+        [[side * .43, -.25, .29], [side * .45, -.36, .28], [side * .46, -.48, .28]],
+        'Continues the femoral artery behind the knee.'
+    );
+
+    addVessel(
+        `${sideName} anterior tibial artery`,
+        arteryMaterial,
+        .012,
+        [[side * .46, -.48, .28], [side * .47, -.87, .27], [side * .49, -1.24, .28]],
+        'Supplies the anterior lower leg and foot.'
+    );
+}
+
+addVessel(
+    'Superior vena cava',
+    veinMaterial,
+    .03,
+    [[.12, 2.43, .31], [.12, 2.15, .31], [.04, 1.93, .32]],
+    'Returns deoxygenated blood from the upper body to the heart.'
+);
+
+addVessel(
+    'Inferior vena cava',
+    veinMaterial,
+    .03,
+    [[.04, .50, .33], [.06, 1.10, .33], [.04, 1.82, .32]],
+    'Returns deoxygenated blood from the lower body to the heart.'
+);
+
+for (const side of [-1, 1]) {
+    const sideName =
+        side < 0 ? 'Left' : 'Right';
+
+    addVessel(
+        `${sideName} internal jugular vein`,
+        veinMaterial,
+        .016,
+        [[side * .13, 2.93, .28], [side * .14, 2.63, .30], [side * .12, 2.39, .31]],
+        'Drains blood from the brain and deep structures of the head and neck.'
+    );
+
+    addVessel(
+        `${sideName} subclavian vein`,
+        veinMaterial,
+        .018,
+        [[side * .12, 2.40, .31], [side * .36, 2.34, .30], [side * .62, 2.18, .29]],
+        'Returns blood from the upper limb toward the superior vena cava.'
+    );
+
+    addVessel(
+        `${sideName} brachial veins`,
+        veinMaterial,
+        .016,
+        [[side * .62, 2.18, .29], [side * .82, 1.80, .30], [side * .99, 1.22, .28]],
+        'Return blood from the upper arm.'
+    );
+
+    addVessel(
+        `${sideName} radial and ulnar veins`,
+        veinMaterial,
+        .01,
+        [[side * 1.04, .88, .27], [side * 1.10, .70, .28], [side * 1.14, .47, .28]],
+        'Return blood from the forearm and hand.'
+    );
+
+    addVessel(
+        `${sideName} common iliac vein`,
+        veinMaterial,
+        .02,
+        [[side * .25, .27, .33], [side * .15, .48, .33], [.04, .61, .33]],
+        'Returns blood from the pelvis and lower limb to the inferior vena cava.'
+    );
+
+    addVessel(
+        `${sideName} femoral vein`,
+        veinMaterial,
+        .018,
+        [[side * .43, -.25, .29], [side * .34, -.12, .31], [side * .25, .27, .33]],
+        'Returns blood from the thigh.'
+    );
+
+    addVessel(
+        `${sideName} tibial veins`,
+        veinMaterial,
+        .011,
+        [[side * .49, -1.22, .28], [side * .46, -.83, .28], [side * .43, -.48, .29]],
+        'Return blood from the lower leg and foot.'
+    );
+}
+
+/* =========================================================
+   RESPIRATORY
+========================================================= */
+
+sphere(
+    lungMaterial,
+    new THREE.Vector3(
+        -.34,
+        1.84,
+        .22
+    ),
+    new THREE.Vector3(
+        .27,
+        .47,
+        .19
+    ),
+    respiratory,
+    anatomy(
+        'Left lung',
+        'Gas exchange',
+        'The lungs exchange oxygen and carbon dioxide with the blood.'
+    )
+);
+
+sphere(
+    lungMaterial,
+    new THREE.Vector3(
+        .34,
+        1.84,
+        .22
+    ),
+    new THREE.Vector3(
+        .29,
+        .50,
+        .19
+    ),
+    respiratory,
+    anatomy(
+        'Right lung',
+        'Gas exchange',
+        'The right lung normally contains three lobes.'
+    )
+);
+
+tube(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        2.42,
+        .20
+    ),
+    new THREE.Vector3(
+        0,
+        2.04,
+        .20
+    ),
+    .055,
+    respiratory,
+    anatomy(
+        'Trachea',
+        'Air passage',
+        'The trachea conducts air toward the bronchi.'
+    )
+);
+
+tube(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        2.04,
+        .20
+    ),
+    new THREE.Vector3(
+        -.27,
+        1.94,
+        .20
+    ),
+    .035,
+    respiratory,
+    anatomy(
+        'Left main bronchus',
+        'Air passage',
+        'The left main bronchus carries air from the trachea toward the left lung.'
+    )
+);
+
+tube(
+    boneDarkMaterial,
+    new THREE.Vector3(
+        0,
+        2.04,
+        .20
+    ),
+    new THREE.Vector3(
+        .27,
+        1.94,
+        .20
+    ),
+    .035,
+    respiratory,
+    anatomy(
+        'Right main bronchus',
+        'Air passage',
+        'The right main bronchus carries air from the trachea toward the right lung.'
+    )
+);
+
+for (const side of [-1, 1]) {
+    const sideName =
+        side < 0 ? 'Left' : 'Right';
+
+    const lobeCount =
+        side < 0 ? 2 : 3;
+
+    for (let lobe = 0; lobe < lobeCount; lobe++) {
+        const lobeY =
+            1.91 - lobe * .16;
+
+        const lobeX =
+            side * (.29 + lobe * .025);
+
+        const lobeName =
+            side < 0
+                ? lobe === 0 ? 'upper' : 'lower'
+                : ['upper', 'middle', 'lower'][lobe];
+
+        curvedTube(
+            boneDarkMaterial,
+            [
+                new THREE.Vector3(side * .25, 1.95, .21),
+                new THREE.Vector3(side * .31, lobeY + .07, .23),
+                new THREE.Vector3(lobeX, lobeY, .25)
+            ],
+            .022,
+            respiratory,
+            anatomy(
+                `${sideName} ${lobeName} lobar bronchus`,
+                'Air passage',
+                `Conducts air into the ${lobeName} lobe of the ${sideName.toLowerCase()} lung.`
+            )
+        );
+
+        for (const branch of [-1, 1]) {
+            const segmentEnd = [
+                lobeX + side * .075,
+                lobeY + branch * .055,
+                .27
+            ];
+
+            curvedTube(
+                boneDarkMaterial,
+                [
+                    new THREE.Vector3(lobeX, lobeY, .25),
+                    new THREE.Vector3(
+                        lobeX + side * .045,
+                        lobeY + branch * .025,
+                        .26
+                    ),
+                    new THREE.Vector3(...segmentEnd)
+                ],
+                .014,
+                respiratory,
+                anatomy(
+                    `${sideName} segmental bronchus`,
+                    'Air passage',
+                    'A segmental bronchus supplies air to a bronchopulmonary segment.'
+                )
+            );
+
+            for (const terminal of [-1, 1]) {
+                curvedTube(
+                    boneDarkMaterial,
+                    [
+                        new THREE.Vector3(...segmentEnd),
+                        new THREE.Vector3(
+                            segmentEnd[0] + side * .035,
+                            segmentEnd[1] + terminal * .035,
+                            .28
+                        ),
+                        new THREE.Vector3(
+                            segmentEnd[0] + side * .07,
+                            segmentEnd[1] + terminal * .06,
+                            .28
+                        )
+                    ],
+                    .008,
+                    respiratory,
+                    anatomy(
+                        `${sideName} bronchiole`,
+                        'Small airway',
+                        'Bronchioles distribute air through the lung toward the alveoli.'
+                    )
+                );
+            }
+        }
+    }
+}
+
+/* =========================================================
+   DIGESTIVE
+========================================================= */
+
+sphere(
+    liverMaterial,
+    new THREE.Vector3(
+        .22,
+        1.36,
+        .23
+    ),
+    new THREE.Vector3(
+        .48,
+        .20,
+        .18
+    ),
+    digestive,
+    anatomy(
+        'Liver',
+        'Metabolism and digestion',
+        'The liver performs many metabolic functions and produces bile.'
+    )
+);
+
+sphere(
+    organMaterial,
+    new THREE.Vector3(
+        -.28,
+        1.25,
+        .29
+    ),
+    new THREE.Vector3(
+        .22,
+        .34,
+        .16
+    ),
+    digestive,
+    anatomy(
+        'Stomach',
+        'Digestion',
+        'The stomach stores food and carries out mechanical and chemical digestion.'
+    )
+);
+
+function addDigestiveSegment(
+    name,
+    points,
+    radius,
+    material,
+    role,
+    fact
+) {
+
+    curvedTube(
+        material,
+        points.map(
+            point => new THREE.Vector3(...point)
+        ),
+        radius,
+        digestive,
+        anatomy(
+            name,
+            role,
+            fact
+        )
+    );
+}
+
+sphere(
+    digestiveMaterial,
+    new THREE.Vector3(0, 2.79, .45),
+    new THREE.Vector3(.055, .025, .02),
+    digestive,
+    anatomy(
+        'Oral cavity',
+        'Alimentary canal',
+        'Digestion begins in the mouth as food is chewed and mixed with saliva.'
+    )
+);
+
+addDigestiveSegment(
+    'Pharynx',
+    [[0, 2.79, .34], [0, 2.64, .22], [0, 2.49, .14]],
+    .045,
+    digestiveMaterial,
+    'Alimentary canal',
+    'The pharynx conducts swallowed food from the mouth into the esophagus.'
+);
+
+addDigestiveSegment(
+    'Esophagus',
+    [[0, 2.49, .14], [0, 2.18, .13], [-.02, 1.82, .14], [-.12, 1.52, .19]],
+    .045,
+    digestiveMaterial,
+    'Alimentary canal',
+    'The esophagus moves swallowed food toward the stomach by peristalsis.'
+);
+
+addDigestiveSegment(
+    'Duodenum',
+    [[-.15, 1.32, .30], [-.02, 1.24, .32], [.12, 1.11, .33], [.18, 1.02, .33]],
+    .034,
+    digestiveMaterial,
+    'Small intestine',
+    'The duodenum receives stomach contents, bile, and pancreatic secretions.'
+);
+
+addDigestiveSegment(
+    'Jejunum and ileum',
+    [
+        [.18, 1.02, .33],
+        [-.24, .98, .34],
+        [-.24, .91, .34],
+        [.23, .88, .34],
+        [.23, .81, .34],
+        [-.23, .78, .34],
+        [-.23, .71, .34],
+        [.20, .68, .34],
+        [.16, .60, .34]
+    ],
+    .032,
+    digestiveMaterial,
+    'Small intestine',
+    'The jejunum and ileum form folded sections where most nutrient absorption occurs.'
+);
+
+addDigestiveSegment(
+    'Ascending colon',
+    [[.30, .57, .29], [.34, .72, .29], [.34, .91, .29], [.33, 1.04, .29]],
+    .05,
+    organMaterial,
+    'Large intestine',
+    'The ascending colon absorbs water and moves contents toward the transverse colon.'
+);
+
+addDigestiveSegment(
+    'Transverse colon',
+    [[.33, 1.04, .29], [.18, 1.07, .29], [0, 1.06, .29], [-.18, 1.07, .29], [-.33, 1.02, .29]],
+    .05,
+    organMaterial,
+    'Large intestine',
+    'The transverse colon carries contents across the upper abdomen.'
+);
+
+addDigestiveSegment(
+    'Descending colon',
+    [[-.33, 1.02, .29], [-.35, .84, .29], [-.35, .65, .29], [-.29, .52, .29]],
+    .05,
+    organMaterial,
+    'Large intestine',
+    'The descending colon carries contents toward the sigmoid colon.'
+);
+
+addDigestiveSegment(
+    'Sigmoid colon',
+    [[-.29, .52, .29], [-.22, .43, .30], [-.10, .44, .30], [0, .36, .30]],
+    .045,
+    organMaterial,
+    'Large intestine',
+    'The sigmoid colon connects the descending colon to the rectum.'
+);
+
+addDigestiveSegment(
+    'Rectum',
+    [[0, .36, .30], [0, .23, .31], [0, .11, .31]],
+    .04,
+    organMaterial,
+    'Alimentary canal',
+    'The rectum temporarily stores feces before elimination.'
+);
+
+addDigestiveSegment(
+    'Anal canal',
+    [[0, .11, .31], [0, .035, .31]],
+    .028,
+    organMaterial,
+    'Alimentary canal',
+    'The anal canal forms the terminal passage of the digestive tract.'
+);
+
+/* =========================================================
+   REPRODUCTIVE
+========================================================= */
+
+const femaleSystem =
+    new THREE.Group();
+
+const maleSystem =
+    new THREE.Group();
+
+reproductive.add(
+    femaleSystem,
+    maleSystem
+);
+
+/* female */
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        -.22,
+        .43,
+        .35
+    ),
+    new THREE.Vector3(
+        .10,
+        .13,
+        .09
+    ),
+    femaleSystem,
+    anatomy(
+        'Left ovary',
+        'Female reproductive organ',
+        'The ovary contains developing oocytes and produces reproductive hormones.'
+    )
+);
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        .22,
+        .43,
+        .35
+    ),
+    new THREE.Vector3(
+        .10,
+        .13,
+        .09
+    ),
+    femaleSystem,
+    anatomy(
+        'Right ovary',
+        'Female reproductive organ',
+        'The ovary contains developing oocytes and produces reproductive hormones.'
+    )
+);
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        0,
+        .20,
+        .37
+    ),
+    new THREE.Vector3(
+        .19,
+        .27,
+        .11
+    ),
+    femaleSystem,
+    anatomy(
+        'Uterus',
+        'Female reproductive organ',
+        'The uterus is a muscular reproductive organ.'
+    )
+);
+
+tube(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        -.16,
+        .35,
+        .36
+    ),
+    new THREE.Vector3(
+        -.28,
+        .43,
+        .35
+    ),
+    .018,
+    femaleSystem,
+    anatomy(
+        'Left uterine tube',
+        'Female reproductive organ',
+        'The uterine tube extends from the uterus toward the ovary.'
+    )
+);
+
+tube(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        .16,
+        .35,
+        .36
+    ),
+    new THREE.Vector3(
+        .28,
+        .43,
+        .35
+    ),
+    .018,
+    femaleSystem,
+    anatomy(
+        'Right uterine tube',
+        'Female reproductive organ',
+        'The uterine tube extends from the uterus toward the ovary.'
+    )
+);
+
+sphere(
+    heartLightMaterial,
+    new THREE.Vector3(
+        0,
+        .19,
+        .485
+    ),
+    new THREE.Vector3(
+        .11,
+        .18,
+        .018
+    ),
+    femaleSystem,
+    anatomy(
+        'Endometrium',
+        'Uterine lining',
+        'The endometrium lines the uterus and changes during the menstrual cycle.'
+    )
+);
+
+cylinder(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        0,
+        -.045,
+        .39
+    ),
+    .055,
+    .14,
+    femaleSystem,
+    anatomy(
+        'Cervix',
+        'Female reproductive organ',
+        'The cervix is the lower, narrow part of the uterus that opens into the vagina.'
+    )
+);
+
+tube(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        0,
+        -.11,
+        .39
+    ),
+    new THREE.Vector3(
+        0,
+        -.34,
+        .37
+    ),
+    .05,
+    femaleSystem,
+    anatomy(
+        'Vagina',
+        'Female reproductive canal',
+        'The vagina connects the cervix to the external reproductive opening.'
+    )
+);
+
+/* male */
+
+sphere(
+    scrotalMaterial,
+    new THREE.Vector3(
+        0,
+        .13,
+        .31
+    ),
+    new THREE.Vector3(
+        .23,
+        .18,
+        .12
+    ),
+    maleSystem,
+    anatomy(
+        'Scrotum',
+        'External male reproductive structure',
+        'The scrotum contains the testes and helps regulate their temperature.'
+    )
+);
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        -.12,
+        .18,
+        .41
+    ),
+    new THREE.Vector3(
+        .10,
+        .13,
+        .09
+    ),
+    maleSystem,
+    anatomy(
+        'Left testis',
+        'Male reproductive organ',
+        'The testis produces sperm and testosterone.'
+    )
+);
+
+curvedTube(
+    reproductiveMaterial,
+    [
+        new THREE.Vector3(-.19, .13, .40),
+        new THREE.Vector3(-.21, .20, .43),
+        new THREE.Vector3(-.16, .25, .42)
+    ],
+    .018,
+    maleSystem,
+    anatomy(
+        'Left epididymis',
+        'Male reproductive tract',
+        'The epididymis stores sperm while they mature.'
+    )
+);
+
+curvedTube(
+    reproductiveMaterial,
+    [
+        new THREE.Vector3(.19, .13, .40),
+        new THREE.Vector3(.21, .20, .43),
+        new THREE.Vector3(.16, .25, .42)
+    ],
+    .018,
+    maleSystem,
+    anatomy(
+        'Right epididymis',
+        'Male reproductive tract',
+        'The epididymis stores sperm while they mature.'
+    )
+);
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        .12,
+        .18,
+        .41
+    ),
+    new THREE.Vector3(
+        .10,
+        .13,
+        .09
+    ),
+    maleSystem,
+    anatomy(
+        'Right testis',
+        'Male reproductive organ',
+        'The testis produces sperm and testosterone.'
+    )
+);
+
+tube(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        -.12,
+        .27,
+        .41
+    ),
+    new THREE.Vector3(
+        -.12,
+        .56,
+        .36
+    ),
+    .016,
+    maleSystem,
+    anatomy(
+        'Left ductus deferens',
+        'Male reproductive tract',
+        'The ductus deferens transports sperm toward the ejaculatory duct.'
+    )
+);
+
+tube(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        .12,
+        .27,
+        .41
+    ),
+    new THREE.Vector3(
+        .12,
+        .56,
+        .36
+    ),
+    .016,
+    maleSystem,
+    anatomy(
+        'Right ductus deferens',
+        'Male reproductive tract',
+        'The ductus deferens transports sperm toward the ejaculatory duct.'
+    )
+);
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        0,
+        .37,
+        .40
+    ),
+    new THREE.Vector3(
+        .09,
+        .07,
+        .07
+    ),
+    maleSystem,
+    anatomy(
+        'Prostate gland',
+        'Male accessory gland',
+        'The prostate surrounds part of the urethra and contributes fluid to semen.'
+    )
+);
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        -.075,
+        .49,
+        .33
+    ),
+    new THREE.Vector3(
+        .045,
+        .08,
+        .04
+    ),
+    maleSystem,
+    anatomy(
+        'Left seminal vesicle',
+        'Male accessory gland',
+        'The seminal vesicles contribute nutrient-rich fluid to semen.'
+    )
+);
+
+sphere(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        .075,
+        .49,
+        .33
+    ),
+    new THREE.Vector3(
+        .045,
+        .08,
+        .04
+    ),
+    maleSystem,
+    anatomy(
+        'Right seminal vesicle',
+        'Male accessory gland',
+        'The seminal vesicles contribute nutrient-rich fluid to semen.'
+    )
+);
+
+tube(
+    reproductiveMaterial,
+    new THREE.Vector3(
+        0,
+        .36,
+        .44
+    ),
+    new THREE.Vector3(
+        0,
+        -.08,
+        .47
+    ),
+    .018,
+    maleSystem,
+    anatomy(
+        'Urethra',
+        'Urinary and reproductive passage',
+        'The male urethra carries urine and, during ejaculation, semen.'
+    )
+);
+
+capsule(
+    skinLightMaterial,
+    new THREE.Vector3(
+        0,
+        .16,
+        .46
+    ),
+    new THREE.Vector3(
+        0,
+        -.10,
+        .48
+    ),
+    .045,
+    maleSystem,
+    anatomy(
+        'Penis',
+        'External male reproductive organ',
+        'The penis contains the urethra and erectile tissues.'
+    )
+);
+
+/* =========================================================
+   VISIBILITY HELPERS
+========================================================= */
+
+function isObjectVisible(object) {
+
+    let current =
+        object;
+
+    while (current) {
+
+        if (
+            current.visible === false
+        ) {
+            return false;
+        }
+
+        current =
+            current.parent;
+    }
+
+    return true;
+}
+
+function isDescendantOf(
+    object,
+    parent
+) {
+
+    let current =
+        object;
+
+    while (current) {
+
+        if (
+            current === parent
+        ) {
+            return true;
+        }
+
+        current =
+            current.parent;
+    }
+
+    return false;
+}
+
+/* =========================================================
+   SEX
+========================================================= */
+
+function setSex(
+    selectedSex
+) {
+
+    if (activeSkeletonDetail) {
+        restoreSkeletonDetail();
+    }
+
+    sex =
+        selectedSex;
+
+    femaleSystem.visible =
+        sex === 'female';
+
+    maleSystem.visible =
+        sex === 'male';
+
+    hair.visible =
+        sex === 'female' &&
+        (
+            currentLayer === 'skin' ||
+            currentLayer === 'all'
+        );
+
+    femaleBodyDetails.visible =
+        sex === 'female';
+
+    document
+        .getElementById(
+            'maleMode'
+        )
+        .classList.toggle(
+            'active',
+            sex === 'male'
+        );
+
+    document
+        .getElementById(
+            'femaleMode'
+        )
+        .classList.toggle(
+            'active',
+            sex === 'female'
+        );
+
+    document
+        .getElementById(
+            'speciesTag'
+        )
+        .textContent =
+            sex === 'female'
+                ? 'Human anatomy · female study'
+                : 'Human anatomy · male study';
+
+    document
+        .getElementById(
+            'femaleNotes'
+        )
+        .style.display =
+            sex === 'female'
+                ? 'block'
+                : 'none';
+
+    document
+        .getElementById(
+            'maleNotes'
+        )
+        .style.display =
+            sex === 'male'
+                ? 'block'
+                : 'none';
+
+    clearSelection();
+}
+
+/* =========================================================
+   LAYERS
+========================================================= */
+
+let currentLayer =
+    'skin';
+
+let activeSkeletonDetail =
+    null;
+
+let activeDetailButton =
+    null;
+
+let skeletonDetailSnapshot =
+    null;
+
+function setSkinMuscleOverlay(enabled) {
+
+    skinMaterial.transparent = enabled;
+    skinMaterial.opacity =
+        enabled
+            ? .10
+            : 1;
+    skinMaterial.depthWrite = !enabled;
+    skinMaterial.needsUpdate = true;
+}
+
+const anatomyGroups = [
+    skin,
+    muscles,
+    skeleton,
+    organs,
+    circulation,
+    respiratory,
+    digestive,
+    nervous,
+    reproductive,
+    hair,
+    handFootContext
+];
+
+function hideAllLayers() {
+
+    setSkinMuscleOverlay(false);
+
+    skin.visible = false;
+    muscles.visible = false;
+    skeleton.visible = false;
+    organs.visible = false;
+    circulation.visible = false;
+    respiratory.visible = false;
+    digestive.visible = false;
+    nervous.visible = false;
+    reproductive.visible = false;
+    hair.visible = false;
+    handFootContext.visible = false;
+}
+
+function setLayer(
+    layer
+) {
+
+    if (activeSkeletonDetail) {
+        restoreSkeletonDetail();
+    }
+
+    currentLayer =
+        layer;
+
+    hideAllLayers();
+
+    if (
+        layer === 'skin'
+    ) {
+
+        skin.visible = true;
+
+        hair.visible =
+            sex === 'female';
+    }
+
+    if (
+        layer === 'muscles'
+    ) {
+
+        skin.visible = true;
+        muscles.visible =
+            true;
+
+        setSkinMuscleOverlay(true);
+    }
+
+    if (
+        layer === 'skeleton'
+    ) {
+
+        skeleton.visible =
+            true;
+    }
+
+    if (
+        layer === 'all'
+    ) {
+
+        skin.visible = true;
+        muscles.visible = true;
+        skeleton.visible = true;
+        organs.visible = true;
+        circulation.visible = true;
+        respiratory.visible = true;
+        digestive.visible = true;
+        nervous.visible = true;
+        reproductive.visible = true;
+
+        setSkinMuscleOverlay(true);
+
+        hair.visible =
+            sex === 'female';
+    }
+
+    document
+        .querySelectorAll(
+            '.layer-button'
+        )
+        .forEach(
+            button =>
+                button.classList.remove(
+                    'active'
+                )
+        );
+
+    const buttonMap = {
+        skin: 'skinButton',
+        muscles: 'muscleButton',
+        skeleton: 'skeletonButton',
+        all: 'allButton'
+    };
+
+    document
+        .getElementById(
+            buttonMap[layer]
+        )
+        .classList.add(
+            'active'
+        );
+
+    clearSystemButtons();
+    clearSelection();
+}
+
+/* =========================================================
+   SYSTEM VIEW
+========================================================= */
+
+function showOnlySystem(
+    systemName
+) {
+
+    if (activeSkeletonDetail) {
+        restoreSkeletonDetail();
+    }
+
+    currentLayer = 'system';
+    hideAllLayers();
+
+    if (
+        systemName === 'organs'
+    ) {
+
+        organs.visible = true;
+        digestive.visible = true;
+    }
+
+    if (
+        systemName === 'circulation'
+    ) {
+
+        circulation.visible =
+            true;
+    }
+
+    if (
+        systemName === 'respiratory'
+    ) {
+
+        respiratory.visible =
+            true;
+    }
+
+    if (
+        systemName === 'digestive'
+    ) {
+
+        digestive.visible =
+            true;
+    }
+
+    if (
+        systemName === 'nervous'
+    ) {
+
+        nervous.visible =
+            true;
+    }
+
+    if (
+        systemName === 'reproductive'
+    ) {
+
+        reproductive.visible =
+            true;
+    }
+
+    clearLayerButtons();
+    clearSelection();
+}
+
+/* =========================================================
+   BUTTON HELPERS
+========================================================= */
+
+function clearLayerButtons() {
+
+    document
+        .querySelectorAll(
+            '.layer-button'
+        )
+        .forEach(
+            button =>
+                button.classList.remove(
+                    'active'
+                )
+        );
+}
+
+function clearSystemButtons() {
+
+    document
+        .querySelectorAll(
+            '.anatomy-button'
+        )
+        .forEach(
+            button =>
+                button.classList.remove(
+                    'is-selected'
+                )
+        );
+}
+
+/* =========================================================
+   SKELETON DETAIL VIEWS
+========================================================= */
+
+const detailMaterials =
+    new Map();
+
+const detailPalette = [
+    0xc96d4a,
+    0x388f83,
+    0xd7a642,
+    0x567da8,
+    0xa45f84,
+    0x77a052,
+    0xd17b9a,
+    0x8b6bb0
+];
+
+function getSkeletonAnatomyName(
+    root
+) {
+
+    let name = '';
+
+    root.traverse(
+        object => {
+            if (
+                !name &&
+                object.userData.anatomy
+            ) {
+                name =
+                    object.userData.anatomy.name;
+            }
+        }
+    );
+
+    return name.toLowerCase();
+}
+
+function getSkullGroup(
+    name
+) {
+
+    if (
+        /malleus|incus|stapes/.test(name)
+    ) {
+        return 'ossicles';
+    }
+
+    if (
+        /frontal bone|parietal bone|temporal bone|occipital bone|sphenoid|ethmoid|cranium/.test(name)
+    ) {
+        return 'neurocranium';
+    }
+
+    if (
+        /nasal|zygomatic|maxilla|mandible|lacrimal|palatine|concha|vomer|orbit/.test(name)
+    ) {
+        return 'viscerocranium';
+    }
+
+    return '';
+}
+
+function matchesSkeletonDetail(
+    name,
+    detail,
+    position
+) {
+
+    const skullGroup =
+        getSkullGroup(name);
+
+    if (detail === 'whole') {
+        return true;
+    }
+
+    if (detail === 'skull') {
+        return skullGroup === 'neurocranium' ||
+            skullGroup === 'viscerocranium';
+    }
+
+    if (detail === 'hyoid') {
+        return /hyoid|malleus|incus|stapes/.test(name);
+    }
+
+    if (
+        detail === 'neurocranium' ||
+        detail === 'viscerocranium'
+    ) {
+        return skullGroup === detail;
+    }
+
+    if (detail === 'spine') {
+        return /vertebra|atlas|axis|coccyx|sacrum/.test(name) ||
+            (!name && Math.abs(position.x) < .14 && position.y > -.25 && position.y < 2.75 && position.z < -.08);
+    }
+
+    if (detail === 'thorax') {
+        return /rib|sternum|manubrium|xiphoid|costal cartilage/.test(name) ||
+            (!name && Math.abs(position.x) > .12 && Math.abs(position.x) < .75 && position.y > 1.05 && position.y < 2.55);
+    }
+
+    if (detail === 'shoulder') {
+        return /clavicle|scapula|glenoid/.test(name) ||
+            (!name && Math.abs(position.x) > .45 && position.y > 1.72 && position.y < 2.42);
+    }
+
+    if (detail === 'hand') {
+        return /scaphoid|lunate|triquetrum|pisiform|trapezium|trapezoid|capitate|hamate|carpal|metacarpal|phalange|digit|finger|hand/.test(name);
+    }
+
+    if (detail === 'foot') {
+        return /calcaneus|talus|navicular|cuboid|cuneiform|tarsal|metatarsal|phalange|toe|foot/.test(name);
+    }
+
+    if (detail === 'pelvis') {
+        return /ilium|ischium|pubis|acetabulum|pubic symphysis|sacrum/.test(name) ||
+            (!name && position.y > -.12 && position.y < .65 && Math.abs(position.x) < .48);
+    }
+
+    if (detail === 'upperLimb') {
+        return /humerus|radius|ulna|carpal|metacarpal|digit|finger|hand/.test(name) ||
+            (!name && Math.abs(position.x) > .72 && position.y > .25 && position.y < 2.15);
+    }
+
+    if (detail === 'lowerLimb') {
+        return /femur|patella|tibia|fibula|tarsal|metatarsal|toe|foot/.test(name) ||
+            (!name && Math.abs(position.x) > .22 && position.y < -.12);
+    }
+
+    return false;
+}
+
+function colorSkeletonPart(
+    root,
+    name
+) {
+
+    let hash = 0;
+
+    for (const character of name) {
+        hash =
+            (hash * 31 + character.charCodeAt(0)) >>> 0;
+    }
+
+    const color =
+        detailPalette[hash % detailPalette.length];
+
+    root.traverse(
+        object => {
+
+            if (!object.isMesh) {
+                return;
+            }
+
+            if (!detailMaterials.has(object)) {
+                detailMaterials.set(
+                    object,
+                    object.material
+                );
+            }
+
+            const materials =
+                Array.isArray(object.material)
+                    ? object.material
+                    : [object.material];
+
+            const coloredMaterials =
+                materials.map(
+                    material => {
+                        const colored =
+                            material.clone();
+
+                        if (colored.color) {
+                            colored.color.setHex(color);
+                        }
+
+                        return colored;
+                    }
+                );
+
+            object.material =
+                Array.isArray(object.material)
+                    ? coloredMaterials
+                    : coloredMaterials[0];
+        }
+    );
+}
+
+function restoreDetailMaterials() {
+
+    detailMaterials.forEach(
+        (material, object) => {
+            object.material = material;
+        }
+    );
+
+    detailMaterials.clear();
+}
+
+function restoreSkeletonDetail() {
+
+    if (!skeletonDetailSnapshot) {
+        return;
+    }
+
+    clearSelection();
+    restoreDetailMaterials();
+
+    skeletonDetailSnapshot.groupVisibility.forEach(
+        ([group, visible]) => {
+            group.visible = visible;
+        }
+    );
+
+    skeletonDetailSnapshot.boneVisibility.forEach(
+        ([bone, visible]) => {
+            bone.visible = visible;
+        }
+    );
+
+    skeletonDetailSnapshot.boneTransforms.forEach(
+        ([bone, position, quaternion, scale]) => {
+            bone.position.copy(position);
+            bone.quaternion.copy(quaternion);
+            bone.scale.copy(scale);
+        }
+    );
+
+    skeleton.updateMatrixWorld(true);
+
+    camera.up.copy(
+        skeletonDetailSnapshot.cameraUp
+    );
+
+    skinMaterial.transparent =
+        skeletonDetailSnapshot.skinTransparent;
+
+    skinMaterial.opacity =
+        skeletonDetailSnapshot.skinOpacity;
+
+    skinMaterial.depthWrite =
+        skeletonDetailSnapshot.skinDepthWrite;
+
+    skinMaterial.needsUpdate = true;
+
+    camera.position.copy(
+        skeletonDetailSnapshot.cameraPosition
+    );
+
+    controls.target.copy(
+        skeletonDetailSnapshot.controlsTarget
+    );
+
+    controls.minDistance =
+        skeletonDetailSnapshot.minDistance;
+
+    currentLayer =
+        skeletonDetailSnapshot.currentLayer;
+
+    skeletonDetailSnapshot.layerButtons.forEach(
+        ([button, active]) => {
+            button.classList.toggle(
+                'active',
+                active
+            );
+        }
+    );
+
+    skeletonDetailSnapshot.systemButtons.forEach(
+        ([button, selected]) => {
+            button.classList.toggle(
+                'is-selected',
+                selected
+            );
+        }
+    );
+
+    const infoPanel =
+        document.getElementById('infoPanel');
+
+    const infoToggle =
+        document.getElementById('infoToggle');
+
+    infoPanel.hidden =
+        skeletonDetailSnapshot.infoPanelHidden;
+
+    infoToggle.textContent =
+        skeletonDetailSnapshot.infoToggleText;
+
+    infoToggle.setAttribute(
+        'aria-expanded',
+        skeletonDetailSnapshot.infoExpanded
+    );
+
+    document
+        .getElementById('organList')
+        .textContent =
+            skeletonDetailSnapshot.organListText;
+
+    document
+        .querySelectorAll('.detail-button')
+        .forEach(
+            button =>
+                button.setAttribute(
+                    'aria-pressed',
+                    'false'
+                )
+        );
+
+    activeSkeletonDetail = null;
+    activeDetailButton = null;
+    skeletonDetailSnapshot = null;
+}
+
+function enterSkeletonDetail(
+    detail,
+    label,
+    buttonKey
+) {
+
+    if (activeSkeletonDetail) {
+        restoreSkeletonDetail();
+    }
+
+    skeletonDetailSnapshot = {
+        cameraPosition: camera.position.clone(),
+        cameraUp: camera.up.clone(),
+        controlsTarget: controls.target.clone(),
+        minDistance: controls.minDistance,
+        skinTransparent: skinMaterial.transparent,
+        skinOpacity: skinMaterial.opacity,
+        skinDepthWrite: skinMaterial.depthWrite,
+        currentLayer,
+        groupVisibility: anatomyGroups.map(
+            group => [group, group.visible]
+        ),
+        boneVisibility: skeleton.children.map(
+            bone => [bone, bone.visible]
+        ),
+        boneTransforms: skeleton.children.map(
+            bone => [
+                bone,
+                bone.position.clone(),
+                bone.quaternion.clone(),
+                bone.scale.clone()
+            ]
+        ),
+        layerButtons: [...document.querySelectorAll('.layer-button')].map(
+            button => [button, button.classList.contains('active')]
+        ),
+        systemButtons: [...document.querySelectorAll('.anatomy-button')].map(
+            button => [button, button.classList.contains('is-selected')]
+        ),
+        infoPanelHidden: document
+            .getElementById('infoPanel')
+            .hidden,
+        infoToggleText: document
+            .getElementById('infoToggle')
+            .textContent,
+        infoExpanded: document
+            .getElementById('infoToggle')
+            .getAttribute('aria-expanded'),
+        organListText: document
+            .getElementById('organList')
+            .textContent
+    };
+
+    activeSkeletonDetail = detail;
+    activeDetailButton = buttonKey;
+
+    restoreDetailMaterials();
+    hideAllLayers();
+    skeleton.visible = true;
+    handFootContext.visible =
+        detail === 'hand' ||
+        detail === 'foot';
+
+    clearLayerButtons();
+    clearSystemButtons();
+
+    document
+        .getElementById('infoPanel')
+        .hidden = true;
+
+    document
+        .getElementById('infoToggle')
+        .textContent = 'Related notes';
+
+    document
+        .getElementById('infoToggle')
+        .setAttribute('aria-expanded', 'false');
+
+    document
+        .getElementById('skeletonButton')
+        .classList.add('active');
+
+    const bounds =
+        new THREE.Box3();
+
+    if (
+        detail === 'hand' ||
+        detail === 'foot'
+    ) {
+        const handRotation =
+            new THREE.Quaternion()
+                .setFromAxisAngle(
+                    new THREE.Vector3(1, 0, 0),
+                    -Math.PI / 2
+                );
+
+        const handPivot =
+            new THREE.Vector3(0, .35, 0);
+
+        skeleton.children.forEach(
+            bone => {
+                const name =
+                    getSkeletonAnatomyName(bone);
+
+                if (!matchesSkeletonDetail(name, detail, bone.position)) {
+                    return;
+                }
+
+                const side =
+                    name.startsWith('left ')
+                        ? -1
+                        : name.startsWith('right ')
+                            ? 1
+                            : 0;
+
+                if (side && detail === 'hand') {
+                    bone.position.x =
+                        side * .12 +
+                        (bone.position.x - side * 1.09);
+
+                    bone.position
+                        .sub(handPivot)
+                        .applyQuaternion(handRotation)
+                        .add(handPivot);
+
+                    bone.quaternion.premultiply(
+                        handRotation
+                    );
+
+                    if (
+                        /first metacarpal|digit 1/.test(name)
+                    ) {
+                        const thumbRotation =
+                            new THREE.Quaternion()
+                                .setFromAxisAngle(
+                                    new THREE.Vector3(0, 1, 0),
+                                    side * .45
+                                );
+
+                        const thumbPivot =
+                            new THREE.Vector3(
+                                side * .12,
+                                .365,
+                                0
+                            );
+
+                        bone.position
+                            .sub(thumbPivot)
+                            .applyQuaternion(thumbRotation)
+                            .add(thumbPivot);
+
+                        bone.quaternion.premultiply(
+                            thumbRotation
+                        );
+                    }
+                }
+
+                if (side && detail === 'foot') {
+                    bone.position.x =
+                        side * .20 +
+                        (bone.position.x - side * .49);
+                }
+            }
+        );
+
+        skeleton.updateMatrixWorld(true);
+    }
+
+    let matchedBones = 0;
+
+    skeleton.children.forEach(
+        bone => {
+
+            const name =
+                getSkeletonAnatomyName(bone);
+
+            const position =
+                bone.getWorldPosition(
+                    new THREE.Vector3()
+                );
+
+            const matches =
+                matchesSkeletonDetail(
+                    name,
+                    detail,
+                    position
+                );
+
+            bone.visible = matches;
+
+            if (matches) {
+                colorSkeletonPart(
+                    bone,
+                    name || detail
+                );
+
+                bounds.expandByObject(bone);
+                matchedBones++;
+            }
+        }
+    );
+
+    if (!matchedBones || bounds.isEmpty()) {
+        restoreSkeletonDetail();
+        return;
+    }
+
+    const center =
+        bounds.getCenter(
+            new THREE.Vector3()
+        );
+
+    const sphere =
+        bounds.getBoundingSphere(
+            new THREE.Sphere()
+        );
+
+    const viewDirection =
+        detail === 'foot' || detail === 'hand'
+            ? new THREE.Vector3(0, 1, 0)
+            : camera.position
+                    .clone()
+                    .sub(controls.target)
+                    .normalize();
+
+    const distance =
+        Math.max(
+            .65,
+            sphere.radius /
+                Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) *
+                (detail === 'whole' ? 1.35 : .92)
+        );
+
+    const viewUp =
+        detail === 'foot' || detail === 'hand'
+            ? new THREE.Vector3(0, 0, -1)
+            : new THREE.Vector3(0, 1, 0);
+
+    const cameraRight =
+        new THREE.Vector3()
+            .crossVectors(
+                viewUp,
+                viewDirection
+            )
+            .normalize();
+
+    const panelBounds =
+        anatomyPanel.getBoundingClientRect();
+
+    const panelOverlapsModelCenter =
+        panelBounds.top < innerHeight * .25;
+
+    const horizontalOffsetPixels =
+        panelOverlapsModelCenter
+            ? Math.max(
+                0,
+                (innerWidth - panelBounds.left) / 2
+            )
+            : 0;
+
+    const visibleWorldWidth =
+        distance *
+        2 *
+        Math.tan(
+            THREE.MathUtils.degToRad(camera.fov / 2)
+        ) *
+        camera.aspect;
+
+    const framedCenter =
+        center.clone().addScaledVector(
+            cameraRight,
+            visibleWorldWidth *
+                horizontalOffsetPixels /
+                innerWidth
+        );
+
+    controls.minDistance = .45;
+    controls.target.copy(framedCenter);
+    camera.up.copy(viewUp);
+
+    camera.position
+        .copy(framedCenter)
+        .addScaledVector(
+            viewDirection,
+            distance
+        );
+
+    document
+        .querySelectorAll('.detail-button')
+        .forEach(
+            button =>
+                button.setAttribute(
+                    'aria-pressed',
+                    String(button.dataset.detail === buttonKey)
+                )
+        );
+
+    document
+        .getElementById('organList')
+        .textContent =
+            `${label} detail view · click the active detail button to restore the full view.`;
+
+    clearSelection();
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+const detailLabels = {
+    whole: 'Whole skeleton',
+    hyoid: 'Hyoid and auditory ossicles',
+    spine: 'Vertebral column',
+    thorax: 'Thoracic cage',
+    shoulder: 'Pectoral girdle',
+    upperLimb: 'Upper limbs',
+    hand: 'Hands',
+    pelvis: 'Pelvic girdle',
+    lowerLimb: 'Lower limbs',
+    foot: 'Feet'
+};
+
+const skullDetailDialog =
+    document.getElementById(
+        'skullDetailDialog'
+    );
+
+document
+    .querySelectorAll('.detail-button')
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                'click',
+                () => {
+
+                    const detail =
+                        button.dataset.detail;
+
+                    if (
+                        activeSkeletonDetail &&
+                        activeDetailButton === detail
+                    ) {
+                        restoreSkeletonDetail();
+                        return;
+                    }
+
+                    if (detail === 'skull') {
+                        if (activeSkeletonDetail) {
+                            restoreSkeletonDetail();
+                        }
+
+                        skullDetailDialog.showModal();
+                        return;
+                    }
+
+                    enterSkeletonDetail(
+                        detail,
+                        detailLabels[detail],
+                        detail
+                    );
+                }
+            );
+        }
+    );
+
+document
+    .querySelectorAll('.skull-choice')
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                'click',
+                () => {
+
+                    const detail =
+                        button.dataset.skullRegion;
+
+                    skullDetailDialog.close();
+
+                    enterSkeletonDetail(
+                        detail,
+                        detail === 'neurocranium'
+                            ? 'Neurocranium'
+                            : 'Viscerocranium',
+                        'skull'
+                    );
+                }
+            );
+        }
+    );
+
+document
+    .getElementById('cancelSkullDetail')
+    .addEventListener(
+        'click',
+        () => skullDetailDialog.close()
+    );
+
+document
+    .getElementById(
+        'skinButton'
+    )
+    .addEventListener(
+        'click',
+        () =>
+            setLayer('skin')
+    );
+
+document
+    .getElementById(
+        'muscleButton'
+    )
+    .addEventListener(
+        'click',
+        () =>
+            setLayer('muscles')
+    );
+
+document
+    .getElementById(
+        'skeletonButton'
+    )
+    .addEventListener(
+        'click',
+        () =>
+            setLayer('skeleton')
+    );
+
+document
+    .getElementById(
+        'allButton'
+    )
+    .addEventListener(
+        'click',
+        () =>
+            setLayer('all')
+    );
+
+document
+    .querySelectorAll(
+        '.anatomy-button'
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                'click',
+                () => {
+
+                    const already =
+                        button.classList.contains(
+                            'is-selected'
+                        );
+
+                    clearSystemButtons();
+
+                    if (already) {
+
+                        setLayer(
+                            'skin'
+                        );
+
+                        return;
+                    }
+
+                    button.classList.add(
+                        'is-selected'
+                    );
+
+                    showOnlySystem(
+                        button.dataset.system
+                    );
+
+                    button.classList.add(
+                        'is-selected'
+                    );
+                }
+            );
+        }
+    );
+
+document
+    .getElementById(
+        'maleMode'
+    )
+    .addEventListener(
+        'click',
+        () =>
+            setSex('male')
+    );
+
+document
+    .getElementById(
+        'femaleMode'
+    )
+    .addEventListener(
+        'click',
+        () =>
+            setSex('female')
+    );
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+const anatomyPanel =
+    document.getElementById(
+        'anatomyPanel'
+    );
+
+document
+    .getElementById(
+        'panelToggle'
+    )
+    .addEventListener(
+        'click',
+        function() {
+
+            const collapsed =
+                anatomyPanel
+                    .classList
+                    .toggle(
+                        'is-collapsed'
+                    );
+
+            this.textContent =
+                collapsed
+                    ? '←'
+                    : '→';
+        }
+    );
+
+/* =========================================================
+   NOTES
+========================================================= */
+
+const infoPanel =
+    document.getElementById(
+        'infoPanel'
+    );
+
+const infoToggle =
+    document.getElementById(
+        'infoToggle'
+    );
+
+infoToggle.addEventListener(
+    'click',
+    () => {
+
+        const open =
+            !infoPanel.hidden;
+
+        infoPanel.hidden =
+            open;
+
+        infoToggle.textContent =
+            open
+                ? 'Related notes'
+                : 'Close related notes';
+
+        infoToggle.setAttribute(
+            'aria-expanded',
+            String(!open)
+        );
+    }
+);
+
+/* =========================================================
+   RAYCASTER
+========================================================= */
+
+const raycaster =
+    new THREE.Raycaster();
+
+const pointer =
+    new THREE.Vector2();
+
+const tooltip =
+    document.getElementById(
+        'tooltip'
+    );
+
+const tooltipTitle =
+    document.getElementById(
+        'tooltipTitle'
+    );
+
+const tooltipRole =
+    document.getElementById(
+        'tooltipRole'
+    );
+
+const tooltipFact =
+    document.getElementById(
+        'tooltipFact'
+    );
+
+let hoveredObject =
+    null;
+
+let selectedObject =
+    null;
+
+/* =========================================================
+   ANATOMY OBJECT SEARCH
+========================================================= */
+
+function findAnatomyObject(
+    object
+) {
+
+    let current =
+        object;
+
+    while (
+        current &&
+        !current.userData.anatomy
+    ) {
+
+        current =
+            current.parent;
+    }
+
+    return current;
+}
+
+/* =========================================================
+   HIGHLIGHTING
+========================================================= */
+
+function highlight(
+    object
+) {
+
+    if (!object) {
+        return;
+    }
+
+    object.traverse(
+        child => {
+
+            if (
+                child.isMesh &&
+                child.material
+            ) {
+
+                if (
+                    !child.userData.highlighted
+                ) {
+
+                    child.userData.originalMaterial =
+                        child.material;
+
+                    child.material =
+                        Array.isArray(child.material)
+                            ? child.material.map(
+                                material => material.clone()
+                            )
+                            : child.material.clone();
+
+                    child.userData.highlighted =
+                        true;
+                }
+
+                const materials =
+                    Array.isArray(child.material)
+                        ? child.material
+                        : [child.material];
+
+                materials.forEach(
+                    material => {
+                        if (material.emissive) {
+                            material.emissive.set(0xc8896d);
+                            material.emissiveIntensity = .38;
+                        }
+                    }
+                );
+            }
+        }
+    );
+}
+
+function unhighlight(
+    object
+) {
+
+    if (!object) {
+        return;
+    }
+
+    object.traverse(
+        child => {
+
+            if (
+                child.isMesh &&
+                child.userData.highlighted
+            ) {
+
+                child.material =
+                    child.userData.originalMaterial;
+
+                delete child.userData.originalMaterial;
+                delete child.userData.highlighted;
+            }
+        }
+    );
+}
+
+/* =========================================================
+   TOOLTIP
+========================================================= */
+
+function showTooltip(
+    data,
+    x,
+    y
+) {
+
+    tooltipTitle.textContent =
+        data.name;
+
+    tooltipRole.textContent =
+        data.role;
+
+    tooltipFact.textContent =
+        data.fact;
+
+    const tooltipWidth =
+        Math.min(
+            290,
+            innerWidth - 28
+        );
+
+    const left =
+        Math.max(
+            10,
+            Math.min(
+                x + 16,
+                innerWidth -
+                    tooltipWidth -
+                    10
+            )
+        );
+
+    const top =
+        Math.max(
+            10,
+            Math.min(
+                y + 16,
+                innerHeight - 150
+            )
+        );
+
+    tooltip.style.left =
+        `${left}px`;
+
+    tooltip.style.top =
+        `${top}px`;
+
+    tooltip.classList.add(
+        'visible'
+    );
+}
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+renderer.domElement.addEventListener(
+    'pointermove',
+    event => {
+
+        pointer.x =
+            event.clientX /
+                innerWidth *
+                2 -
+            1;
+
+        pointer.y =
+            -(
+                event.clientY /
+                innerHeight
+            ) *
+                2 +
+            1;
+
+        raycaster.setFromCamera(
+            pointer,
+            camera
+        );
+
+        const intersections =
+            raycaster.intersectObjects(
+                human.children,
+                true
+            );
+
+        const hit =
+            intersections.find(
+                result =>
+                    isObjectVisible(
+                        result.object
+                    ) &&
+                    !(
+                        currentLayer === 'muscles' &&
+                        isDescendantOf(
+                            result.object,
+                            skin
+                        )
+                    ) &&
+                    findAnatomyObject(
+                        result.object
+                    )
+            );
+
+        const target =
+            hit
+                ? findAnatomyObject(
+                    hit.object
+                )
+                : null;
+
+        const hoverMesh =
+            target
+                ? hit.object
+                : null;
+
+        if (
+            hoverMesh !==
+            hoveredObject
+        ) {
+
+            if (hoveredObject) {
+                unhighlight(
+                    hoveredObject
+                );
+            }
+
+            hoveredObject =
+                hoverMesh;
+
+            if (hoveredObject) {
+                highlight(
+                    hoveredObject
+                );
+            }
+        }
+
+        if (!target) {
+
+            tooltip.classList.remove(
+                'visible'
+            );
+
+            renderer.domElement.style.cursor =
+                'default';
+
+            return;
+        }
+
+        showTooltip(
+            target.userData.anatomy,
+            event.clientX,
+            event.clientY
+        );
+
+        renderer.domElement.style.cursor =
+            'pointer';
+    }
+);
+
+renderer.domElement.addEventListener(
+    'pointerleave',
+    () => {
+        if (hoveredObject) {
+            unhighlight(hoveredObject);
+            hoveredObject = null;
+        }
+
+        tooltip.classList.remove('visible');
+        renderer.domElement.style.cursor = 'default';
+    }
+);
+
+/* =========================================================
+   CLICK
+========================================================= */
+
+renderer.domElement.addEventListener(
+    'click',
+    event => {
+
+        pointer.x =
+            event.clientX /
+                innerWidth *
+                2 -
+            1;
+
+        pointer.y =
+            -(
+                event.clientY /
+                innerHeight
+            ) *
+                2 +
+            1;
+
+        raycaster.setFromCamera(
+            pointer,
+            camera
+        );
+
+        const intersections =
+            raycaster.intersectObjects(
+                human.children,
+                true
+            );
+
+        const hit =
+            intersections.find(
+                result =>
+                    isObjectVisible(
+                        result.object
+                    ) &&
+                    !(
+                        currentLayer === 'muscles' &&
+                        isDescendantOf(
+                            result.object,
+                            skin
+                        )
+                    ) &&
+                    findAnatomyObject(
+                        result.object
+                    )
+            );
+
+        if (!hit) {
+            return;
+        }
+
+        const target =
+            findAnatomyObject(
+                hit.object
+            );
+
+        /*
+            IMPORTANT:
+            Clicking the visible skin while
+            in Skin mode reveals the underlying
+            anatomy instead of leaving the model
+            hidden behind the skin.
+        */
+
+        if (
+            currentLayer === 'skin' &&
+            isDescendantOf(
+                target,
+                skin
+            )
+        ) {
+
+            setLayer('all');
+
+            skin.visible =
+                false;
+
+            hair.visible =
+                false;
+
+            document
+                .getElementById(
+                    'organList'
+                )
+                .textContent =
+                    'Skin hidden — underlying anatomical systems revealed.';
+
+            clearSelection();
+
+            return;
+        }
+
+        if (
+            selectedObject &&
+            selectedObject !==
+                target
+        ) {
+
+            unhighlight(
+                selectedObject
+            );
+        }
+
+        if (
+            selectedObject ===
+            target
+        ) {
+
+            unhighlight(
+                selectedObject
+            );
+
+            selectedObject =
+                null;
+
+            return;
+        }
+
+        selectedObject =
+            target;
+
+        const data =
+            target.userData.anatomy;
+
+        document
+            .getElementById(
+                'organList'
+            )
+            .textContent =
+                `${data.name} — ${data.role}`;
+
+        showTooltip(
+            data,
+            event.clientX,
+            event.clientY
+        );
+    }
+);
+
+/* =========================================================
+   CLEAR SELECTION
+========================================================= */
+
+function clearSelection() {
+
+    if (
+        selectedObject
+    ) {
+
+        unhighlight(
+            selectedObject
+        );
+    }
+
+    if (
+        hoveredObject
+    ) {
+
+        unhighlight(
+            hoveredObject
+        );
+    }
+
+    selectedObject =
+        null;
+
+    hoveredObject =
+        null;
+
+    tooltip.classList.remove(
+        'visible'
+    );
+}
+
+/* =========================================================
+   INITIALISE
+========================================================= */
+
+setSex(
+    sex
+);
+
+setLayer(
+    'skin'
+);
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    'resize',
+    () => {
+
+        camera.aspect =
+            innerWidth /
+            innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            innerWidth,
+            innerHeight
+        );
+    }
+);
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+    controls.update();
+
+    updateMuscleViewSide();
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
